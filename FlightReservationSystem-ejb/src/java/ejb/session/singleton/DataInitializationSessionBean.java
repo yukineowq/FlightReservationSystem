@@ -6,13 +6,19 @@
 package ejb.session.singleton;
 
 import ejb.session.stateless.EmployeeSessionBeanLocal;
+import ejb.session.stateless.AirportSessionBeanLocal;
+import ejb.session.stateless.AircraftTypeSessionBeanLocal;
+import entity.AircraftType;
 import entity.Employee;
+import entity.Airport;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.LocalBean;
 import javax.ejb.Startup;
 import util.enumeration.EmployeeAccessRightEnum;
+import util.exception.AircraftTypeNotFoundException;
+import util.exception.AirportNotFoundException;
 import util.exception.EmployeeNotFoundException;
 
 /**
@@ -37,32 +43,27 @@ public class DataInitializationSessionBean {
     public void postConstruct() {
         try {
             employeeSessionBeanLocal.retrieveEmployeeByUsername("systemadministrator");
-        } catch (EmployeeNotFoundException ex){
+            airportSessionBeanLocal.retrieveAirportByAirportCode("SIN");
+            airportSessionBeanLocal.retrieveAirportByAirportCode("NRT");
+            aircraftTypeSessionBeanLocal.retrieveAircraftTypeByName("Boeing 737");
+            aircraftTypeSessionBeanLocal.retrieveAircraftTypeByName("Boeing 747");
+        } catch (EmployeeNotFoundException | AirportNotFoundException | AircraftTypeNotFoundException ex){
             initializeData();
         }
     }
     
     private void initializeData()
     {
-        try
-        {
+
             Employee employee =  new Employee("John", "Tan", "systemadministrator", "password", EmployeeAccessRightEnum.SYSTEMADMINISTRATOR);
             employeeSessionBeanLocal.createNewEmployee(employee);
 
-            productEntitySessionBeanLocal.createNewProduct(new ProductEntity("PROD001", "Product A1", "Product A1", 100, new BigDecimal("10.00"), "Category A"));
-            productEntitySessionBeanLocal.createNewProduct(new ProductEntity("PROD002", "Product A2", "Product A2", 100, new BigDecimal("25.50"), "Category A"));
-            productEntitySessionBeanLocal.createNewProduct(new ProductEntity("PROD003", "Product A3", "Product A3", 100, new BigDecimal("15.00"), "Category A"));
-            productEntitySessionBeanLocal.createNewProduct(new ProductEntity("PROD004", "Product B1", "Product B1", 100, new BigDecimal("20.00"), "Category B"));
-            productEntitySessionBeanLocal.createNewProduct(new ProductEntity("PROD005", "Product B2", "Product B2", 100, new BigDecimal("10.00"), "Category B"));
-            productEntitySessionBeanLocal.createNewProduct(new ProductEntity("PROD006", "Product B3", "Product B3", 100, new BigDecimal("100.00"), "Category B"));
-            productEntitySessionBeanLocal.createNewProduct(new ProductEntity("PROD007", "Product C1", "Product C1", 100, new BigDecimal("35.00"), "Category C"));
-            productEntitySessionBeanLocal.createNewProduct(new ProductEntity("PROD008", "Product C2", "Product C2", 100, new BigDecimal("20.05"), "Category C"));
-            productEntitySessionBeanLocal.createNewProduct(new ProductEntity("PROD009", "Product C3", "Product C3", 100, new BigDecimal("5.50"), "Category C"));
-        }
-        catch(StaffUsernameExistException | ProductSkuCodeExistException | UnknownPersistenceException ex)
-        {
-            ex.printStackTrace();
-        }
+            airportSessionBeanLocal.createNewAirport(new Airport("Changi Airport", "SIN", "Singapore", "Singapore", "Singapore", Long.valueOf(8)));
+            airportSessionBeanLocal.createNewAirport(new Airport("Narita International Airport", "NRT", "Narita", "Chiba", "Japan", Long.valueOf(9)));
+            aircraftTypeSessionBeanLocal.createNewAircraftType(new AircraftType("Boeing 737", Long.valueOf(204)));
+            aircraftTypeSessionBeanLocal.createNewAircraftType(new AircraftType("Boeing 747", Long.valueOf(467)));
+            
+        
     }
     
 }

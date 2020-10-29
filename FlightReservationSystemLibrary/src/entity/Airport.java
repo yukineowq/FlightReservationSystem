@@ -6,11 +6,16 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import util.exception.EntityInstanceExistsInCollectionException;
+import util.exception.EntityInstanceMissingInCollectionException;
 
 /**
  *
@@ -33,16 +38,29 @@ public class Airport implements Serializable {
     private String state;
     @Column(nullable = false, length = 64)
     private String country;
+    @Column(nullable = false, length = 64)
+    private Long GMT;
 
+    //List of flight routes with this airport as an origin
+    @OneToMany(mappedBy = "origin")
+    private List<FlightRoute> flightRouteOrigins;
+    
+    //List of flight routes with this airport as the destination
+    @OneToMany(mappedBy = "destination")
+    private List<FlightRoute> flightRouteDestinations;
+    
     public Airport() {
+        flightRouteOrigins = new ArrayList<>();
+        flightRouteDestinations = new ArrayList<>();
     }
 
-    public Airport(String name, String airportCode, String city, String state, String country) {
+    public Airport(String name, String airportCode, String city, String state, String country, Long GMT) {
         this.name = name;
         this.airportCode = airportCode;
         this.city = city;
         this.state = state;
         this.country = country;
+        this.GMT = GMT;
     }
 
     
@@ -77,6 +95,58 @@ public class Airport implements Serializable {
     @Override
     public String toString() {
         return "entity.Airport[ id=" + airportId + " ]";
+    }
+    
+    public void addFlightRouteOrigin(FlightRoute flightRoute) throws EntityInstanceExistsInCollectionException
+    {
+        if(!this.flightRouteOrigins.contains(flightRoute))
+        {
+            this.flightRouteOrigins.add(flightRoute);
+        }
+        else
+        {
+            throw new EntityInstanceExistsInCollectionException("This flight route already exist in this airports's origin list");
+        }
+    }
+    
+    
+    
+    public void removeFlightRouteOrigin(FlightRoute flightRoute) throws EntityInstanceMissingInCollectionException
+    {
+        if(this.flightRouteOrigins.contains(flightRoute))
+        {
+            this.flightRouteOrigins.remove(flightRoute);
+        }
+        else
+        {
+            throw new EntityInstanceMissingInCollectionException("This flight route does not exist in this airports's origin list");
+        }
+    }
+    
+    public void addFlightRouteDestination(FlightRoute flightRoute) throws EntityInstanceExistsInCollectionException
+    {
+        if(!this.flightRouteDestinations.contains(flightRoute))
+        {
+            this.flightRouteDestinations.add(flightRoute);
+        }
+        else
+        {
+            throw new EntityInstanceExistsInCollectionException("This flight route already exist in this airports's origin list");
+        }
+    }
+    
+    
+    
+    public void removeFlightRouteDestination(FlightRoute flightRoute) throws EntityInstanceMissingInCollectionException
+    {
+        if(this.flightRouteDestinations.contains(flightRoute))
+        {
+            this.flightRouteDestinations.remove(flightRoute);
+        }
+        else
+        {
+            throw new EntityInstanceMissingInCollectionException("This flight route does not exist in this airports's origin list");
+        }
     }
 
     public String getName() {
@@ -117,6 +187,14 @@ public class Airport implements Serializable {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public Long getGMT() {
+        return GMT;
+    }
+
+    public void setGMT(Long GMT) {
+        this.GMT = GMT;
     }
     
 }
