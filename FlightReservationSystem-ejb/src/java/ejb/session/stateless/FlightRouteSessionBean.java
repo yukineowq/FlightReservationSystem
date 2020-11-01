@@ -6,8 +6,11 @@
 package ejb.session.stateless;
 
 import entity.Airport;
+import entity.Flight;
 import entity.FlightRoute;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -16,6 +19,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import util.enumeration.StatusEnum;
+import util.exception.EntityInstanceMissingInCollectionException;
+import util.exception.FlightRouteDoesNotExistException;
 import util.exception.FlightRouteNotFoundException;
 import util.exception.FlightRouteOriginExistException;
 import util.exception.FlightRouteReturnExistException;
@@ -33,96 +38,114 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
 
     @Override
     public Long createNewFlightRoute(FlightRoute newFlightRoute) throws FlightRouteNotFoundException, UnknownPersistenceException {
-        try
-        {
+        try {
             entityManager.persist(newFlightRoute);
             entityManager.flush();
             newFlightRoute.setStatus(StatusEnum.ENABLED);
-            
+
             return newFlightRoute.getFlightRouteId();
-        }
-        catch(PersistenceException ex)
-        {
-            if(ex.getCause() != null && ex.getCause().getClass().getName().equals("org.eclipse.persistence.exceptions.DatabaseException"))
-            {
-                if(ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getName().equals("java.sql.SQLIntegrityConstraintViolationException"))
-                {
+        } catch (PersistenceException ex) {
+            if (ex.getCause() != null && ex.getCause().getClass().getName().equals("org.eclipse.persistence.exceptions.DatabaseException")) {
+                if (ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getName().equals("java.sql.SQLIntegrityConstraintViolationException")) {
                     throw new FlightRouteNotFoundException();
-                }
-                else
-                {
+                } else {
                     throw new UnknownPersistenceException(ex.getMessage());
                 }
-            }
-            else
-            {
+            } else {
                 throw new UnknownPersistenceException(ex.getMessage());
             }
         }
     }
-    
+
     @Override
     public FlightRoute retrieveFlightRouteByFlightRouteId(Long flightRouteId, Boolean fetchFlight, Boolean fetchAirport) throws FlightRouteNotFoundException {
         FlightRoute flightRoute = entityManager.find(FlightRoute.class, flightRouteId);
-        
+
         if (fetchFlight) {
-            flightRoute.getFlight();
+            flightRoute.getFlights().size();
         }
-        
+
         if (fetchAirport) {
-            flightRoute.getAirport();
+            flightRoute.getOrigin();
+            flightRoute.getDestination();
         }
-        
+
         return flightRoute;
     }
-    
+
     @Override
     public List<FlightRoute> retrieveAllFlightRoutes() {
         Query query = entityManager.createQuery("SELECT fr FROM FlightRoute fr");
-        
-        return query.getResultList();
+        List<FlightRoute> flightRoutes = query.getResultList();
+        flightRoutes.size();
+        return flightRoutes;
     }
-    
+
     @Override
-    public FlightRoute retrieveFlightRouteByOriginAirport(String origin) throws FlightRouteOriginExistException {
-        Query query = entityManager.createQuery("SELECT fr FROM FlightRoute fr WHERE fr.origin = :inOrigin");
-        query.setParameter("inOrigin", origin);
-        
-        try 
-        {
-            return (FlightRoute)query.getSingleResult();
-        }
-        catch(NoResultException | NonUniqueResultException ex)
-        {
-            throw new FlightRouteOriginExistException("Flight route embarking from " + origin + " does not exist!");
+    public FlightRoute retrieveFlightRouteByOD(String OD) throws FlightRouteDoesNotExistException {
+        Query query = entityManager.createQuery("SELECT fr FROM FlightRoute fr WHERE fr.OD = :inOD");
+        query.setParameter("inOD", OD);
+
+        try {
+            return (FlightRoute) query.getSingleResult();
+        } catch (NoResultException | NonUniqueResultException ex) {
+            throw new FlightRouteDoesNotExistException("Flight route  " + OD + " does not exist!");
         }
     }
-    
-    @Override
-    public FlightRoute retrieveFlightRouteByDestinationAirport(String destination) throws FlightRouteReturnExistException {
-        Query query = entityManager.createQuery("SELECT fr FROM FlightRoute fr WHERE fr.destination = :inDestination");
-        query.setParameter("inDestination", destination);
-        
-        try
-        {
-            return (FlightRoute)query.getSingleResult();
-        }
-        catch(NoResultException | NonUniqueResultException ex)
-        {
-            throw new FlightRouteReturnExistException("Flight route returninf from " + destination + " does not exist!");
-        }
-    }
-    
+
+    /* //This method does not check if FlightRout is actually in use before deleteing
     @Override
     public void deleteFlightRoute(Long flightRouteId) throws FlightRouteNotFoundException {
         FlightRoute flightRoute = retrieveFlightRouteByFlightRouteId(flightRouteId, false, false);
         
-        flightRoute.getFlight().setFlightRoute(null);
+        List<Flight> flights = flightRoute.getFlights();
         
-        flightRoute.getAirport().removeFlightRouteOrigin(flightRoute);
-        flightRoute.getAirport().removeFlightRouteDestination(flightRoute);
+        for (Flight flight: flights) {
+            flight.setFlightRoute(null);
+        }
+        
+        try {
+            flightRoute.getOrigin().removeFlightRouteOrigin(flightRoute);
+        } catch (EntityInstanceMissingInCollectionException ex) {
+            Logger.getLogger(FlightRouteSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            flightRoute.getDestination().removeFlightRouteDestination(flightRoute);
+        } catch (EntityInstanceMissingInCollectionException ex) {
+            Logger.getLogger(FlightRouteSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         flightRoute.setStatus(StatusEnum.DISABLED);
         entityManager.remove(flightRoute);
+    }
+     */
+    
+    //Can be improved? Compare to flight delete method..
+    @Override
+    public void deleteFlightRoute(Long flightRouteId) throws FlightRouteNotFoundException {
+        FlightRoute flightRoute = retrieveFlightRouteByFlightRouteId(flightRouteId, false, false);
+
+        List<Flight> flights = flightRoute.getFlights();
+
+        if (flights.isEmpty()) {
+            for (Flight flight : flights) {
+                flight.setFlightRoute(null);
+            }
+
+            try {
+                flightRoute.getOrigin().removeFlightRouteOrigin(flightRoute);
+            } catch (EntityInstanceMissingInCollectionException ex) {
+                Logger.getLogger(FlightRouteSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            try {
+                flightRoute.getDestination().removeFlightRouteDestination(flightRoute);
+            } catch (EntityInstanceMissingInCollectionException ex) {
+                Logger.getLogger(FlightRouteSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            entityManager.remove(flightRoute);
+        } else {
+            flightRoute.setStatus(StatusEnum.DISABLED);
+        }
     }
 }

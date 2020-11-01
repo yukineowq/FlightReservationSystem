@@ -18,8 +18,10 @@ import javax.ejb.LocalBean;
 import javax.ejb.Startup;
 import util.enumeration.EmployeeAccessRightEnum;
 import util.exception.AircraftTypeNotFoundException;
+import util.exception.AirportCodeExistException;
 import util.exception.AirportNotFoundException;
 import util.exception.EmployeeNotFoundException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -40,7 +42,7 @@ public class DataInitializationSessionBean {
     }
 
     @PostConstruct
-    public void postConstruct() {
+    public void postConstruct() throws AirportCodeExistException, UnknownPersistenceException {
         try {
             employeeSessionBeanLocal.retrieveEmployeeByUsername("systemadministrator");
             airportSessionBeanLocal.retrieveAirportByAirportCode("SIN");
@@ -52,7 +54,7 @@ public class DataInitializationSessionBean {
         }
     }
     
-    private void initializeData()
+    private void initializeData() throws AirportCodeExistException, UnknownPersistenceException
     {
 
             Employee employee =  new Employee("John", "Tan", "systemadministrator", "password", EmployeeAccessRightEnum.SYSTEMADMINISTRATOR);

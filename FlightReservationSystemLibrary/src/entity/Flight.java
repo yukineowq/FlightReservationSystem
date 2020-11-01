@@ -6,6 +6,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,7 +33,7 @@ public class Flight implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightId;
     @Column(nullable = false, length = 64)
-    private Long flightNumber;
+    private String flightNumber;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 64)
     private StatusEnum status;
@@ -42,7 +43,8 @@ public class Flight implements Serializable {
     @OneToMany(mappedBy = "flight")
     private List<FlightSchedulePlan> flightSchedulePlan; 
     
-    @OneToOne(mappedBy = "flight")
+    @ManyToOne(optional = true)
+    @JoinColumn(nullable = false)
     private FlightRoute flightRoute;
     
     @ManyToOne(optional = false)
@@ -50,9 +52,10 @@ public class Flight implements Serializable {
     private AircraftConfiguration aircraftConfiguration;
 
     public Flight() {
+        flightSchedulePlan = new ArrayList<>();
     }
 
-    public Flight(Long flightNumber, AircraftConfiguration aircraftConfiguration, Boolean returnFlight) {
+    public Flight(String flightNumber, AircraftConfiguration aircraftConfiguration, Boolean returnFlight) {
         this.flightNumber = flightNumber;
         this.aircraftConfiguration = aircraftConfiguration;
         this.returnFlight = returnFlight;
@@ -91,11 +94,11 @@ public class Flight implements Serializable {
         return "entity.Flight[ id=" + flightId + " ]";
     }
 
-    public Long getFlightNumber() {
+    public String getFlightNumber() {
         return flightNumber;
     }
 
-    public void setFlightNumber(Long flightNumber) {
+    public void setFlightNumber(String flightNumber) {
         this.flightNumber = flightNumber;
     }
 

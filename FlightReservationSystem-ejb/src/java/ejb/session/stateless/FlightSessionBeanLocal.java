@@ -8,8 +8,10 @@ package ejb.session.stateless;
 import entity.Flight;
 import java.util.List;
 import javax.ejb.Local;
+import util.exception.FlightNotFoundException;
 import util.exception.FlightNumberExistException;
 import util.exception.UnknownPersistenceException;
+import util.exception.UpdateFlightException;
 
 /**
  *
@@ -19,5 +21,6 @@ import util.exception.UnknownPersistenceException;
 public interface FlightSessionBeanLocal {
     Long createNewFlight(Flight newFlight) throws FlightNumberExistException, UnknownPersistenceException;
     List<Flight> retrieveAllFlights();
-    Flight retrieveFlightByFlightNumber(Long flightNumber) throws FlightNumberExistException;
+    Flight retrieveFlightByFlightNumber(String flightNumber) throws FlightNumberExistException;
+    void updateFlight(Flight updatedFlight) throws FlightNotFoundException, UpdateFlightException;
 }

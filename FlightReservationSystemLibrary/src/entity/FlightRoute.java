@@ -6,6 +6,8 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -15,6 +17,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import util.enumeration.StatusEnum;
 
@@ -29,29 +32,33 @@ public class FlightRoute implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightRouteId;
-    @Column(nullable = false, length = 64)
-    private String origin;
-    @Column(nullable = false, length = 64)
-    private String destination;
+    @Column(nullable = false, unique = true, length = 10)
+    private String OD;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 64)
     private StatusEnum status;
             
-    @OneToOne(mappedBy = "FlightRoute")
-    private Flight flight;
+    @OneToMany(mappedBy = "flightRoute")
+    private List<Flight> flights;
     
-    @ManyToOne(optional = false)
+    @OneToOne(optional = false)
     @JoinColumn(nullable = false)
-    private Airport airport;
-
+    private Airport origin;
+    
+    @OneToOne(optional = false)
+    @JoinColumn(nullable = false)
+    private Airport destination;
     
     public FlightRoute() {
+        flights = new ArrayList<>();
     }
 
-    public FlightRoute(String origin, String destination, Airport airport) {
+    public FlightRoute(Airport origin, Airport destination) {
         this.origin = origin;
         this.destination = destination;
-        this.airport = airport;
+        String o = origin.getAirportCode();
+        String d = destination.getAirportCode();
+        this.OD = o + "-" + d;
     }
     
     public Long getFlightRouteId() {
@@ -87,19 +94,19 @@ public class FlightRoute implements Serializable {
         return "entity.FlightRoute[ id=" + flightRouteId + " ]";
     }
 
-    public String getOrigin() {
+    public Airport getOrigin() {
         return origin;
     }
 
-    public void setOrigin(String origin) {
+    public void setOrigin(Airport origin) {
         this.origin = origin;
     }
 
-    public String getDestination() {
+    public Airport getDestination() {
         return destination;
     }
 
-    public void setDestination(String destination) {
+    public void setDestination(Airport destination) {
         this.destination = destination;
     }
 
@@ -111,20 +118,20 @@ public class FlightRoute implements Serializable {
         this.status = status;
     }
 
-    public Flight getFlight() {
-        return flight;
+    public String getOD() {
+        return OD;
+    } 
+    
+    public void setOD(String OD) {
+        this.OD = OD;
     }
 
-    public void setFlight(Flight flight) {
-        this.flight = flight;
+    public List<Flight> getFlights() {
+        return flights;
     }
 
-    public Airport getAirport() {
-        return airport;
-    }
-
-    public void setAirport(Airport airport) {
-        this.airport = airport;
+    public void setFlights(List<Flight> flights) {
+        this.flights = flights;
     }
     
 }
