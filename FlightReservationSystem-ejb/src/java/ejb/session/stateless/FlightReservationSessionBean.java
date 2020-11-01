@@ -5,8 +5,7 @@
  */
 package ejb.session.stateless;
 
-import entity.AircraftConfiguration;
-import java.util.List;
+import entity.FlightReservation;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -14,27 +13,29 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
-import util.exception.AircraftConfigurationNameExistException;
-import util.exception.AircraftConfigurationNotFoundException;
+import util.exception.FlightReservationNotFoundException;
+import util.exception.FlightRouteNotFoundException;
+import util.exception.FlightRouteOriginExistException;
+import util.exception.SeatNumberNotFoundException;
 import util.exception.UnknownPersistenceException;
 
 /**
  *
- * @author reuben
+ * @author Yuki
  */
 @Stateless
-public class AircraftConfigurationSessionBean implements AircraftConfigurationSessionBeanRemote, AircraftConfigurationSessionBeanLocal {
+public class FlightReservationSessionBean implements FlightReservationSessionBeanRemote, FlightReservationSessionBeanLocal {
+
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager entityManager;
-    
-    @Override
-    public Long createNewAircraftConfiguration(AircraftConfiguration newAircraftConfiguration) throws AircraftConfigurationNameExistException, UnknownPersistenceException {
-        try
-        {
-            entityManager.persist(newAircraftConfiguration);
-            entityManager.flush();
 
-            return newAircraftConfiguration.getAircraftConfigurationId();
+    public Long createNewFlightReservation(FlightReservation newFlightReservation) throws FlightReservationNotFoundException, UnknownPersistenceException {
+        try 
+        {
+            entityManager.persist(newFlightReservation);
+            entityManager.flush();
+            
+            return newFlightReservation.getFlightReservationId();
         }
         catch(PersistenceException ex)
         {
@@ -42,7 +43,7 @@ public class AircraftConfigurationSessionBean implements AircraftConfigurationSe
             {
                 if(ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getName().equals("java.sql.SQLIntegrityConstraintViolationException"))
                 {
-                    throw new AircraftConfigurationNameExistException();
+                    throw new FlightReservationNotFoundException();
                 }
                 else
                 {
@@ -56,26 +57,18 @@ public class AircraftConfigurationSessionBean implements AircraftConfigurationSe
         }
     }
     
-    @Override
-    public List<AircraftConfiguration> retrieveAllAircraftConfigurations() {
-        Query query = entityManager.createQuery("SELECT a FROM AircraftConfiguration a");
-        
-        return query.getResultList();
-    }
-    
-    @Override
-    public AircraftConfiguration retrieveAircraftConfigurationByName(String name) throws AircraftConfigurationNotFoundException {
-        Query query = entityManager.createQuery("SELECT a FROM AircraftConfiguration a WHERE a.name = :inName");
-        query.setParameter("inName", name);
+    public FlightReservation retrieveFlightReservationBySeatNumber(String seatNumber) throws SeatNumberNotFoundException {
+        Query query = entityManager.createQuery("SELECT r FROM FlightReservation r WHERE r.seatNumber = :inSeatNumber");
+        query.setParameter("inSeatNumber", seatNumber);
         
         try
         {
-            return (AircraftConfiguration)query.getSingleResult();
+        return (FlightReservation)query.getResultList();
         }
         catch(NoResultException | NonUniqueResultException ex)
         {
-            throw new AircraftConfigurationNotFoundException("Aircraft Configuration name:" + name + " does not exist!");
+            throw new SeatNumberNotFoundException("Seat number: " + seatNumber + " does not exist!");
         }
     }
+    
 }
-
