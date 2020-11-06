@@ -60,8 +60,8 @@ public class DataInitializationSessionBean {
             Employee employee =  new Employee("John", "Tan", "systemadministrator", "password", EmployeeAccessRightEnum.SYSTEMADMINISTRATOR);
             employeeSessionBeanLocal.createNewEmployee(employee);
 
-            airportSessionBeanLocal.createNewAirport(new Airport("Changi Airport", "SIN", "Singapore", "Singapore", "Singapore", Long.valueOf(8)));
-            airportSessionBeanLocal.createNewAirport(new Airport("Narita International Airport", "NRT", "Narita", "Chiba", "Japan", Long.valueOf(9)));
+            airportSessionBeanLocal.createNewAirport(new Airport("Changi Airport", "SIN", "Singapore", "Singapore", "Singapore", "GMT+08:00"));
+            airportSessionBeanLocal.createNewAirport(new Airport("Narita International Airport", "NRT", "Narita", "Chiba", "Japan", "GMT+09:00"));
             aircraftTypeSessionBeanLocal.createNewAircraftType(new AircraftType("Boeing 737", Long.valueOf(204)));
             aircraftTypeSessionBeanLocal.createNewAircraftType(new AircraftType("Boeing 747", Long.valueOf(467)));
             

@@ -6,6 +6,8 @@
 package ejb.session.stateless;
 
 import entity.AircraftConfiguration;
+import entity.AircraftType;
+import entity.CabinClassConfiguration;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -28,7 +30,13 @@ public class AircraftConfigurationSessionBean implements AircraftConfigurationSe
     private EntityManager entityManager;
     
     @Override
-    public Long createNewAircraftConfiguration(AircraftConfiguration newAircraftConfiguration) throws AircraftConfigurationNameExistException, UnknownPersistenceException {
+    public Long createNewAircraftConfiguration(AircraftConfiguration newAircraftConfiguration, Long aircraftTypeId) throws AircraftConfigurationNameExistException, UnknownPersistenceException {
+        AircraftType aircraftType = entityManager.find(AircraftType.class, aircraftTypeId);
+       
+        if (aircraftType != null) {
+            newAircraftConfiguration.setAircraftType(aircraftType);
+            aircraftType.getAircraftConfigurations().add(newAircraftConfiguration);
+        }
         try
         {
             entityManager.persist(newAircraftConfiguration);
@@ -60,6 +68,7 @@ public class AircraftConfigurationSessionBean implements AircraftConfigurationSe
     public List<AircraftConfiguration> retrieveAllAircraftConfigurations() {
         Query query = entityManager.createQuery("SELECT a FROM AircraftConfiguration a");
         List<AircraftConfiguration> aircraftConfigurations = query.getResultList();
+        aircraftConfigurations.size();
         return aircraftConfigurations;
     }
     
@@ -70,7 +79,9 @@ public class AircraftConfigurationSessionBean implements AircraftConfigurationSe
         
         try
         {
-            return (AircraftConfiguration)query.getSingleResult();
+            AircraftConfiguration aircraftConfiguration = (AircraftConfiguration)query.getSingleResult();
+            aircraftConfiguration.getFlights().size();
+            return aircraftConfiguration;
         }
         catch(NoResultException | NonUniqueResultException ex)
         {

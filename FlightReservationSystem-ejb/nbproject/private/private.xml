@@ -3,9 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FlightSessionBeanLocal.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FlightReservationSessionBean.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FlightSchedulePlanSessionBean.java</file>
             <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FlightSessionBean.java</file>
-            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/singleton/DataInitializationSessionBean.java</file>
-            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FlightRouteSessionBean.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/AircraftConfigurationSessionBeanLocal.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FlightSchedulePlanSessionBeanLocal.java</file>
         </group>
     </open-files>
 </project-private>

@@ -19,8 +19,9 @@ import util.exception.UpdateFlightException;
  */
 @Local
 public interface FlightSessionBeanLocal {
-    Long createNewFlight(Flight newFlight) throws FlightNumberExistException, UnknownPersistenceException;
+    Long createNewFlight(Flight newFlight, Long aircraftConfigurationId, Long flightRouteId) throws FlightNumberExistException, UnknownPersistenceException;
     List<Flight> retrieveAllFlights();
     Flight retrieveFlightByFlightNumber(String flightNumber) throws FlightNumberExistException;
     void updateFlight(Flight updatedFlight) throws FlightNotFoundException, UpdateFlightException;
+    void deleteFlight(String flightNumber) throws FlightNumberExistException;
 }

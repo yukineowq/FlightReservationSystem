@@ -5,7 +5,12 @@
  */
 package ejb.session.stateless;
 
+import entity.FlightSchedulePlan;
+import java.util.List;
 import javax.ejb.Local;
+import util.exception.FlightScheduleContainsReservationException;
+import util.exception.FlightSchedulePlanDoesNotExistException;
+
 
 /**
  *
@@ -13,5 +18,10 @@ import javax.ejb.Local;
  */
 @Local
 public interface FlightSchedulePlanSessionBeanLocal {
+    Long createNewFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId); 
+    List<FlightSchedulePlan> viewAllFlightSchedulePlans();
+    FlightSchedulePlan viewFlightSchedulePlanDetails(Long flightSchedulePlanId) throws FlightSchedulePlanDoesNotExistException;
+    void updateFlightSchedulePlan(FlightSchedulePlan updatedFlightSchedulePlan, Long flightSchedulePlanId) throws FlightSchedulePlanDoesNotExistException, FlightScheduleContainsReservationException;
+    void deleteFlightSchedulePlan(Long flightSchedulePlanId) throws FlightSchedulePlanDoesNotExistException;
     
 }

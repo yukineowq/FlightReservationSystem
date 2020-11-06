@@ -6,6 +6,8 @@
 package ejb.session.stateless;
 
 import entity.FlightReservation;
+import entity.FlightSchedule;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -16,6 +18,7 @@ import javax.persistence.Query;
 import util.exception.FlightReservationNotFoundException;
 import util.exception.FlightRouteNotFoundException;
 import util.exception.FlightRouteOriginExistException;
+import util.exception.FlightScheduleNotFoundException;
 import util.exception.SeatNumberNotFoundException;
 import util.exception.UnknownPersistenceException;
 
@@ -29,7 +32,12 @@ public class FlightReservationSessionBean implements FlightReservationSessionBea
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager entityManager;
 
-    public Long createNewFlightReservation(FlightReservation newFlightReservation) throws FlightReservationNotFoundException, UnknownPersistenceException {
+    public Long createNewFlightReservation(FlightReservation newFlightReservation, Long flightScheduleId) throws FlightReservationNotFoundException, UnknownPersistenceException {
+        FlightSchedule flightSchedule = entityManager.find(FlightSchedule.class, flightScheduleId);
+        if (flightSchedule != null) {
+            newFlightReservation.setFlightSchedule(flightSchedule);
+            flightSchedule.getFlightReservations().add(newFlightReservation);
+        }
         try 
         {
             entityManager.persist(newFlightReservation);
@@ -69,6 +77,18 @@ public class FlightReservationSessionBean implements FlightReservationSessionBea
         {
             throw new SeatNumberNotFoundException("Seat number: " + seatNumber + " does not exist!");
         }
+    }
+    
+    @Override
+    public List<FlightReservation> viewFlightReservations(Long flightScheduleId) throws FlightScheduleNotFoundException {
+        FlightSchedule flightSchedule = new FlightSchedule();
+        try {
+            flightSchedule = entityManager.find(FlightSchedule.class, flightScheduleId);
+        } catch (Exception ex) {
+            throw new FlightScheduleNotFoundException();
+        }
+        flightSchedule.getFlightReservations().size();
+        return flightSchedule.getFlightReservations();
     }
     
 }

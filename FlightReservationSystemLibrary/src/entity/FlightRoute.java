@@ -54,6 +54,7 @@ public class FlightRoute implements Serializable {
     }
 
     public FlightRoute(Airport origin, Airport destination) {
+        this();
         this.origin = origin;
         this.destination = destination;
         String o = origin.getAirportCode();

@@ -41,6 +41,7 @@ public class AircraftType implements Serializable {
     }
 
     public AircraftType(String name, Long maxSeatCapacity) {
+        this();
         this.name = name;
         this.maxSeatCapacity = maxSeatCapacity;
     }
@@ -87,7 +88,7 @@ public class AircraftType implements Serializable {
     {
         if(!this.aircraftConfigurations.contains(aircraftConfiguration))
         {
-            this.aircraftConfigurations.add(aircraftConfiguration);
+            this.getAircraftConfigurations().add(aircraftConfiguration);
         }
         else
         {
@@ -99,9 +100,9 @@ public class AircraftType implements Serializable {
     
     public void removeAircraftConfiguration(AircraftConfiguration aircraftConfiguration) throws EntityInstanceMissingInCollectionException
     {
-        if(this.aircraftConfigurations.contains(aircraftConfiguration))
+        if(this.getAircraftConfigurations().contains(aircraftConfiguration))
         {
-            this.aircraftConfigurations.remove(aircraftConfiguration);
+            this.getAircraftConfigurations().remove(aircraftConfiguration);
         }
         else
         {
@@ -119,5 +120,13 @@ public class AircraftType implements Serializable {
 
     public void setMaxSeatCapacity(Long maxSeatCapacity) {
         this.maxSeatCapacity = maxSeatCapacity;
+    }
+
+    public List<AircraftConfiguration> getAircraftConfigurations() {
+        return aircraftConfigurations;
+    }
+
+    public void setAircraftConfigurations(List<AircraftConfiguration> aircraftConfigurations) {
+        this.aircraftConfigurations = aircraftConfigurations;
     }
 }

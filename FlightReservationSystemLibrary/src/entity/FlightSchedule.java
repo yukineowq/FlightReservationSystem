@@ -6,8 +6,10 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,6 +17,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -31,18 +34,25 @@ public class FlightSchedule implements Serializable {
     private Date departureDate;
     @Column(nullable = false)
     private GregorianCalendar departureTime;
+    @Column(nullable = false)
+    private int estimatedFlightDuration;
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private FlightSchedulePlan flightSchedulePlan;
+    
+    @OneToMany(mappedBy = "flightSchedule")
+    private List<FlightReservation> flightReservations;
 
     
     public FlightSchedule() {
+        flightReservations = new ArrayList<>();
     }
 
-    public FlightSchedule(Date departureDate, GregorianCalendar departureTime) {
+    public FlightSchedule(Date departureDate, GregorianCalendar departureTime, int estimatedFlightDuration) {
         this.departureDate = departureDate;
         this.departureTime = departureTime;
+        this.estimatedFlightDuration = estimatedFlightDuration;
     }
     
     public Long getFlightScheduleId() {
@@ -100,6 +110,22 @@ public class FlightSchedule implements Serializable {
 
     public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
         this.flightSchedulePlan = flightSchedulePlan;
+    }
+
+    public int getEstimatedFlightDuration() {
+        return estimatedFlightDuration;
+    }
+
+    public void setEstimatedFlightDuration(int estimatedFlightDuration) {
+        this.estimatedFlightDuration = estimatedFlightDuration;
+    }
+    
+    public List<FlightReservation> getFlightReservations() {
+        return flightReservations;
+    }
+
+    public void setFlightReservations(List<FlightReservation> flightReservations) {
+        this.flightReservations = flightReservations;
     }
     
 }

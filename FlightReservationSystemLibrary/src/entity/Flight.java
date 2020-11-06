@@ -56,6 +56,7 @@ public class Flight implements Serializable {
     }
 
     public Flight(String flightNumber, AircraftConfiguration aircraftConfiguration, Boolean returnFlight) {
+        this();
         this.flightNumber = flightNumber;
         this.aircraftConfiguration = aircraftConfiguration;
         this.returnFlight = returnFlight;

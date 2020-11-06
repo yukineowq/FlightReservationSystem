@@ -5,7 +5,11 @@
  */
 package ejb.session.stateless;
 
+import entity.FlightSchedulePlan;
+import java.util.List;
 import javax.ejb.Remote;
+import util.exception.FlightScheduleContainsReservationException;
+import util.exception.FlightSchedulePlanDoesNotExistException;
 
 /**
  *
@@ -13,5 +17,9 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface FlightSchedulePlanSessionBeanRemote {
-    
+    Long createNewFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId);
+    List<FlightSchedulePlan> viewAllFlightSchedulePlans();
+    FlightSchedulePlan viewFlightSchedulePlanDetails(Long flightSchedulePlanId) throws FlightSchedulePlanDoesNotExistException;
+    void updateFlightSchedulePlan(FlightSchedulePlan updatedFlightSchedulePlan, Long flightSchedulePlanId) throws FlightSchedulePlanDoesNotExistException, FlightScheduleContainsReservationException;
+    void deleteFlightSchedulePlan(Long flightSchedulePlanId) throws FlightSchedulePlanDoesNotExistException;    
 }

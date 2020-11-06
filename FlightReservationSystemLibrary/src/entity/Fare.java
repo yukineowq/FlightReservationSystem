@@ -15,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import util.enumeration.CabinClassEnum;
 
 /**
@@ -39,6 +40,10 @@ public class Fare implements Serializable {
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private FlightSchedulePlan flightSchedulePlan;
+    
+    @OneToOne(optional = false)
+    @JoinColumn(nullable = false)
+    private CabinClassConfiguration cabinClassConfiguration;
     
     public Fare() {
     }
@@ -112,6 +117,14 @@ public class Fare implements Serializable {
 
     public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
         this.flightSchedulePlan = flightSchedulePlan;
+    }
+
+    public CabinClassConfiguration getCabinClassConfiguration() {
+        return cabinClassConfiguration;
+    }
+
+    public void setCabinClassConfiguration(CabinClassConfiguration cabinClassConfiguration) {
+        this.cabinClassConfiguration = cabinClassConfiguration;
     }
     
 }

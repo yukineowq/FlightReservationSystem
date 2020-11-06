@@ -7,7 +7,9 @@ package entity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -39,28 +41,31 @@ public class Airport implements Serializable {
     @Column(nullable = false, length = 64)
     private String country;
     @Column(nullable = false, length = 64)
-    private Long GMT;
+    private GregorianCalendar gregorianCalendar;
+    @Column(nullable = false, length = 64)
+    private String GMT;
 
-    //List of flight routes with this airport as an origin
-    @OneToMany(mappedBy = "origin")
-    private List<FlightRoute> flightRouteOrigins;
     
     //List of flight routes with this airport as the destination
     @OneToMany(mappedBy = "destination")
     private List<FlightRoute> flightRouteDestinations;
     
+    @OneToMany(mappedBy = "origin")
+    private List<FlightRoute> flightRouteOrigins;
+    
     public Airport() {
-        flightRouteOrigins = new ArrayList<>();
         flightRouteDestinations = new ArrayList<>();
+        flightRouteOrigins = new ArrayList<>();
     }
 
-    public Airport(String name, String airportCode, String city, String state, String country, Long GMT) {
+    public Airport(String name, String airportCode, String city, String state, String country, String GMT) {
         this.name = name;
         this.airportCode = airportCode;
         this.city = city;
         this.state = state;
         this.country = country;
         this.GMT = GMT;
+        this.gregorianCalendar = new GregorianCalendar(TimeZone.getTimeZone(GMT));
     }
 
     
@@ -97,57 +102,7 @@ public class Airport implements Serializable {
         return "entity.Airport[ id=" + airportId + " ]";
     }
     
-    public void addFlightRouteOrigin(FlightRoute flightRoute) throws EntityInstanceExistsInCollectionException
-    {
-        if(!this.flightRouteOrigins.contains(flightRoute))
-        {
-            this.flightRouteOrigins.add(flightRoute);
-        }
-        else
-        {
-            throw new EntityInstanceExistsInCollectionException("This flight route already exist in this airports's origin list");
-        }
-    }
-    
-    
-    
-    public void removeFlightRouteOrigin(FlightRoute flightRoute) throws EntityInstanceMissingInCollectionException
-    {
-        if(this.flightRouteOrigins.contains(flightRoute))
-        {
-            this.flightRouteOrigins.remove(flightRoute);
-        }
-        else
-        {
-            throw new EntityInstanceMissingInCollectionException("This flight route does not exist in this airports's origin list");
-        }
-    }
-    
-    public void addFlightRouteDestination(FlightRoute flightRoute) throws EntityInstanceExistsInCollectionException
-    {
-        if(!this.flightRouteDestinations.contains(flightRoute))
-        {
-            this.flightRouteDestinations.add(flightRoute);
-        }
-        else
-        {
-            throw new EntityInstanceExistsInCollectionException("This flight route already exist in this airports's origin list");
-        }
-    }
-    
-    
-    
-    public void removeFlightRouteDestination(FlightRoute flightRoute) throws EntityInstanceMissingInCollectionException
-    {
-        if(this.flightRouteDestinations.contains(flightRoute))
-        {
-            this.flightRouteDestinations.remove(flightRoute);
-        }
-        else
-        {
-            throw new EntityInstanceMissingInCollectionException("This flight route does not exist in this airports's origin list");
-        }
-    }
+
 
     public String getName() {
         return name;
@@ -189,12 +144,39 @@ public class Airport implements Serializable {
         this.country = country;
     }
 
-    public Long getGMT() {
+    public String getGMT() {
         return GMT;
     }
 
-    public void setGMT(Long GMT) {
+    public void setGMT(String GMT) {
         this.GMT = GMT;
+        this.setGregorianCalendar(new GregorianCalendar(TimeZone.getTimeZone(GMT)));
     }
+
+    public GregorianCalendar getGregorianCalendar() {
+        return gregorianCalendar;
+    }
+
+    public void setGregorianCalendar(GregorianCalendar gregorianCalendar) {
+        this.gregorianCalendar = gregorianCalendar;
+    }
+
+    public List<FlightRoute> getFlightRouteDestinations() {
+        return flightRouteDestinations;
+    }
+
+    public void setFlightRouteDestinations(List<FlightRoute> flightRouteDestinations) {
+        this.flightRouteDestinations = flightRouteDestinations;
+    }
+
+    public List<FlightRoute> getFlightRouteOrigins() {
+        return flightRouteOrigins;
+    }
+
+    public void setFlightRouteOrigins(List<FlightRoute> flightRouteOrigins) {
+        this.flightRouteOrigins = flightRouteOrigins;
+    }
+
+   
     
 }

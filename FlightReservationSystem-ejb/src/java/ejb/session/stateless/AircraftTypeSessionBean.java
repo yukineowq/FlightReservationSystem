@@ -5,7 +5,9 @@
  */
 package ejb.session.stateless;
 
+import entity.AircraftConfiguration;
 import entity.AircraftType;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -25,6 +27,7 @@ public class AircraftTypeSessionBean implements AircraftTypeSessionBeanRemote, A
     
     @Override
     public Long createNewAircraftType(AircraftType newAircraftType){
+        
         entityManager.persist(newAircraftType);
         entityManager.flush();
         
@@ -38,7 +41,9 @@ public class AircraftTypeSessionBean implements AircraftTypeSessionBeanRemote, A
         
         try
         {
-            return (AircraftType)query.getSingleResult();
+            AircraftType aircraftType = (AircraftType)query.getSingleResult();
+            aircraftType.getAircraftConfigurations().size();
+            return aircraftType;
         }
         catch(NoResultException | NonUniqueResultException ex)
         {

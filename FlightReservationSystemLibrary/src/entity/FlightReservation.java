@@ -34,7 +34,7 @@ public class FlightReservation implements Serializable {
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
-    private FlightSchedulePlan flightSchedulePlan;
+    private FlightSchedule flightSchedule;
 
     
     public FlightReservation() {
@@ -103,12 +103,12 @@ public class FlightReservation implements Serializable {
         this.fareBasisCode = fareBasisCode;
     }
 
-    public FlightSchedulePlan getFlightSchedulePlan() {
-        return flightSchedulePlan;
+    public FlightSchedule getFlightSchedule() {
+        return flightSchedule;
     }
 
-    public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
-        this.flightSchedulePlan = flightSchedulePlan;
+    public void setFlightSchedule(FlightSchedule flightSchedule) {
+        this.flightSchedule = flightSchedule;
     }
     
 }

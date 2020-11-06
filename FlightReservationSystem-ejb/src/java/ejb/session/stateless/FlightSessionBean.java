@@ -37,8 +37,18 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager entityManager;
     
-    public Long createNewFlight(Flight newFlight) throws FlightNumberExistException, UnknownPersistenceException {
-    
+    @Override
+    public Long createNewFlight(Flight newFlight, Long aircraftConfigurationId, Long flightRouteId) throws FlightNumberExistException, UnknownPersistenceException {
+        AircraftConfiguration aircraftConfiguration = entityManager.find(AircraftConfiguration.class, aircraftConfigurationId);
+        if (aircraftConfiguration != null) {
+            newFlight.setAircraftConfiguration(aircraftConfiguration);
+            aircraftConfiguration.getFlights().add(newFlight);
+        }
+        FlightRoute flightRoute = entityManager.find(FlightRoute.class, flightRouteId);
+        if (flightRoute != null) {
+            newFlight.setFlightRoute(flightRoute);
+            flightRoute.getFlights().add(newFlight);
+        }
         try 
         {
           entityManager.persist(newFlight);
@@ -79,7 +89,9 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         
         try
         {
-            return (Flight)query.getResultList();
+            Flight flight = (Flight)query.getResultList();
+            flight.getFlightSchedulePlan().size();
+            return flight;
         }
         catch(NoResultException | NonUniqueResultException ex)
         {
@@ -118,13 +130,14 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         }
     }
     
+    @Override
     public void deleteFlight(String flightNumber) throws FlightNumberExistException {
         Flight flight = retrieveFlightByFlightNumber(flightNumber);
         List<FlightSchedulePlan> flightSchedulePlan = flight.getFlightSchedulePlan();
         FlightRoute flightRoute = flight.getFlightRoute();
         AircraftConfiguration aircraftConfiguration = flight.getAircraftConfiguration();
         if (flightSchedulePlan.isEmpty() && flightRoute == null && aircraftConfiguration == null) {
-            entityManager.remove(flightRoute);
+            entityManager.remove(flight);
         } else {
             flight.setStatus(StatusEnum.DISABLED);
         }

@@ -18,9 +18,9 @@ import util.exception.UnknownPersistenceException;
  */
 @Local
 public interface FlightRouteSessionBeanLocal {
-    public Long createNewFlightRoute(FlightRoute flightRoute) throws FlightRouteNotFoundException, UnknownPersistenceException;
+    public Long createNewFlightRoute(FlightRoute flightRoute, Long originAirportId, Long destinationAirportId) throws FlightRouteNotFoundException, UnknownPersistenceException;
     FlightRoute retrieveFlightRouteByFlightRouteId(Long flightRouteId, Boolean fetchFlight, Boolean fetchAirport) throws FlightRouteNotFoundException;
     List<FlightRoute> retrieveAllFlightRoutes();
-    void deleteFlightRoute(Long flightRouteId) throws FlightRouteNotFoundException;
+    void deleteFlightRoute(String OD) throws FlightRouteDoesNotExistException;
     FlightRoute retrieveFlightRouteByOD(String OD) throws FlightRouteDoesNotExistException;
 }

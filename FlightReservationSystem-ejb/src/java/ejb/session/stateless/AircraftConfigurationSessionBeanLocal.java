@@ -18,7 +18,7 @@ import util.exception.UnknownPersistenceException;
  */
 @Local
 public interface AircraftConfigurationSessionBeanLocal {
-    Long createNewAircraftConfiguration(AircraftConfiguration newAircraftConfiguration) throws AircraftConfigurationNameExistException, UnknownPersistenceException;
+    Long createNewAircraftConfiguration(AircraftConfiguration newAircraftConfiguration, Long aircraftTypeId) throws AircraftConfigurationNameExistException, UnknownPersistenceException;
     
     List<AircraftConfiguration> retrieveAllAircraftConfigurations();
     

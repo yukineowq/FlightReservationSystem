@@ -52,6 +52,9 @@ public class CabinClassConfiguration implements Serializable {
     private AircraftConfiguration aircraftConfiguration;
     
     @OneToOne(mappedBy = "cabinClassConfiguration")
+    private Fare fare;
+    
+    @OneToOne(mappedBy = "cabinClassConfiguration")
     private SeatInventory seatInventory;
     
 
@@ -184,5 +187,13 @@ public class CabinClassConfiguration implements Serializable {
     
     public void setSeatInventory(SeatInventory seatInventory){
         this.seatInventory = seatInventory;
+    }
+
+    public Fare getFare() {
+        return fare;
+    }
+
+    public void setFare(Fare fare) {
+        this.fare = fare;
     }
 }

@@ -37,7 +37,15 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
     private EntityManager entityManager;
 
     @Override
-    public Long createNewFlightRoute(FlightRoute newFlightRoute) throws FlightRouteNotFoundException, UnknownPersistenceException {
+    public Long createNewFlightRoute(FlightRoute newFlightRoute, Long originAirportId, Long destinationAirportId) throws FlightRouteNotFoundException, UnknownPersistenceException {
+        Airport originAirport = entityManager.find(Airport.class, originAirportId);
+        Airport destinationAirport = entityManager.find(Airport.class, destinationAirportId);
+        if (originAirport != null && destinationAirport != null) {
+            newFlightRoute.setDestination(destinationAirport);
+            newFlightRoute.setOrigin(originAirport);
+            originAirport.getFlightRouteDestinations().add(newFlightRoute);
+            destinationAirport.getFlightRouteOrigins().add(newFlightRoute);
+        }
         try {
             entityManager.persist(newFlightRoute);
             entityManager.flush();
@@ -87,62 +95,18 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
         query.setParameter("inOD", OD);
 
         try {
-            return (FlightRoute) query.getSingleResult();
+            FlightRoute flightRoute = (FlightRoute) query.getSingleResult();
+            flightRoute.getFlights().size();
+            return  flightRoute;
         } catch (NoResultException | NonUniqueResultException ex) {
             throw new FlightRouteDoesNotExistException("Flight route  " + OD + " does not exist!");
         }
     }
-
-    /* //This method does not check if FlightRout is actually in use before deleteing
-    @Override
-    public void deleteFlightRoute(Long flightRouteId) throws FlightRouteNotFoundException {
-        FlightRoute flightRoute = retrieveFlightRouteByFlightRouteId(flightRouteId, false, false);
-        
-        List<Flight> flights = flightRoute.getFlights();
-        
-        for (Flight flight: flights) {
-            flight.setFlightRoute(null);
-        }
-        
-        try {
-            flightRoute.getOrigin().removeFlightRouteOrigin(flightRoute);
-        } catch (EntityInstanceMissingInCollectionException ex) {
-            Logger.getLogger(FlightRouteSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
-            flightRoute.getDestination().removeFlightRouteDestination(flightRoute);
-        } catch (EntityInstanceMissingInCollectionException ex) {
-            Logger.getLogger(FlightRouteSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        flightRoute.setStatus(StatusEnum.DISABLED);
-        entityManager.remove(flightRoute);
-    }
-     */
     
-    //Can be improved? Compare to flight delete method..
-    @Override
-    public void deleteFlightRoute(Long flightRouteId) throws FlightRouteNotFoundException {
-        FlightRoute flightRoute = retrieveFlightRouteByFlightRouteId(flightRouteId, false, false);
-
+    public void deleteFlightRoute(String OD) throws FlightRouteDoesNotExistException {
+        FlightRoute flightRoute = retrieveFlightRouteByOD(OD);
         List<Flight> flights = flightRoute.getFlights();
-
-        if (flights.isEmpty()) {
-            for (Flight flight : flights) {
-                flight.setFlightRoute(null);
-            }
-
-            try {
-                flightRoute.getOrigin().removeFlightRouteOrigin(flightRoute);
-            } catch (EntityInstanceMissingInCollectionException ex) {
-                Logger.getLogger(FlightRouteSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            try {
-                flightRoute.getDestination().removeFlightRouteDestination(flightRoute);
-            } catch (EntityInstanceMissingInCollectionException ex) {
-                Logger.getLogger(FlightRouteSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
+        if (!flights.isEmpty()) {
             entityManager.remove(flightRoute);
         } else {
             flightRoute.setStatus(StatusEnum.DISABLED);

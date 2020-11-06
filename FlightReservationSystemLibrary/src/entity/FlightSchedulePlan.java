@@ -5,7 +5,9 @@
  */
 package entity;
 
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,7 +31,7 @@ public class FlightSchedulePlan implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long flightScheduleId;
+    private Long flightSchedulePlanId;
     @Column(nullable = false, length = 64)
     private String flightNumber;
     @Column(nullable = false, length = 64)
@@ -41,48 +43,48 @@ public class FlightSchedulePlan implements Serializable {
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Flight flight;
-   
-    @OneToMany(mappedBy = "flightSchedulePlan")
-    private List<FlightReservation> flightReservations;
     
     @OneToMany(mappedBy = "flightSchedulePlan")
-    private List<FlightSchedule> flightSchedule;
+    private List<FlightSchedule> flightSchedules;
     
     @OneToMany(mappedBy = "flightSchedulePlan")
-    private Fare fare;
+    private List<Fare> fares;
 
     
     public FlightSchedulePlan() {
+        flightSchedules = new ArrayList<>();
+        fares = new ArrayList<>();
     }
 
-    public FlightSchedulePlan(String flightNumber, List<FlightSchedule> flightSchedule) {
-        this.flightNumber = flightNumber;
-        this.flightSchedule = flightSchedule;
+    public FlightSchedulePlan(Boolean complementaryRFSP, ScheduleTypeEnum scheduleType) {
+        this();
+        this.complementaryRFSP = complementaryRFSP;
+        this.scheduleType = scheduleType;   
     }
     
-    public Long getFlightScheduleId() {
-        return flightScheduleId;
+    public Long getFlightSchedulePlanId() {
+        return flightSchedulePlanId;
     }
 
-    public void setFlightScheduleId(Long flightScheduleId) {
-        this.flightScheduleId = flightScheduleId;
+    public void setFlightSchedulePlanId(Long flightSchedulePlanId) {
+        this.flightSchedulePlanId = flightSchedulePlanId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (flightScheduleId != null ? flightScheduleId.hashCode() : 0);
+        hash += (flightSchedulePlanId != null ? flightSchedulePlanId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the flightScheduleId fields are not set
+        // TODO: Warning - this method won't work in the case the flightSchedulePlanId fields are not set
         if (!(object instanceof FlightSchedulePlan)) {
             return false;
         }
         FlightSchedulePlan other = (FlightSchedulePlan) object;
-        if ((this.flightScheduleId == null && other.flightScheduleId != null) || (this.flightScheduleId != null && !this.flightScheduleId.equals(other.flightScheduleId))) {
+        if ((this.flightSchedulePlanId == null && other.flightSchedulePlanId != null) || (this.flightSchedulePlanId != null && !this.flightSchedulePlanId.equals(other.flightSchedulePlanId))) {
             return false;
         }
         return true;
@@ -90,15 +92,7 @@ public class FlightSchedulePlan implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.FlightSchedulePlan[ id=" + flightScheduleId + " ]";
-    }
-
-    public String getFlightNumber() {
-        return flightNumber;
-    }
-
-    public void setFlightNumber(String flightNumber) {
-        this.flightNumber = flightNumber;
+        return "entity.FlightSchedulePlan[ id=" + flightSchedulePlanId + " ]";
     }
 
     public Boolean getComplementaryRFSP() {
@@ -109,6 +103,14 @@ public class FlightSchedulePlan implements Serializable {
         this.complementaryRFSP = complementaryRFSP;
     }
 
+    public ScheduleTypeEnum getScheduleType() {
+        return scheduleType;
+    }
+
+    public void setScheduleType(ScheduleTypeEnum scheduleType) {
+        this.scheduleType = scheduleType;
+    }
+
     public Flight getFlight() {
         return flight;
     }
@@ -117,12 +119,20 @@ public class FlightSchedulePlan implements Serializable {
         this.flight = flight;
     }
 
-    public Fare getFare() {
-        return fare;
+    public List<FlightSchedule> getFlightSchedules() {
+        return flightSchedules;
     }
 
-    public void setFare(Fare fare) {
-        this.fare = fare;
+    public void setFlightSchedules(List<FlightSchedule> flightSchedules) {
+        this.flightSchedules = flightSchedules;
+    }
+
+    public List<Fare> getFares() {
+        return fares;
+    }
+
+    public void setFares(List<Fare> fares) {
+        this.fares = fares;
     }
     
 }

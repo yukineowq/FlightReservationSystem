@@ -5,7 +5,7 @@
  */
 package ejb.session.stateless;
 
-import entity.CabinClassConfiguration;
+import entity.Fare;
 import javax.ejb.Remote;
 
 /**
@@ -13,6 +13,6 @@ import javax.ejb.Remote;
  * @author reuben
  */
 @Remote
-public interface CabinClassConfigurationSessionBeanRemote {
-    Long createNewCabinClassConfiguration(CabinClassConfiguration cabinClassConfiguration, Long aircraftConfigurationId);
+public interface FareSessionBeanRemote {
+    public Long createNewFare(Fare newFare, Long cabinClassConfigurationId, Long flightSchedulePlanId);
 }

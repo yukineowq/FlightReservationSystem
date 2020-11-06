@@ -5,7 +5,7 @@
  */
 package ejb.session.stateless;
 
-import entity.CabinClassConfiguration;
+import entity.Fare;
 import javax.ejb.Local;
 
 /**
@@ -13,6 +13,6 @@ import javax.ejb.Local;
  * @author reuben
  */
 @Local
-public interface CabinClassConfigurationSessionBeanLocal {
-    Long createNewCabinClassConfiguration(CabinClassConfiguration cabinClassConfiguration, Long aircraftConfigurationId);
+public interface FareSessionBeanLocal {
+    public Long createNewFare(Fare newFare, Long cabinClassConfigurationId, Long flightSchedulePlanId);
 }

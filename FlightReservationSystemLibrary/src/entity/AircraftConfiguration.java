@@ -6,6 +6,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,11 +41,27 @@ public class AircraftConfiguration implements Serializable {
     
     @OneToMany(mappedBy = "aircraftConfiguration")
     private List<CabinClassConfiguration> cabinClassConfigurations;
+    
+    @OneToMany(mappedBy = "aircraftConfiguration")
+    private List<Flight> flights;
 
     public Long getAircraftConfigurationId() {
         return aircraftConfigurationId;
     }
 
+    public AircraftConfiguration() {
+        this.cabinClassConfigurations = new ArrayList<>();
+        this.flights = new  ArrayList<>();
+    }
+
+    public AircraftConfiguration(String name, Long numCabinClass, AircraftType aircraftType) {
+        this();
+        this.name = name;
+        this.numCabinClass = numCabinClass;
+        this.aircraftType = aircraftType;
+    }
+
+    
     public void setAircraftConfigurationId(Long aircraftConfigurationId) {
         this.aircraftConfigurationId = aircraftConfigurationId;
     }
@@ -126,6 +143,14 @@ public class AircraftConfiguration implements Serializable {
 
     public void setAircraftType(AircraftType aircraftType) {
         this.aircraftType = aircraftType;
+    }
+
+    public List<Flight> getFlights() {
+        return flights;
+    }
+
+    public void setFlights(List<Flight> flights) {
+        this.flights = flights;
     }
     
 }
