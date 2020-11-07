@@ -40,7 +40,7 @@ public class AircraftConfiguration implements Serializable {
     @Column(nullable = false, length = 64)
     @NotNull
     @Min(0)
-    private Long numCabinClass;
+    private int numCabinClass;
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
@@ -61,11 +61,10 @@ public class AircraftConfiguration implements Serializable {
         this.flights = new  ArrayList<>();
     }
 
-    public AircraftConfiguration(String name, Long numCabinClass, AircraftType aircraftType) {
+    public AircraftConfiguration(String name, int numCabinClass) {
         this();
         this.name = name;
         this.numCabinClass = numCabinClass;
-        this.aircraftType = aircraftType;
     }
 
     
@@ -136,11 +135,11 @@ public class AircraftConfiguration implements Serializable {
         this.name = name;
     }
 
-    public Long getNumCabinClass() {
+    public int getNumCabinClass() {
         return numCabinClass;
     }
 
-    public void setNumCabinClass(Long numCabinClass) {
+    public void setNumCabinClass(int numCabinClass) {
         this.numCabinClass = numCabinClass;
     }
 

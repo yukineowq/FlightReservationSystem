@@ -11,6 +11,7 @@ import entity.FlightRoute;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -19,6 +20,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import util.enumeration.StatusEnum;
+import util.exception.AirportNotFoundException;
 import util.exception.EntityInstanceMissingInCollectionException;
 import util.exception.FlightRouteDoesNotExistException;
 import util.exception.FlightRouteNotFoundException;
@@ -36,10 +38,16 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager entityManager;
 
+    public FlightRouteSessionBean() {
+    }
+    
+    @EJB
+    private AirportSessionBeanLocal airportSessionBeanLocal;
+
     @Override
-    public Long createNewFlightRoute(FlightRoute newFlightRoute, Long originAirportId, Long destinationAirportId) throws FlightRouteNotFoundException, UnknownPersistenceException {
-        Airport originAirport = entityManager.find(Airport.class, originAirportId);
-        Airport destinationAirport = entityManager.find(Airport.class, destinationAirportId);
+    public Long createNewFlightRoute(FlightRoute newFlightRoute, String originAirportCode, String destinationAirportCode) throws FlightRouteNotFoundException, UnknownPersistenceException, AirportNotFoundException {
+        Airport originAirport = airportSessionBeanLocal.retrieveAirportByAirportCode(originAirportCode);
+        Airport destinationAirport = airportSessionBeanLocal.retrieveAirportByAirportCode(destinationAirportCode);
         if (originAirport != null && destinationAirport != null) {
             newFlightRoute.setDestination(destinationAirport);
             newFlightRoute.setOrigin(originAirport);

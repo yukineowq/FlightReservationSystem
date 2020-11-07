@@ -39,15 +39,15 @@ public class CabinClassConfiguration implements Serializable {
     @Column(nullable = false, length = 64)
     @NotNull
     @Min(0)
-    private Long numAisle;
+    private int numAisle;
     @Column(nullable = false, length = 64)
     @NotNull
     @Min(0)
-    private Long numRow;
+    private int numRow;
     @Column(nullable = false, length = 64)
     @NotNull
     @Min(0)
-    private Long numSeatsAbreast;
+    private int numSeatsAbreast;
     @Column(nullable = false, length = 64)
     @NotNull
     @Size(max = 10)
@@ -55,7 +55,7 @@ public class CabinClassConfiguration implements Serializable {
     @Column(nullable = false, length = 64)
     @NotNull
     @Min(0)
-    private Long maxCabinSeatCapacity;
+    private int maxCabinSeatCapacity;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 64)
     private CabinClassEnum cabinClass;
@@ -78,7 +78,7 @@ public class CabinClassConfiguration implements Serializable {
     public CabinClassConfiguration() {
     }
 
-    public CabinClassConfiguration(Long numAisle, Long numRow, Long numSeatsAbreast, String seatingConfigurationPerColumn, CabinClassEnum cabinClass) {
+    public CabinClassConfiguration(int numAisle, int numRow, int numSeatsAbreast, String seatingConfigurationPerColumn, CabinClassEnum cabinClass) {
         this.numAisle = numAisle;
         this.numRow = numRow;
         this.numSeatsAbreast = numSeatsAbreast;
@@ -117,27 +117,27 @@ public class CabinClassConfiguration implements Serializable {
         return "entity.CabinClassConfiguration[ id=" + cabinClassConfigurationId + " ]";
     }
 
-    public Long getNumAisle() {
+    public int getNumAisle() {
         return numAisle;
     }
 
-    public void setNumAisle(Long numAisle) {
+    public void setNumAisle(int numAisle) {
         this.numAisle = numAisle;
     }
 
-    public Long getNumRow() {
+    public int getNumRow() {
         return numRow;
     }
 
-    public void setNumRow(Long numRow) {
+    public void setNumRow(int numRow) {
         this.numRow = numRow;
     }
 
-    public Long getNumSeatsAbreast() {
+    public int getNumSeatsAbreast() {
         return numSeatsAbreast;
     }
 
-    public void setNumSeatsAbreast(Long numSeatsAbreast) {
+    public void setNumSeatsAbreast(int numSeatsAbreast) {
         this.numSeatsAbreast = numSeatsAbreast;
     }
 
@@ -149,11 +149,11 @@ public class CabinClassConfiguration implements Serializable {
         this.seatingConfigurationPerColumn = seatingConfigurationPerColumn;
     }
 
-    public Long getMaxCabinSeatCapacity() {
+    public int getMaxCabinSeatCapacity() {
         return maxCabinSeatCapacity;
     }
 
-    public void setMaxCabinSeatCapacity(Long maxCabinSeatCapacity) {
+    public void setMaxCabinSeatCapacity(int maxCabinSeatCapacity) {
         this.maxCabinSeatCapacity = maxCabinSeatCapacity;
     }
 
