@@ -1,6 +1,12 @@
 # IS2103 Enterprise Systems Server-Side Design and Development (Pair Project 2020)
 This pair project is one of NUS School of Computing (Information Systems [IS] major) core IS modules.
 
+## Business Rules
+
+## Rationales
+
+## Assumption
+
 # High-level architecture of Flight Reservation System [FRS] 
 This project also known as FRS, consists of 3 parts:
 1. FRS Management Client
