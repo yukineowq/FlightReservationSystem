@@ -19,7 +19,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import util.enumeration.ScheduleTypeEnum;
+import util.enumeration.StatusEnum;
 
 /**
  *
@@ -33,11 +36,16 @@ public class FlightSchedulePlan implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightSchedulePlanId;
     @Column(nullable = false, length = 64)
+    @NotNull
+    @Size(max = 10)
     private String flightNumber;
+    @Column(nullable = false, length = 64)
+    private StatusEnum status;
     @Column(nullable = false, length = 64)
     private Boolean complementaryRFSP;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 64)
+    @NotNull
     private ScheduleTypeEnum scheduleType;
     
     @ManyToOne(optional = false)
@@ -59,7 +67,8 @@ public class FlightSchedulePlan implements Serializable {
     public FlightSchedulePlan(Boolean complementaryRFSP, ScheduleTypeEnum scheduleType) {
         this();
         this.complementaryRFSP = complementaryRFSP;
-        this.scheduleType = scheduleType;   
+        this.scheduleType = scheduleType;
+        this.status = StatusEnum.ENABLED;
     }
     
     public Long getFlightSchedulePlanId() {
@@ -133,6 +142,14 @@ public class FlightSchedulePlan implements Serializable {
 
     public void setFares(List<Fare> fares) {
         this.fares = fares;
+    }
+
+    public StatusEnum getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusEnum status) {
+        this.status = status;
     }
     
 }

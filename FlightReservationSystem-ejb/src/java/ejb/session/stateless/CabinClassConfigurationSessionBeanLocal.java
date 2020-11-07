@@ -7,6 +7,7 @@ package ejb.session.stateless;
 
 import entity.CabinClassConfiguration;
 import javax.ejb.Local;
+import util.exception.InputDataValidationException;
 
 /**
  *
@@ -14,5 +15,5 @@ import javax.ejb.Local;
  */
 @Local
 public interface CabinClassConfigurationSessionBeanLocal {
-    Long createNewCabinClassConfiguration(CabinClassConfiguration cabinClassConfiguration, Long aircraftConfigurationId);
+    Long createNewCabinClassConfiguration(CabinClassConfiguration cabinClassConfiguration, Long aircraftConfigurationId) throws InputDataValidationException;
 }

@@ -10,6 +10,7 @@ import java.util.List;
 import javax.ejb.Local;
 import util.exception.FlightNotFoundException;
 import util.exception.FlightNumberExistException;
+import util.exception.InputDataValidationException;
 import util.exception.UnknownPersistenceException;
 import util.exception.UpdateFlightException;
 
@@ -19,7 +20,7 @@ import util.exception.UpdateFlightException;
  */
 @Local
 public interface FlightSessionBeanLocal {
-    Long createNewFlight(Flight newFlight, Long aircraftConfigurationId, Long flightRouteId) throws FlightNumberExistException, UnknownPersistenceException;
+    Long createNewFlight(Flight newFlight, Long aircraftConfigurationId, String flightRouteOD) throws FlightNumberExistException, UnknownPersistenceException, InputDataValidationException;
     List<Flight> retrieveAllFlights();
     Flight retrieveFlightByFlightNumber(String flightNumber) throws FlightNumberExistException;
     void updateFlight(Flight updatedFlight) throws FlightNotFoundException, UpdateFlightException;

@@ -11,6 +11,8 @@ import ejb.session.stateless.AircraftTypeSessionBeanLocal;
 import entity.AircraftType;
 import entity.Employee;
 import entity.Airport;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
@@ -21,6 +23,7 @@ import util.exception.AircraftTypeNotFoundException;
 import util.exception.AirportCodeExistException;
 import util.exception.AirportNotFoundException;
 import util.exception.EmployeeNotFoundException;
+import util.exception.InputDataValidationException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -42,7 +45,7 @@ public class DataInitializationSessionBean {
     }
 
     @PostConstruct
-    public void postConstruct() throws AirportCodeExistException, UnknownPersistenceException {
+    public void postConstruct(){
         try {
             employeeSessionBeanLocal.retrieveEmployeeByUsername("systemadministrator");
             airportSessionBeanLocal.retrieveAirportByAirportCode("SIN");
@@ -50,11 +53,15 @@ public class DataInitializationSessionBean {
             aircraftTypeSessionBeanLocal.retrieveAircraftTypeByName("Boeing 737");
             aircraftTypeSessionBeanLocal.retrieveAircraftTypeByName("Boeing 747");
         } catch (EmployeeNotFoundException | AirportNotFoundException | AircraftTypeNotFoundException ex){
-            initializeData();
+            try {
+                initializeData();
+            } catch (Exception ex1) {
+                Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex1);
+            }
         }
     }
     
-    private void initializeData() throws AirportCodeExistException, UnknownPersistenceException
+    private void initializeData() throws AirportCodeExistException, UnknownPersistenceException, InputDataValidationException
     {
 
             Employee employee =  new Employee("John", "Tan", "systemadministrator", "password", EmployeeAccessRightEnum.SYSTEMADMINISTRATOR);

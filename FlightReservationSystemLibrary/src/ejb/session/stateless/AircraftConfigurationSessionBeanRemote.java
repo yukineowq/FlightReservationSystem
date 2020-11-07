@@ -6,10 +6,12 @@
 package ejb.session.stateless;
 
 import entity.AircraftConfiguration;
+import util.exception.InputDataValidationException;
 import java.util.List;
 import javax.ejb.Remote;
 import util.exception.AircraftConfigurationNameExistException;
 import util.exception.AircraftConfigurationNotFoundException;
+import util.exception.AircraftTypeNotFoundException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -18,7 +20,7 @@ import util.exception.UnknownPersistenceException;
  */
 @Remote
 public interface AircraftConfigurationSessionBeanRemote {
-    Long createNewAircraftConfiguration(AircraftConfiguration newAircraftConfiguration, Long aircraftTypeId) throws AircraftConfigurationNameExistException, UnknownPersistenceException;
+    Long createNewAircraftConfiguration(AircraftConfiguration newAircraftConfiguration, String aircraftTypeName) throws AircraftConfigurationNameExistException, UnknownPersistenceException, AircraftTypeNotFoundException, InputDataValidationException;
     
     List<AircraftConfiguration> retrieveAllAircraftConfigurations();
     

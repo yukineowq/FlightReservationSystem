@@ -9,6 +9,7 @@ import entity.Employee;
 import java.util.List;
 import javax.ejb.Local;
 import util.exception.EmployeeNotFoundException;
+import util.exception.InputDataValidationException;
 import util.exception.InvalidLoginCredentialException;
 
 /**
@@ -17,7 +18,7 @@ import util.exception.InvalidLoginCredentialException;
  */
 @Local
 public interface EmployeeSessionBeanLocal {
-    Long createNewEmployee(Employee newEmployee);
+    Long createNewEmployee(Employee newEmployee) throws InputDataValidationException;
     
     List<Employee> retrieveAllEmployees();
     

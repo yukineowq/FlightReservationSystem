@@ -7,6 +7,7 @@ package ejb.session.stateless;
 
 import entity.Fare;
 import javax.ejb.Local;
+import util.exception.InputDataValidationException;
 
 /**
  *
@@ -14,5 +15,5 @@ import javax.ejb.Local;
  */
 @Local
 public interface FareSessionBeanLocal {
-    public Long createNewFare(Fare newFare, Long cabinClassConfigurationId, Long flightSchedulePlanId);
+    public Long createNewFare(Fare newFare, Long cabinClassConfigurationId, Long flightSchedulePlanId) throws InputDataValidationException;
 }

@@ -18,6 +18,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import util.enumeration.CabinClassEnum;
 import util.exception.EntityInstanceExistsInCollectionException;
 import util.exception.EntityInstanceMissingInCollectionException;
@@ -34,14 +37,24 @@ public class CabinClassConfiguration implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cabinClassConfigurationId;
     @Column(nullable = false, length = 64)
+    @NotNull
+    @Min(0)
     private Long numAisle;
     @Column(nullable = false, length = 64)
+    @NotNull
+    @Min(0)
     private Long numRow;
     @Column(nullable = false, length = 64)
+    @NotNull
+    @Min(0)
     private Long numSeatsAbreast;
     @Column(nullable = false, length = 64)
+    @NotNull
+    @Size(max = 10)
     private String seatingConfigurationPerColumn;
     @Column(nullable = false, length = 64)
+    @NotNull
+    @Min(0)
     private Long maxCabinSeatCapacity;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 64)

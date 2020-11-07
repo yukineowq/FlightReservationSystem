@@ -7,6 +7,7 @@ package ejb.session.stateless;
 
 import entity.CabinClassConfiguration;
 import javax.ejb.Remote;
+import util.exception.InputDataValidationException;
 
 /**
  *
@@ -14,5 +15,5 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface CabinClassConfigurationSessionBeanRemote {
-    Long createNewCabinClassConfiguration(CabinClassConfiguration cabinClassConfiguration, Long aircraftConfigurationId);
+    Long createNewCabinClassConfiguration(CabinClassConfiguration cabinClassConfiguration, Long aircraftConfigurationId) throws InputDataValidationException;
 }

@@ -19,6 +19,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import util.enumeration.StatusEnum;
 
 /**
@@ -33,6 +35,8 @@ public class Flight implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightId;
     @Column(nullable = false, length = 64)
+    @NotNull
+    @Size(max = 64)
     private String flightNumber;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 64)
@@ -60,6 +64,7 @@ public class Flight implements Serializable {
         this.flightNumber = flightNumber;
         this.aircraftConfiguration = aircraftConfiguration;
         this.returnFlight = returnFlight;
+        this.status = StatusEnum.ENABLED;
     }
     
     public Long getFlightId() {

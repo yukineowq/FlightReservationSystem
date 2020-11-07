@@ -16,6 +16,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import util.exception.EntityInstanceExistsInCollectionException;
 import util.exception.EntityInstanceMissingInCollectionException;
 
@@ -31,18 +33,30 @@ public class Airport implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long airportId;
     @Column(nullable = false, length = 64)
+    @NotNull
+    @Size(max = 64)
     private String name;
     @Column(nullable = false, unique = true, length = 3)
+    @NotNull
+    @Size(max = 3)
     private String airportCode;
     @Column(nullable = false, length = 64)
+    @NotNull
+    @Size(max = 64)
     private String city;
     @Column(nullable = false, length = 64)
+    @NotNull
+    @Size(max = 64)
     private String state;
     @Column(nullable = false, length = 64)
+    @NotNull
+    @Size(max = 64)
     private String country;
     @Column(nullable = false, length = 64)
     private GregorianCalendar gregorianCalendar;
     @Column(nullable = false, length = 64)
+    @NotNull
+    @Size(min = 9, max = 9)
     private String GMT;
 
     

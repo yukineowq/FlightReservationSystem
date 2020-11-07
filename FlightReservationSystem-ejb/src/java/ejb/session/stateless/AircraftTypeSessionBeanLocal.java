@@ -8,6 +8,7 @@ package ejb.session.stateless;
 import entity.AircraftType;
 import javax.ejb.Local;
 import util.exception.AircraftTypeNotFoundException;
+import util.exception.InputDataValidationException;
 
 /**
  *
@@ -15,6 +16,6 @@ import util.exception.AircraftTypeNotFoundException;
  */
 @Local
 public interface AircraftTypeSessionBeanLocal {
-    Long createNewAircraftType(AircraftType newAircraftType);
+    Long createNewAircraftType(AircraftType newAircraftType) throws InputDataValidationException;
     AircraftType retrieveAircraftTypeByName(String name) throws AircraftTypeNotFoundException;
 }

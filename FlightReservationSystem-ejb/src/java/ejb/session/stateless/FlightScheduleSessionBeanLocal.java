@@ -8,6 +8,7 @@ package ejb.session.stateless;
 import entity.FlightSchedule;
 import javax.ejb.Local;
 import util.exception.FlightScheduleNotFoundException;
+import util.exception.InputDataValidationException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -16,5 +17,5 @@ import util.exception.UnknownPersistenceException;
  */
 @Local
 public interface FlightScheduleSessionBeanLocal {
-    public Long createNewFlightSchedule(FlightSchedule newFlightSchedule, Long flightSchedulePlanId)throws FlightScheduleNotFoundException, UnknownPersistenceException; 
+    public Long createNewFlightSchedule(FlightSchedule newFlightSchedule, Long flightSchedulePlanId)throws FlightScheduleNotFoundException, UnknownPersistenceException, InputDataValidationException; 
 }

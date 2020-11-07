@@ -16,6 +16,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import util.exception.EntityInstanceExistsInCollectionException;
 import util.exception.EntityInstanceMissingInCollectionException;
 
@@ -31,8 +34,12 @@ public class AircraftConfiguration implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long aircraftConfigurationId;
     @Column(nullable = false, unique = true, length = 64)
+    @NotNull
+    @Size(max = 64)
     private String name;
     @Column(nullable = false, length = 64)
+    @NotNull
+    @Min(0)
     private Long numCabinClass;
     
     @ManyToOne(optional = false)

@@ -60,6 +60,7 @@ public class FlightRoute implements Serializable {
         String o = origin.getAirportCode();
         String d = destination.getAirportCode();
         this.OD = o + "-" + d;
+        this.status = StatusEnum.ENABLED;
     }
     
     public Long getFlightRouteId() {

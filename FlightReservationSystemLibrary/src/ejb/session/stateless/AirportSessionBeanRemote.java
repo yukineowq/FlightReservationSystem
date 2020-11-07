@@ -9,6 +9,7 @@ import entity.Airport;
 import javax.ejb.Remote;
 import util.exception.AirportCodeExistException;
 import util.exception.AirportNotFoundException;
+import util.exception.InputDataValidationException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -17,6 +18,6 @@ import util.exception.UnknownPersistenceException;
  */
 @Remote
 public interface AirportSessionBeanRemote {
-    Long createNewAirport(Airport newAirport) throws AirportCodeExistException, UnknownPersistenceException;
+    Long createNewAirport(Airport newAirport) throws AirportCodeExistException, UnknownPersistenceException, InputDataValidationException;
     Airport retrieveAirportByAirportCode(String airportCode) throws AirportNotFoundException;
 }

@@ -16,6 +16,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import util.enumeration.CabinClassEnum;
 
 /**
@@ -31,10 +33,15 @@ public class Fare implements Serializable {
     private Long fareId;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 64)
+    @NotNull
     private CabinClassEnum cabinClass;
     @Column(nullable = false, length = 64)
+    @NotNull
+    @Size(max = 64)
     private String fareBasisCode;
     @Column(nullable = false, length = 64)
+    @NotNull
+    @Size(max = 64)
     private String fareAmount;
 
     @ManyToOne(optional = false)

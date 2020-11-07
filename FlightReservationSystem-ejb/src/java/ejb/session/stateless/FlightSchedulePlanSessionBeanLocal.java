@@ -10,6 +10,7 @@ import java.util.List;
 import javax.ejb.Local;
 import util.exception.FlightScheduleContainsReservationException;
 import util.exception.FlightSchedulePlanDoesNotExistException;
+import util.exception.InputDataValidationException;
 
 
 /**
@@ -18,10 +19,10 @@ import util.exception.FlightSchedulePlanDoesNotExistException;
  */
 @Local
 public interface FlightSchedulePlanSessionBeanLocal {
-    Long createNewFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId); 
+    Long createNewFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId) throws InputDataValidationException; 
     List<FlightSchedulePlan> viewAllFlightSchedulePlans();
     FlightSchedulePlan viewFlightSchedulePlanDetails(Long flightSchedulePlanId) throws FlightSchedulePlanDoesNotExistException;
-    void updateFlightSchedulePlan(FlightSchedulePlan updatedFlightSchedulePlan, Long flightSchedulePlanId) throws FlightSchedulePlanDoesNotExistException, FlightScheduleContainsReservationException;
+    void updateFlightSchedulePlan(FlightSchedulePlan updatedFlightSchedulePlan, Long flightSchedulePlanId) throws FlightSchedulePlanDoesNotExistException, FlightScheduleContainsReservationException, InputDataValidationException;
     void deleteFlightSchedulePlan(Long flightSchedulePlanId) throws FlightSchedulePlanDoesNotExistException;
     
 }

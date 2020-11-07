@@ -14,6 +14,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import util.exception.EntityInstanceExistsInCollectionException;
 import util.exception.EntityInstanceMissingInCollectionException;
 
@@ -29,8 +32,12 @@ public class AircraftType implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long aircraftTypeId;
     @Column(nullable = false, length = 64)
+    @NotNull
+    @Size(max = 64)
     private String name;
     @Column(nullable = false, length = 64)
+    @NotNull
+    @Min(0)
     private Long maxSeatCapacity;
 
     @OneToMany(mappedBy = "aircraftType")
