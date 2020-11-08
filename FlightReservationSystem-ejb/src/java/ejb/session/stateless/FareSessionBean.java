@@ -43,7 +43,7 @@ public class FareSessionBean implements FareSessionBeanRemote, FareSessionBeanLo
             CabinClassConfiguration cabinClassConfiguration = entityManager.find(CabinClassConfiguration.class, cabinClassConfigurationId);
             if (cabinClassConfiguration != null) {
                 newFare.setCabinClassConfiguration(cabinClassConfiguration);
-                cabinClassConfiguration.setFare(newFare);
+                cabinClassConfiguration.getFares().add(newFare);
             }
             FlightSchedulePlan flightSchedulePlan = entityManager.find(FlightSchedulePlan.class, flightSchedulePlanId);
             if (flightSchedulePlan != null) {

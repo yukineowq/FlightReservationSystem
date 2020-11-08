@@ -42,20 +42,20 @@ public class Fare implements Serializable {
     @Column(nullable = false, length = 64)
     @NotNull
     @Size(max = 64)
-    private String fareAmount;
+    private double fareAmount;
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private FlightSchedulePlan flightSchedulePlan;
     
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private CabinClassConfiguration cabinClassConfiguration;
     
     public Fare() {
     }
 
-    public Fare(CabinClassEnum cabinClass, String fareBasisCode, String fareAmount) {
+    public Fare(CabinClassEnum cabinClass, String fareBasisCode, double fareAmount) {
         this.cabinClass = cabinClass;
         this.fareBasisCode = fareBasisCode;
         this.fareAmount = fareAmount;
@@ -110,11 +110,11 @@ public class Fare implements Serializable {
         this.fareBasisCode = fareBasisCode;
     }
 
-    public String getFareAmount() {
+    public double getFareAmount() {
         return fareAmount;
     }
 
-    public void setFareAmount(String fareAmount) {
+    public void setFareAmount(double fareAmount) {
         this.fareAmount = fareAmount;
     }
 

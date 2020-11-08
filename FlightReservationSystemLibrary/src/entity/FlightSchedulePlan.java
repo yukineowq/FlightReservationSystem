@@ -19,6 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import util.enumeration.ScheduleTypeEnum;
@@ -30,6 +31,14 @@ import util.enumeration.StatusEnum;
  */
 @Entity
 public class FlightSchedulePlan implements Serializable {
+
+    public String getFlightNumber() {
+        return flightNumber;
+    }
+
+    public void setFlightNumber(String flightNumber) {
+        this.flightNumber = flightNumber;
+    }
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -58,6 +67,9 @@ public class FlightSchedulePlan implements Serializable {
     @OneToMany(mappedBy = "flightSchedulePlan")
     private List<Fare> fares;
 
+    @OneToOne(optional = true)
+    @JoinColumn(nullable = false)
+    private FlightSchedulePlan complementary;
     
     public FlightSchedulePlan() {
         flightSchedules = new ArrayList<>();
@@ -150,6 +162,14 @@ public class FlightSchedulePlan implements Serializable {
 
     public void setStatus(StatusEnum status) {
         this.status = status;
+    }
+
+    public FlightSchedulePlan getComplementary() {
+        return complementary;
+    }
+
+    public void setComplementary(FlightSchedulePlan complementary) {
+        this.complementary = complementary;
     }
     
 }

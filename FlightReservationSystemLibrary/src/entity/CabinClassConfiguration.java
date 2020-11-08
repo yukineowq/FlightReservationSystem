@@ -6,6 +6,8 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.Column;
@@ -17,6 +19,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -64,8 +67,8 @@ public class CabinClassConfiguration implements Serializable {
     @JoinColumn(nullable = false)
     private AircraftConfiguration aircraftConfiguration;
     
-    @OneToOne(mappedBy = "cabinClassConfiguration")
-    private Fare fare;
+    @OneToMany(mappedBy = "cabinClassConfiguration")
+    private List<Fare> fares;
     
     @OneToOne(mappedBy = "cabinClassConfiguration")
     private SeatInventory seatInventory;
@@ -76,6 +79,7 @@ public class CabinClassConfiguration implements Serializable {
     }
 
     public CabinClassConfiguration() {
+        fares = new ArrayList<>();
     }
 
     public CabinClassConfiguration(int numAisle, int numRow, int numSeatsAbreast, String seatingConfigurationPerColumn, CabinClassEnum cabinClass) {
@@ -202,11 +206,12 @@ public class CabinClassConfiguration implements Serializable {
         this.seatInventory = seatInventory;
     }
 
-    public Fare getFare() {
-        return fare;
+    public List<Fare> getFares() {
+        return fares;
     }
 
-    public void setFare(Fare fare) {
-        this.fare = fare;
+    public void setFares(List<Fare> fares) {
+        this.fares = fares;
     }
+
 }

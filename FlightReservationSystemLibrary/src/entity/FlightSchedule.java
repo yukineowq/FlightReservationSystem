@@ -39,6 +39,8 @@ public class FlightSchedule implements Serializable {
     private Date departureDate;
     @Column(nullable = false)
     private GregorianCalendar departureTime;
+    private Date arrivalDate;
+    private GregorianCalendar arrivalTime;
     @Column(nullable = false)
     @NotNull
     @Min(0)
@@ -99,9 +101,6 @@ public class FlightSchedule implements Serializable {
         return departureDate;
     }
 
-    public void setDepartureDate(Date departureDate) {
-        this.departureDate = departureDate;
-    }
 
     public GregorianCalendar getDepartureTime() {
         return departureTime;
@@ -124,7 +123,7 @@ public class FlightSchedule implements Serializable {
     }
 
     public void setEstimatedFlightDuration(int estimatedFlightDuration) {
-        this.estimatedFlightDuration = estimatedFlightDuration;
+        this.setEstimatedFlightDuration(estimatedFlightDuration);
     }
     
     public List<FlightReservation> getFlightReservations() {
@@ -134,5 +133,26 @@ public class FlightSchedule implements Serializable {
     public void setFlightReservations(List<FlightReservation> flightReservations) {
         this.flightReservations = flightReservations;
     }
+
+    public void setDepartureDate(Date departureDate) {
+        this.departureDate = departureDate;
+    }
+
+    public Date getArrivalDate() {
+        return arrivalDate;
+    }
+
+    public void setArrivalDate(Date arrivalDate) {
+        this.arrivalDate = arrivalDate;
+    }
+
+    public GregorianCalendar getArrivalTime() {
+        return arrivalTime;
+    }
+
+    public void setArrivalTime(GregorianCalendar arrivalTime) {
+        this.arrivalTime = arrivalTime;
+    }
+
     
 }
