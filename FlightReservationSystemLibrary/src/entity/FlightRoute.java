@@ -23,7 +23,7 @@ import util.enumeration.StatusEnum;
 
 /**
  *
- * @author Yuki
+ * @author Reuben
  */
 @Entity
 public class FlightRoute implements Serializable {
@@ -48,6 +48,10 @@ public class FlightRoute implements Serializable {
     @OneToOne(optional = false)
     @JoinColumn(nullable = false)
     private Airport destination;
+    
+    @OneToOne(optional = true)
+    @JoinColumn(nullable = false)
+    private FlightRoute complementary;
     
     public FlightRoute() {
         flights = new ArrayList<>();
@@ -134,6 +138,14 @@ public class FlightRoute implements Serializable {
 
     public void setFlights(List<Flight> flights) {
         this.flights = flights;
+    }
+
+    public FlightRoute getComplementary() {
+        return complementary;
+    }
+
+    public void setComplementary(FlightRoute complementary) {
+        this.complementary = complementary;
     }
     
 }

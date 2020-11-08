@@ -25,7 +25,7 @@ import util.enumeration.StatusEnum;
 
 /**
  *
- * @author Yuki
+ * @author Reuben
  */
 @Entity
 public class Flight implements Serializable {
@@ -41,8 +41,6 @@ public class Flight implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 64)
     private StatusEnum status;
-    @Column(nullable = false, length = 64)
-    private Boolean returnFlight;
     
     @OneToMany(mappedBy = "flight")
     private List<FlightSchedulePlan> flightSchedulePlan; 
@@ -54,17 +52,19 @@ public class Flight implements Serializable {
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private AircraftConfiguration aircraftConfiguration;
+    
+    @OneToOne(optional = true)
+    @JoinColumn(nullable = false)
+    private Flight complementary;
 
     public Flight() {
         flightSchedulePlan = new ArrayList<>();
+        this.status = StatusEnum.ENABLED;
     }
 
-    public Flight(String flightNumber, AircraftConfiguration aircraftConfiguration, Boolean returnFlight) {
+    public Flight(String flightNumber) {
         this();
-        this.flightNumber = flightNumber;
-        this.aircraftConfiguration = aircraftConfiguration;
-        this.returnFlight = returnFlight;
-        this.status = StatusEnum.ENABLED;
+        this.flightNumber = flightNumber;       
     }
     
     public Long getFlightId() {
@@ -124,14 +124,6 @@ public class Flight implements Serializable {
         this.status = status;
     }
 
-    public Boolean getReturnFlight() {
-        return returnFlight;
-    }
-
-    public void setReturnFlight(Boolean returnFlight) {
-        this.returnFlight = returnFlight;
-    }
-
     public List<FlightSchedulePlan> getFlightSchedulePlan() {
         return flightSchedulePlan;
     }
@@ -146,6 +138,14 @@ public class Flight implements Serializable {
 
     public void setFlightRoute(FlightRoute flightRoute) {
         this.flightRoute = flightRoute;
+    }
+
+    public Flight getComplementary() {
+        return complementary;
+    }
+
+    public void setComplementary(Flight complementary) {
+        this.complementary = complementary;
     }
     
 }

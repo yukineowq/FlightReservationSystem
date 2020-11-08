@@ -117,6 +117,7 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
         if (!flights.isEmpty()) {
             entityManager.remove(flightRoute);
         } else {
+            System.out.println("Flight route is currently in use. Flight route set to disabled instead.");
             flightRoute.setStatus(StatusEnum.DISABLED);
         }
     }
