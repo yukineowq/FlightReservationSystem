@@ -23,6 +23,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.util.Set;
+import util.exception.FlightSchedulePlanDeleteException;
 
 /**
  *
@@ -83,19 +84,14 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
     }
 
     @Override
-    public void updateFlightSchedulePlan(FlightSchedulePlan updatedFlightSchedulePlan, Long flightSchedulePlanId) throws FlightSchedulePlanDoesNotExistException, FlightScheduleContainsReservationException, InputDataValidationException {
-        if (updatedFlightSchedulePlan != null && updatedFlightSchedulePlan.getFlightSchedulePlanId() != null) {
-            Set<ConstraintViolation<FlightSchedulePlan>> constraintViolations = validator.validate(updatedFlightSchedulePlan);
+    public void updateFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) throws FlightSchedulePlanDoesNotExistException, FlightScheduleContainsReservationException, InputDataValidationException {
+        if (flightSchedulePlan != null && flightSchedulePlan.getFlightSchedulePlanId() != null) {
+            Set<ConstraintViolation<FlightSchedulePlan>> constraintViolations = validator.validate(flightSchedulePlan);
             if (constraintViolations.isEmpty()) {
-                FlightSchedulePlan flightSchedulePlanToUpdate = new FlightSchedulePlan();
-                try {
-                    flightSchedulePlanToUpdate = viewFlightSchedulePlanDetails(flightSchedulePlanId);
-                } catch (Exception ex) {
-                    throw new FlightSchedulePlanDoesNotExistException();
-                }
+                FlightSchedulePlan flightSchedulePlanToUpdate = entityManager.find(FlightSchedulePlan.class, flightSchedulePlan.getFlightSchedulePlanId());
 
                 List<FlightSchedule> originalFlightSchedules = flightSchedulePlanToUpdate.getFlightSchedules();
-                List<FlightSchedule> updatedFlightSchedules = updatedFlightSchedulePlan.getFlightSchedules();
+                List<FlightSchedule> updatedFlightSchedules = flightSchedulePlan.getFlightSchedules();
 
                 for (FlightSchedule flightSchedule : originalFlightSchedules) {
                     if (!updatedFlightSchedules.contains(flightSchedule)) {
@@ -105,8 +101,8 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                     }
                 }
 
-                flightSchedulePlanToUpdate.setFares(updatedFlightSchedulePlan.getFares());
-                flightSchedulePlanToUpdate.setFlightSchedules(updatedFlightSchedulePlan.getFlightSchedules());
+                flightSchedulePlanToUpdate.setFares(flightSchedulePlan.getFares());
+                flightSchedulePlanToUpdate.setFlightSchedules(flightSchedulePlan.getFlightSchedules());
             } else {
                 throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
             }
@@ -116,7 +112,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
     }
 
     @Override
-    public void deleteFlightSchedulePlan(Long flightSchedulePlanId) throws FlightSchedulePlanDoesNotExistException {
+    public void deleteFlightSchedulePlan(Long flightSchedulePlanId) throws FlightSchedulePlanDoesNotExistException, FlightSchedulePlanDeleteException {
         FlightSchedulePlan flightSchedulePlan = viewFlightSchedulePlanDetails(flightSchedulePlanId);
         List<Fare> fares = flightSchedulePlan.getFares();
         List<FlightSchedule> flightSchedules = flightSchedulePlan.getFlightSchedules();
@@ -124,6 +120,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             entityManager.remove(flightSchedulePlan);
         } else {
             flightSchedulePlan.setStatus(StatusEnum.DISABLED);
+            throw new FlightSchedulePlanDeleteException();
         }
     }
 

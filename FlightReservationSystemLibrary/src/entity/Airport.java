@@ -52,7 +52,7 @@ public class Airport implements Serializable {
     @NotNull
     @Size(max = 64)
     private String country;
-    @Column(nullable = false, length = 64)
+    @Column(nullable = false, length = 6)
     private GregorianCalendar gregorianCalendar;
     @Column(nullable = false, length = 64)
     @NotNull

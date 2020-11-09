@@ -70,9 +70,6 @@ public class CabinClassConfiguration implements Serializable {
     @OneToMany(mappedBy = "cabinClassConfiguration")
     private List<Fare> fares;
     
-    @OneToOne(mappedBy = "cabinClassConfiguration")
-    private SeatInventory seatInventory;
-    
 
     public Long getCabinClassConfigurationId() {
         return cabinClassConfigurationId;
@@ -196,14 +193,6 @@ public class CabinClassConfiguration implements Serializable {
                 }
             }
         }
-    }
-    
-    public SeatInventory getSeatInventory() {
-        return seatInventory;
-    }
-    
-    public void setSeatInventory(SeatInventory seatInventory){
-        this.seatInventory = seatInventory;
     }
 
     public List<Fare> getFares() {

@@ -18,13 +18,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 /**
  *
- * @author Yuki
+ * @author Reuben
  */
 @Entity
 public class FlightSchedule implements Serializable {
@@ -52,10 +53,14 @@ public class FlightSchedule implements Serializable {
     
     @OneToMany(mappedBy = "flightSchedule")
     private List<FlightReservation> flightReservations;
+    
+    @OneToMany(mappedBy = "flightSchedule")
+    private List<SeatInventory> seatInventories;
 
     
     public FlightSchedule() {
         flightReservations = new ArrayList<>();
+        seatInventories = new ArrayList<>();
     }
 
     public FlightSchedule(Date departureDate, GregorianCalendar departureTime, int estimatedFlightDuration) {
@@ -153,6 +158,15 @@ public class FlightSchedule implements Serializable {
     public void setArrivalTime(GregorianCalendar arrivalTime) {
         this.arrivalTime = arrivalTime;
     }
+
+    public List<SeatInventory> getSeatInventories() {
+        return seatInventories;
+    }
+
+    public void setSeatInventories(List<SeatInventory> seatInventories) {
+        this.seatInventories = seatInventories;
+    }
+
 
     
 }

@@ -86,15 +86,11 @@ public class FlightReservationSessionBean implements FlightReservationSessionBea
     }
 
     @Override
-    public List<FlightReservation> viewFlightReservations(Long flightScheduleId) throws FlightScheduleNotFoundException {
-        FlightSchedule flightSchedule = new FlightSchedule();
-        try {
-            flightSchedule = entityManager.find(FlightSchedule.class, flightScheduleId);
-        } catch (Exception ex) {
-            throw new FlightScheduleNotFoundException();
-        }
-        flightSchedule.getFlightReservations().size();
-        return flightSchedule.getFlightReservations();
+    public List<FlightReservation> viewFlightReservations() {
+        Query query = entityManager.createQuery("SELECT r FROM FlightReservation r");
+        List<FlightReservation> flightReservations = query.getResultList();
+        flightReservations.size();
+        return flightReservations;
     }
 
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<FlightReservation>> constraintViolations) {

@@ -27,7 +27,7 @@ import util.enumeration.StatusEnum;
 
 /**
  *
- * @author Yuki
+ * @author Reuben
  */
 @Entity
 public class FlightSchedulePlan implements Serializable {

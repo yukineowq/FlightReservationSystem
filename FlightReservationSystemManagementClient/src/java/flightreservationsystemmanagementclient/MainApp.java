@@ -96,7 +96,7 @@ public class MainApp {
                         System.out.println("Login successful!\n");
                         flightOperationModule = new FlightOperationModule(currentEmployee, flightSessionBeanRemote, flightScheduleSessionBeanRemote, flightSchedulePlanSessionBeanRemote, fareSessionBeanRemote, aircraftConfigurationSessionBeanRemote, flightRouteSessionBeanRemote);
                         flightPlanningModule = new FlightPlanningModule(currentEmployee, aircraftConfigurationSessionBeanRemote, flightRouteSessionBeanRemote, cabinClassConfigurationSessionBeanRemote, aircraftTypeSessionBeanRemote, airportSessionBeanRemote);
-                        salesManagementModule = new SalesManagementModule(currentEmployee, seatsInventorySessionBeanRemote, flightReservationSessionBeanRemote);
+                        salesManagementModule = new SalesManagementModule(currentEmployee, seatsInventorySessionBeanRemote, flightReservationSessionBeanRemote, flightSessionBeanRemote);
                         menuMain();
                     } catch (InvalidLoginCredentialException ex) {
                         System.out.println("Invalid login credential: " + ex.getMessage() + "\n");
@@ -138,7 +138,7 @@ public class MainApp {
 
         while (true) {
             System.out.println("*** FRS Management Client ***\n");
-            System.out.println("You are login as " + currentEmployee.getFirstName() + " " + currentEmployee.getLastName() + " with " + currentStaffEntity.getAccessRightEnum().toString() + " rights\n");
+            System.out.println("You are login as " + currentEmployee.getFirstName() + " " + currentEmployee.getLastName() + " with " + currentEmployee.getAccessRight().toString() + " rights\n");
             System.out.println("1: Flight Planning - Aircraft Congiguration");
             System.out.println("2: Flight Planning - Flight Route");
             System.out.println("3: Flight Operation");
@@ -169,9 +169,9 @@ public class MainApp {
                     } catch (InvalidAccessRightException ex) {
                         System.out.println("Invalid option, please try again!: " + ex.getMessage() + "\n");
                     }
-                } else if (response == 4) {
+                } else if (response == 4) {                    
                     try {
-                        SalesManagementModule.menuSalesManagement();
+                        salesManagementModule.menuSalesManagement();
                     } catch (InvalidAccessRightException ex) {
                         System.out.println("Invalid option, please try again!: " + ex.getMessage() + "\n");
                     }

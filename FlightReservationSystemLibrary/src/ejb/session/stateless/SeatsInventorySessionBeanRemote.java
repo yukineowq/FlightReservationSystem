@@ -5,13 +5,15 @@
  */
 package ejb.session.stateless;
 
+import entity.SeatInventory;
+import java.util.List;
 import javax.ejb.Remote;
 
 /**
  *
- * @author Yuki
+ * @author Reuben
  */
 @Remote
 public interface SeatsInventorySessionBeanRemote {
-    
+    public List<SeatInventory> viewSeatsInventory();
 }

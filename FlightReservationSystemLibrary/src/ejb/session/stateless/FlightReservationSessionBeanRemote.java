@@ -22,5 +22,5 @@ import util.exception.UnknownPersistenceException;
 public interface FlightReservationSessionBeanRemote {
     Long createNewFlightReservation(FlightReservation newFlightReservation, Long flightScheduleId) throws FlightReservationNotFoundException, UnknownPersistenceException, InputDataValidationException;
     FlightReservation retrieveFlightReservationBySeatNumber(String seatNumber) throws SeatNumberNotFoundException;
-    List<FlightReservation> viewFlightReservations(Long flightScheduleId) throws FlightScheduleNotFoundException;
+    List<FlightReservation> viewFlightReservations();
 }

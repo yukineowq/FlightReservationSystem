@@ -5,13 +5,15 @@
  */
 package ejb.session.stateless;
 
+import entity.SeatInventory;
+import java.util.List;
 import javax.ejb.Local;
 
 /**
  *
- * @author Yuki
+ * @author Reuben
  */
 @Local
 public interface SeatsInventorySessionBeanLocal {
-    
+    public List<SeatInventory> viewSeatsInventory();
 }

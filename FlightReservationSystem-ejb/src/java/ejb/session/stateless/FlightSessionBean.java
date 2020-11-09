@@ -38,7 +38,7 @@ import util.exception.FlightDeleteException;
 
 /**
  *
- * @author Yuki
+ * @author Reuben
  */
 @Stateless
 public class FlightSessionBean implements FlightSessionBeanRemote, FlightSessionBeanLocal {

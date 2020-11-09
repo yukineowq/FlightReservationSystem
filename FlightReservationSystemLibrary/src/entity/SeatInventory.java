@@ -8,11 +8,15 @@ package entity;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import util.enumeration.CabinClassEnum;
 
 /**
  *
@@ -26,23 +30,27 @@ public class SeatInventory implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seatInventoryId;
     @Column(nullable = false, length = 64)
-    private Long available;
+    private int available;
     @Column(nullable = false, length = 64)
-    private Long reserved;
+    private int reserved;
     @Column(nullable = false, length = 64)
-    private Long balance;
+    private int balance;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 64)
+    private CabinClassEnum cabinClass;
     
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
-    private CabinClassConfiguration cabinClassConfiguration;
+    private FlightSchedule flightSchedule;
 
     public SeatInventory() {
     }
 
-    public SeatInventory(Long available) {
+    public SeatInventory(int available, CabinClassEnum cabinClassEnum) {
         this.available = available;
-        this.reserved = Long.valueOf(0);
-        this.balance = Long.valueOf(0);
+        this.reserved = 0;
+        this.balance = 0;
+        this.cabinClass = cabinClassEnum;
     }
 
     
@@ -79,39 +87,48 @@ public class SeatInventory implements Serializable {
         return "entity.SeatInventory[ id=" + seatInventoryId + " ]";
     }
 
-    public Long getAvailable() {
+    public int getAvailable() {
         return available;
     }
 
-    public void setAvailable(Long available) {
+    public void setAvailable(int available) {
         this.available = available;
     }
 
-    public Long getReserved() {
+    public int getReserved() {
         return reserved;
     }
 
     //Whenever set reserved, automatically update available and balance as well
-    public void setReserved(Long reserved) {
+    public void setReserved(int reserved) {
         this.available = available - reserved;
         this.reserved = reserved;
         this.balance = available - this.reserved;
     }
 
-    public Long getBalance() {
+    public int getBalance() {
         return balance;
     }
 
-    public void setBalance(Long balance) {
+    public void setBalance(int balance) {
         this.balance = balance;
     }
 
-    public CabinClassConfiguration getCabinClassConfiguration() {
-        return cabinClassConfiguration;
+    public FlightSchedule getFlightSchedule() {
+        return flightSchedule;
     }
 
-    public void setCabinClassConfiguration(CabinClassConfiguration cabinClassConfiguration) {
-        this.cabinClassConfiguration = cabinClassConfiguration;
+    public void setFlightSchedule(FlightSchedule flightSchedule) {
+        this.flightSchedule = flightSchedule;
     }
+
+    public CabinClassEnum getCabinClass() {
+        return cabinClass;
+    }
+
+    public void setCabinClass(CabinClassEnum cabinClass) {
+        this.cabinClass = cabinClass;
+    }
+
     
 }
