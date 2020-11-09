@@ -80,7 +80,7 @@ public class MainApp {
         Integer response = 0;
 
         while (true) {
-            System.out.println("*** Welcome to Point-of-Sale (POS) System (v4.2) ***\n");
+            System.out.println("*** FRS Management Client ***\n");
             System.out.println("1: Login");
             System.out.println("2: Exit\n");
             response = 0;
@@ -119,7 +119,7 @@ public class MainApp {
         String username = "";
         String password = "";
 
-        System.out.println("*** POS System :: Login ***\n");
+        System.out.println("*** FRS System :: Login ***\n");
         System.out.print("Enter username> ");
         username = scanner.nextLine().trim();
         System.out.print("Enter password> ");
