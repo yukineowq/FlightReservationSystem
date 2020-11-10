@@ -76,7 +76,7 @@ This project also known as FRS, consists of 3 parts:
 - [X] Customer Login
 - [ ] Customer Logout
 
-*(to include Domain Class Diagram)*
+![Alt Text](https://i.imgur.com/X4sptXo.png)
 
 ## Holiday Resevation System (tbc)
 ...
