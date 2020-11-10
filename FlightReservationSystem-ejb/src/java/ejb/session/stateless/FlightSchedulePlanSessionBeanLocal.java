@@ -16,7 +16,7 @@ import util.exception.InputDataValidationException;
 
 /**
  *
- * @author Yuki
+ * @author Yuki Neo Wei Qian
  */
 @Local
 public interface FlightSchedulePlanSessionBeanLocal {

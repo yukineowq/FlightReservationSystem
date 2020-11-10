@@ -20,7 +20,7 @@ import util.exception.InputDataValidationException;
 
 /**
  *
- * @author reuben
+ * @author Yuki Neo Wei Qian
  */
 @Stateless
 public class FareSessionBean implements FareSessionBeanRemote, FareSessionBeanLocal {

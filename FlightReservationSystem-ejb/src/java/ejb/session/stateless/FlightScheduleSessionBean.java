@@ -23,7 +23,7 @@ import util.exception.UnknownPersistenceException;
 
 /**
  *
- * @author reuben
+ * @author Yuki Neo Wei Qian
  */
 @Stateless
 public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemote, FlightScheduleSessionBeanLocal {

@@ -15,7 +15,7 @@ import util.exception.UnknownPersistenceException;
 
 /**
  *
- * @author reuben
+ * @author Reuben Ang Wen Zheng
  */
 @Remote
 public interface CustomerSessionBeanRemote {

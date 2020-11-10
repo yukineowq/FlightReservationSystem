@@ -12,7 +12,7 @@ import util.exception.InputDataValidationException;
 
 /**
  *
- * @author reuben
+ * @author Reuben Ang Wen Zheng
  */
 @Local
 public interface AircraftTypeSessionBeanLocal {

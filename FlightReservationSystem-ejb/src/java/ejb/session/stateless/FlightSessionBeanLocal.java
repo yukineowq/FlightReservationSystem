@@ -17,7 +17,7 @@ import util.exception.UpdateFlightException;
 
 /**
  *
- * @author Yuki
+ * @author Yuki Neo Wei Qian
  */
 @Local
 public interface FlightSessionBeanLocal {

@@ -15,7 +15,7 @@ import util.exception.InputDataValidationException;
 
 /**
  *
- * @author Yuki
+ * @author Yuki Neo Wei Qian
  */
 @Remote
 public interface FlightSchedulePlanSessionBeanRemote {

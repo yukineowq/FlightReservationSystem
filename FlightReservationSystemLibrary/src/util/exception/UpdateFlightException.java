@@ -7,7 +7,7 @@ package util.exception;
 
 /**
  *
- * @author reuben
+ * @author Yuki Neo Wei Qian
  */
 public class UpdateFlightException extends Exception {
 

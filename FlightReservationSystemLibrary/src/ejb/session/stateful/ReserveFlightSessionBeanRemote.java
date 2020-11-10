@@ -9,7 +9,7 @@ import javax.ejb.Remote;
 
 /**
  *
- * @author reuben
+ * @author Reuben Ang Wen Zheng
  */
 @Remote
 public interface ReserveFlightSessionBeanRemote {

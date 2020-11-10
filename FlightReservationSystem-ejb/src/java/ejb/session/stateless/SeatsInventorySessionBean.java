@@ -16,7 +16,7 @@ import javax.persistence.Query;
 
 /**
  *
- * @author Reuben
+ * @author Reuben Ang Wen Zheng
  */
 @Stateless
 public class SeatsInventorySessionBean implements SeatsInventorySessionBeanRemote, SeatsInventorySessionBeanLocal {

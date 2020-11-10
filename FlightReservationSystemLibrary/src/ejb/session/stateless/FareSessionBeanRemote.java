@@ -11,7 +11,7 @@ import util.exception.InputDataValidationException;
 
 /**
  *
- * @author reuben
+ * @author Yuki Neo Wei Qian
  */
 @Remote
 public interface FareSessionBeanRemote {

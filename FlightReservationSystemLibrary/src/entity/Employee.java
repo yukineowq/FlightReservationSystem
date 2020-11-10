@@ -19,7 +19,7 @@ import util.enumeration.EmployeeAccessRightEnum;
 
 /**
  *
- * @author reuben
+ * @author Reuben Ang Wen Zheng
  */
 @Entity
 public class Employee implements Serializable {
