@@ -2,10 +2,20 @@
 This pair project is one of NUS School of Computing (Information Systems [IS] major) core IS modules.
 
 ## Business Rules
+1. Every entity class has a unique key identifier.
+2. Not all entities must perform CRUD (Create, Remove, Update & Delete) operations, only FlightSchedulePlan entity has to.
+3. The core logic lies in *Create Flight Schedule Plan* and *Search Flights*.
 
 ## Rationales
+1. By having a unique key identifier, which is a primary key, data objects are retrieved easily and directly with its own ID.
 
 ## Assumption
+1. We assume that there will be 30 aircrafts and tracking of aircraft based on its tail number is not required.
+2. We assume that row numbers and seat letters are sequential with no skipping.
+Such that it is not essential to skip letters that may be confused with numbers (e.g. I, O, Q, S or Z).
+3. We assume that Merlion Airlines does not operates only in its home hub in Singapore Changi Airport and Taoyuan International Airport,
+it can also operate in other airports like Narita and Incheon International Airport.
+4. We have to take into account that different countries have different time zones. 
 
 # High-level architecture of Flight Reservation System [FRS] 
 This project also known as FRS, consists of 3 parts:
@@ -53,7 +63,7 @@ This project also known as FRS, consists of 3 parts:
 - [ ] Delete Flight Schedule Plan
 
 ### Seats Inventory Session Bean [Sales Management Module]
-- [ ] View Seats Inventory
+- [X] View Seats Inventory
 
 ### Flight Reservations Session Bean [Sales Management Module]
 - [X] View Flight Reservations
@@ -62,8 +72,8 @@ This project also known as FRS, consists of 3 parts:
 
 ## FRS Reservation Client (for Customers)
 ### Customer Session Bean 
-- [ ] Register As Customer
-- [ ] Customer Login
+- [X] Register As Customer
+- [X] Customer Login
 - [ ] Customer Logout
 
 *(to include Domain Class Diagram)*
