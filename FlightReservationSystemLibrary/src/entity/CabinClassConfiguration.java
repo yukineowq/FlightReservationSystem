@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -18,6 +19,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -67,8 +69,12 @@ public class CabinClassConfiguration implements Serializable {
     @JoinColumn(nullable = false)
     private AircraftConfiguration aircraftConfiguration;
     
-    @OneToMany(mappedBy = "cabinClassConfiguration")
+    
+    @OneToMany(mappedBy = "cabinClassConfiguration", cascade = CascadeType.PERSIST)
     private List<Fare> fares;
+    
+    @ManyToMany(mappedBy = "cabinClassConfiguration", cascade = CascadeType.PERSIST)
+    private List<Flight> flights;
     
 
     public Long getCabinClassConfigurationId() {
@@ -202,5 +208,14 @@ public class CabinClassConfiguration implements Serializable {
     public void setFares(List<Fare> fares) {
         this.fares = fares;
     }
+
+    public List<Flight> getFlights() {
+        return flights;
+    }
+
+    public void setFlights(List<Flight> flights) {
+        this.flights = flights;
+    }
+
 
 }

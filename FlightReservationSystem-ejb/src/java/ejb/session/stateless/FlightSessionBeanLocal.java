@@ -5,6 +5,7 @@
  */
 package ejb.session.stateless;
 
+import entity.Airport;
 import entity.Flight;
 import java.util.List;
 import javax.ejb.Local;
@@ -21,7 +22,7 @@ import util.exception.UpdateFlightException;
  */
 @Local
 public interface FlightSessionBeanLocal {
-    Long createNewFlight(Flight newFlight, String aircraftConfigurationName, String flightRouteOD) throws FlightNumberExistException, UnknownPersistenceException, InputDataValidationException;
+    Long createNewFlight(Flight newFlight) throws FlightNumberExistException, UnknownPersistenceException, InputDataValidationException;
     List<Flight> retrieveAllFlights();
     Flight retrieveFlightByFlightNumber(String flightNumber) throws FlightNumberExistException;
     void updateFlight(Flight flight) throws FlightNotFoundException, UpdateFlightException,InputDataValidationException ;

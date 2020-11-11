@@ -8,6 +8,7 @@ package entity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -57,7 +58,7 @@ public class Customer implements Serializable {
     @Size(min = 8, max = 32)
     private String password;
     
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.PERSIST)
     private List<FlightReservation> flightReservations;
 
     public Customer(String firstName, String lastName, String email, String mobileNumber, String address, String userName, String password, List<FlightReservation> flightReservations) {

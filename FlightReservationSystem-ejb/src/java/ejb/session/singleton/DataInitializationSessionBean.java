@@ -48,6 +48,10 @@ public class DataInitializationSessionBean {
     public void postConstruct(){
         try {
             employeeSessionBeanLocal.retrieveEmployeeByUsername("systemadministrator");
+            employeeSessionBeanLocal.retrieveEmployeeByUsername("fleetmanager");
+            employeeSessionBeanLocal.retrieveEmployeeByUsername("routeplanner");
+            employeeSessionBeanLocal.retrieveEmployeeByUsername("schedulemanager");
+            employeeSessionBeanLocal.retrieveEmployeeByUsername("salesmanager");
             airportSessionBeanLocal.retrieveAirportByAirportCode("SIN");
             airportSessionBeanLocal.retrieveAirportByAirportCode("NRT");
             aircraftTypeSessionBeanLocal.retrieveAircraftTypeByName("Boeing 737");
@@ -64,13 +68,21 @@ public class DataInitializationSessionBean {
     private void initializeData() throws AirportCodeExistException, UnknownPersistenceException, InputDataValidationException
     {
 
-            Employee employee =  new Employee("John", "Tan", "systemadministrator", "password", EmployeeAccessRightEnum.SYSTEMADMINISTRATOR);
+            Employee employee =  new Employee("Reuben", "Ang", "systemadministrator", "password", EmployeeAccessRightEnum.SYSTEMADMINISTRATOR);
+            employeeSessionBeanLocal.createNewEmployee(employee);
+            employee =  new Employee("Mike", "Tan", "fleetmanager", "password", EmployeeAccessRightEnum.FLEETMANAGER);
+            employeeSessionBeanLocal.createNewEmployee(employee);
+            employee =  new Employee("Lisa", "Tan", "routeplanner", "password", EmployeeAccessRightEnum.ROUTEPLANNER);
+            employeeSessionBeanLocal.createNewEmployee(employee);
+            employee =  new Employee("John", "Tan", "schedulemanager", "password", EmployeeAccessRightEnum.SCHEDULEMANAGER);
+            employeeSessionBeanLocal.createNewEmployee(employee);
+            employee =  new Employee("Yuki", "Neo", "salesmanager", "password", EmployeeAccessRightEnum.SALESMANAGER);
             employeeSessionBeanLocal.createNewEmployee(employee);
 
-            airportSessionBeanLocal.createNewAirport(new Airport("Changi Airport", "SIN", "Singapore", "Singapore", "Singapore", "GMT+08:00"));
-            airportSessionBeanLocal.createNewAirport(new Airport("Narita International Airport", "NRT", "Narita", "Chiba", "Japan", "GMT+09:00"));
-            aircraftTypeSessionBeanLocal.createNewAircraftType(new AircraftType("Boeing 737", Long.valueOf(204)));
-            aircraftTypeSessionBeanLocal.createNewAircraftType(new AircraftType("Boeing 747", Long.valueOf(467)));
+            airportSessionBeanLocal.createNewAirport(new Airport("Changi Airport", "SIN", "Singapore", "Singapore", "Singapore", 8));
+            airportSessionBeanLocal.createNewAirport(new Airport("Narita International Airport", "NRT", "Narita", "Chiba", "Japan", 9));
+            aircraftTypeSessionBeanLocal.createNewAircraftType(new AircraftType("Boeing 737", 204));
+            aircraftTypeSessionBeanLocal.createNewAircraftType(new AircraftType("Boeing 747", 467));
             
         
     }

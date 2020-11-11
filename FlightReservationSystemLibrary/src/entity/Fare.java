@@ -6,6 +6,7 @@
 package entity;
 
 import java.io.Serializable;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -16,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import util.enumeration.CabinClassEnum;
@@ -41,7 +43,7 @@ public class Fare implements Serializable {
     private String fareBasisCode;
     @Column(nullable = false, length = 64)
     @NotNull
-    @Size(max = 64)
+    @Min(0)
     private double fareAmount;
 
     @ManyToOne(optional = false)

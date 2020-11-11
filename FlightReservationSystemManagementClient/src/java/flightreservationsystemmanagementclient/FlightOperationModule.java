@@ -11,6 +11,8 @@ import ejb.session.stateless.FlightScheduleSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
 import ejb.session.stateless.AircraftConfigurationSessionBeanRemote;
 import ejb.session.stateless.FlightRouteSessionBeanRemote;
+import ejb.session.stateless.AirportSessionBeanRemote;
+import ejb.session.stateless.CabinClassConfigurationSessionBeanRemote;
 import entity.Employee;
 import entity.Flight;
 import entity.FlightRoute;
@@ -48,8 +50,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.TimeZone;
 import util.enumeration.CabinClassEnum;
+import util.exception.AirportNotFoundException;
 import util.exception.FlightScheduleContainsReservationException;
 import util.exception.FlightSchedulePlanDeleteException;
 import util.exception.FlightSchedulePlanDoesNotExistException;
@@ -71,13 +75,15 @@ public class FlightOperationModule {
     private FareSessionBeanRemote fareSessionBeanRemote;
     private FlightRouteSessionBeanRemote flightRouteSessionBeanRemote;
     private AircraftConfigurationSessionBeanRemote aircraftConfigurationSessionBeanRemote;
+    private AirportSessionBeanRemote airportSessionBeanRemote;
+    private CabinClassConfigurationSessionBeanRemote cabinClassConfigurationSessionBeanRemote;
 
     public FlightOperationModule() {
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.getValidator();
     }
 
-    public FlightOperationModule(Employee currentEmployee, FlightSessionBeanRemote flightSessionBeanRemote, FlightScheduleSessionBeanRemote flightScheduleSessionBeanRemote, FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBeanRemote, FareSessionBeanRemote fareSessionBeanRemote, AircraftConfigurationSessionBeanRemote aircraftConfigurationSessionBeanRemote, FlightRouteSessionBeanRemote flightRouteSessionBeanRemote) {
+    public FlightOperationModule(Employee currentEmployee, FlightSessionBeanRemote flightSessionBeanRemote, FlightScheduleSessionBeanRemote flightScheduleSessionBeanRemote, FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBeanRemote, FareSessionBeanRemote fareSessionBeanRemote, AircraftConfigurationSessionBeanRemote aircraftConfigurationSessionBeanRemote, FlightRouteSessionBeanRemote flightRouteSessionBeanRemote, AirportSessionBeanRemote airportSessionBeanRemote, CabinClassConfigurationSessionBeanRemote cabinClassConfigurationSessionBeanRemote) {
         this();
         this.currentEmployee = currentEmployee;
         this.flightSessionBeanRemote = flightSessionBeanRemote;
@@ -86,6 +92,8 @@ public class FlightOperationModule {
         this.fareSessionBeanRemote = fareSessionBeanRemote;
         this.aircraftConfigurationSessionBeanRemote = aircraftConfigurationSessionBeanRemote;
         this.flightRouteSessionBeanRemote = flightRouteSessionBeanRemote;
+        this.airportSessionBeanRemote = airportSessionBeanRemote;
+        this.cabinClassConfigurationSessionBeanRemote = cabinClassConfigurationSessionBeanRemote;
     }
 
     public void menuFlightOperation() throws InvalidAccessRightException {
@@ -146,7 +154,7 @@ public class FlightOperationModule {
             Calendar cal2 = new GregorianCalendar();
             SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
 
-            SimpleDateFormat inputDateFormat = new SimpleDateFormat("dd/mm/yy HH:MM");
+            SimpleDateFormat inputDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             Date departureDate;
             FlightSchedulePlan flightSchedulePlan = new FlightSchedulePlan();
             FlightSchedulePlan complementaryFSP = new FlightSchedulePlan();
@@ -154,16 +162,42 @@ public class FlightOperationModule {
             System.out.print("Enter Flight Number> ");
             String flightNumber = scanner.nextLine().trim();
             flightSchedulePlan.setFlightNumber(flightNumber);
+            complementaryFSP.setFlightNumber(flightNumber);
             Flight flight = new Flight();
             try {
                 flight = flightSessionBeanRemote.retrieveFlightByFlightNumber(flightNumber);
             } catch (FlightNumberExistException ex) {
                 Logger.getLogger(FlightOperationModule.class.getName()).log(Level.SEVERE, null, ex);
             }
-            AircraftConfiguration aircraftConfiguration = flight.getAircraftConfiguration();
-            List<CabinClassConfiguration> cabinClassConfigurations = aircraftConfiguration.getCabinClassConfigurations();
+
+            if (flight.getComplementaryFlightNumber().length() > 0) {
+                System.out.println("Would you like to create a complementary return flight schedule plan? Y/N >");
+                String response = scanner.nextLine().trim();
+                if (response.equals("Y")) {
+                    complementary = true;
+                }
+            }
+            flightSchedulePlan.setFlight(flight);
+            Flight complementaryFlight = new Flight();
+            if (flight.getComplementaryFlightNumber().length() > 0) {
+                try {
+                    complementaryFlight = flightSessionBeanRemote.retrieveFlightByFlightNumber(flight.getComplementaryFlightNumber());
+                } catch (FlightNumberExistException ex) {
+                    Logger.getLogger(FlightOperationModule.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                complementaryFSP.setFlight(complementaryFlight);
+            }
+            AircraftConfiguration aircraftConfiguration = new AircraftConfiguration();
+            try {
+                aircraftConfiguration = aircraftConfigurationSessionBeanRemote.retrieveAircraftConfigurationByName(flight.getAircraftConfiguration().getName());
+            } catch (AircraftConfigurationNotFoundException ex) {
+                System.out.println("Aircraft configuration not found with flight number provided.");
+            }
+
+            List<CabinClassConfiguration> cabinClassConfigurations = flight.getCabinClassConfiguration();
             Airport originAirport = flight.getFlightRoute().getOrigin();
             Airport destinationAirport = flight.getFlightRoute().getDestination();
+            int timeDifference = destinationAirport.getGMT() - originAirport.getGMT();
 
             System.out.println("1: Single schedule");
             System.out.println("2: Multiple schedule");
@@ -171,27 +205,42 @@ public class FlightOperationModule {
             System.out.println("4: Recurrent schedules every week");
             System.out.println("Select flight schedule plan type> ");
             int res = scanner.nextInt();
+            scanner.nextLine();
             if (res == 1) {
-                GregorianCalendar departingCalendar = new GregorianCalendar(TimeZone.getTimeZone(originAirport.getGMT()));
-                GregorianCalendar arrivingCalendar = new GregorianCalendar(TimeZone.getTimeZone(destinationAirport.getGMT()));
+                Calendar departingCalendar = new GregorianCalendar();
+                Calendar arrivingCalendar = new GregorianCalendar();
+                Calendar complementaryDepartingCalendar = new GregorianCalendar();
+                Calendar complementaryArrivingCalendar = new GregorianCalendar();
+                complementaryFSP.setScheduleType(ScheduleTypeEnum.SINGLE);
                 flightSchedulePlan.setScheduleType(ScheduleTypeEnum.SINGLE);
                 FlightSchedule flightSchedule = new FlightSchedule();
-                System.out.print("Enter Departure Date (dd/mm/yy HH:MM)> ");
+                System.out.print("Enter Departure Date (yyyy-mm-dd HH:MM)> ");
                 departureDate = inputDateFormat.parse(scanner.nextLine().trim());
                 departingCalendar.setTime(departureDate);
+                complementaryArrivingCalendar.setTime(departureDate);
                 arrivingCalendar.setTime(departureDate);
+                complementaryDepartingCalendar.setTime(departureDate);
+                arrivingCalendar.add(GregorianCalendar.HOUR, timeDifference);
+                complementaryDepartingCalendar.add(GregorianCalendar.HOUR, timeDifference);
                 System.out.println("Enter estimated flight hours> ");
                 int hours = scanner.nextInt();
+                scanner.nextLine();
+
                 arrivingCalendar.add(GregorianCalendar.HOUR, hours);
-                departingCalendar.add(GregorianCalendar.HOUR, hours);
+                complementaryDepartingCalendar.add(GregorianCalendar.HOUR, hours);
+                complementaryArrivingCalendar.add(GregorianCalendar.HOUR, hours);
                 System.out.println("Enter estimated flight minutes> ");
                 int mins = scanner.nextInt();
+                scanner.nextLine();
                 arrivingCalendar.add(GregorianCalendar.MINUTE, mins);
-                departingCalendar.add(GregorianCalendar.MINUTE, mins);
-                flightSchedule.setArrivalDate(arrivingCalendar.getTime());
-                flightSchedule.setDepartureDate(departingCalendar.getTime());
+                complementaryDepartingCalendar.add(GregorianCalendar.MINUTE, mins);
+                complementaryArrivingCalendar.add(GregorianCalendar.MINUTE, mins);
+                flightSchedule.setEstimatedFlightMinute(mins);
+                flightSchedule.setEstimatedFlightHour(hours);
+                flightSchedule.setDepartureTime(departingCalendar);
                 flightSchedule.setArrivalTime(arrivingCalendar);
                 flightSchedulePlan.getFlightSchedules().add(flightSchedule);
+                flightSchedule.setFlightSchedulePlan(flightSchedulePlan);
 
                 for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
                     CabinClassEnum cabinClassEnum = cabinClassConfiguration.getCabinClass();
@@ -201,148 +250,18 @@ public class FlightOperationModule {
                     seatInventory.setFlightSchedule(flightSchedule);
                 }
 
-                if (flight.getComplementary() != null) {
-                    System.out.println("Would you like to create a complementary return flight schedule plan? Y/N >");
-                    String response = scanner.nextLine().trim();
-                    if (response.equals("Y")) {
-                        complementary = true;
-                        FlightSchedule complementaryFS = new FlightSchedule();
-                        arrivingCalendar.add(GregorianCalendar.HOUR, 4);
-                        departingCalendar.add(GregorianCalendar.HOUR, 4 + hours);
-                        departingCalendar.add(GregorianCalendar.MINUTE, mins);
-                        complementaryFS.setArrivalDate(departingCalendar.getTime());
-                        complementaryFS.setDepartureDate(arrivingCalendar.getTime());
-                        complementaryFS.setArrivalTime(departingCalendar);
-                        complementaryFSP.getFlightSchedules().add(complementaryFS);
-                        complementaryFSP.setFlight(flight.getComplementary());
-
-                        for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
-                            CabinClassEnum cabinClassEnum = cabinClassConfiguration.getCabinClass();
-                            int maxCabinSeatCapacity = cabinClassConfiguration.getMaxCabinSeatCapacity();
-                            SeatInventory seatInventory = new SeatInventory(maxCabinSeatCapacity, cabinClassEnum);
-                            complementaryFS.getSeatInventories().add(seatInventory);
-                            seatInventory.setFlightSchedule(complementaryFS);
-                        }
-                    }
-                }
-            } else if (res == 2) {
-                GregorianCalendar departingCalendar = new GregorianCalendar(TimeZone.getTimeZone(originAirport.getGMT()));
-                GregorianCalendar arrivingCalendar = new GregorianCalendar(TimeZone.getTimeZone(destinationAirport.getGMT()));
-                flightSchedulePlan.setScheduleType(ScheduleTypeEnum.MULTIPLE);
-                System.out.println("Enter estimated flight hours> ");
-                int hours = scanner.nextInt();
-                System.out.println("Enter estimated flight minutes> ");
-                int mins = scanner.nextInt();
-                System.out.println("Enter number of schedules> ");
-                int numSchedules = scanner.nextInt();
-                for (int i = 0; i < numSchedules; i++) {
-                    FlightSchedule flightSchedule = new FlightSchedule();
-                    System.out.println("Creating flight schedule: " + i);
-                    System.out.print("Enter Departure Date (dd/mm/yy HH:MM)> ");
-                    departureDate = inputDateFormat.parse(scanner.nextLine().trim());
-                    departingCalendar.setTime(departureDate);
-                    arrivingCalendar.setTime(departureDate);
-                    arrivingCalendar.add(GregorianCalendar.HOUR, hours);
-                    departingCalendar.add(GregorianCalendar.HOUR, hours);
-                    arrivingCalendar.add(GregorianCalendar.MINUTE, mins);
-                    departingCalendar.add(GregorianCalendar.MINUTE, mins);
-                    flightSchedule.setArrivalDate(arrivingCalendar.getTime());
-                    flightSchedule.setDepartureDate(departingCalendar.getTime());
-                    flightSchedule.setArrivalTime(arrivingCalendar);
-                    flightSchedulePlan.getFlightSchedules().add(flightSchedule);
-
-                    for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
-                        CabinClassEnum cabinClassEnum = cabinClassConfiguration.getCabinClass();
-                        int maxCabinSeatCapacity = cabinClassConfiguration.getMaxCabinSeatCapacity();
-                        SeatInventory seatInventory = new SeatInventory(maxCabinSeatCapacity, cabinClassEnum);
-                        flightSchedule.getSeatInventories().add(seatInventory);
-                        seatInventory.setFlightSchedule(flightSchedule);
-                    }
-                }
-
-                if (flight.getComplementary() != null) {
-                    System.out.println("Would you like to create a complementary return flight schedule plan? Y/N >");
-                    String response = scanner.nextLine().trim();
-                    if (response.equals("Y")) {
-                        complementary = true;
-                        FlightSchedule complementaryFS = new FlightSchedule();
-                        arrivingCalendar.add(GregorianCalendar.HOUR, 4);
-                        departingCalendar.add(GregorianCalendar.HOUR, 4 + hours);
-                        departingCalendar.add(GregorianCalendar.MINUTE, mins);
-                        complementaryFS.setArrivalDate(departingCalendar.getTime());
-                        complementaryFS.setDepartureDate(arrivingCalendar.getTime());
-                        complementaryFS.setArrivalTime(departingCalendar);
-                        complementaryFSP.getFlightSchedules().add(complementaryFS);
-                        complementaryFSP.setFlight(flight.getComplementary());
-
-                        for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
-                            CabinClassEnum cabinClassEnum = cabinClassConfiguration.getCabinClass();
-                            int maxCabinSeatCapacity = cabinClassConfiguration.getMaxCabinSeatCapacity();
-                            SeatInventory seatInventory = new SeatInventory(maxCabinSeatCapacity, cabinClassEnum);
-                            complementaryFS.getSeatInventories().add(seatInventory);
-                            seatInventory.setFlightSchedule(complementaryFS);
-                        }
-                    }
-                }
-            } else if (res == 3) {
-                GregorianCalendar departingCalendar = new GregorianCalendar(TimeZone.getTimeZone(originAirport.getGMT()));
-                GregorianCalendar arrivingCalendar = new GregorianCalendar(TimeZone.getTimeZone(destinationAirport.getGMT()));
-                flightSchedulePlan.setScheduleType(ScheduleTypeEnum.MULTIPLE);
-                System.out.println("Enter estimated flight hours> ");
-                int hours = scanner.nextInt();
-                System.out.println("Enter estimated flight minutes> ");
-                int mins = scanner.nextInt();
-                System.out.println("Enter n> ");
-                int n = scanner.nextInt();
-                System.out.println("Enter effective date (ddMMyyyy) >");
-                Date date = sdf.parse(scanner.nextLine().trim());
-                cal1.setTime(date);
-                System.out.println("Enter end date (ddMMyyyy) >");
-                date = sdf.parse(scanner.nextLine().trim());
-                cal2.setTime(date);
-                int daysBetween = daysBetween(cal1.getTime(), cal2.getTime()) + 1;
-                System.out.print("Enter Departure Date (dd/mm/yy HH:MM)> ");
-                departureDate = inputDateFormat.parse(scanner.nextLine().trim());
-                departingCalendar.setTime(departureDate);
-                arrivingCalendar.setTime(departureDate);
-                arrivingCalendar.add(GregorianCalendar.HOUR, hours);
-                departingCalendar.add(GregorianCalendar.HOUR, hours);
-                arrivingCalendar.add(GregorianCalendar.MINUTE, mins);
-                departingCalendar.add(GregorianCalendar.MINUTE, mins);
-                if (flight.getComplementary() != null) {
-                    System.out.println("Would you like to create a complementary return flight schedule plan? Y/N >");
-                    String response = scanner.nextLine().trim();
-                    if (response.equals("Y")) {
-                        complementary = true;
-                    }
-                }
-                for (int i = 0; i < daysBetween; i = i + n) {
-                    FlightSchedule flightSchedule = new FlightSchedule();
-                    arrivingCalendar.add(GregorianCalendar.DAY_OF_MONTH, i);
-                    departingCalendar.add(GregorianCalendar.DAY_OF_MONTH, i);
-                    flightSchedule.setArrivalDate(arrivingCalendar.getTime());
-                    flightSchedule.setDepartureDate(departingCalendar.getTime());
-                    flightSchedule.setArrivalTime(arrivingCalendar);
-                    flightSchedulePlan.getFlightSchedules().add(flightSchedule);
-
-                    for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
-                        CabinClassEnum cabinClassEnum = cabinClassConfiguration.getCabinClass();
-                        int maxCabinSeatCapacity = cabinClassConfiguration.getMaxCabinSeatCapacity();
-                        SeatInventory seatInventory = new SeatInventory(maxCabinSeatCapacity, cabinClassEnum);
-                        flightSchedule.getSeatInventories().add(seatInventory);
-                        seatInventory.setFlightSchedule(flightSchedule);
-                    }
-                }
                 if (complementary) {
+
                     FlightSchedule complementaryFS = new FlightSchedule();
-                    arrivingCalendar.add(GregorianCalendar.HOUR, 4);
-                    departingCalendar.add(GregorianCalendar.HOUR, 4 + hours);
-                    departingCalendar.add(GregorianCalendar.MINUTE, mins);
-                    complementaryFS.setArrivalDate(departingCalendar.getTime());
-                    complementaryFS.setDepartureDate(arrivingCalendar.getTime());
-                    complementaryFS.setArrivalTime(departingCalendar);
+                    complementaryDepartingCalendar.add(GregorianCalendar.HOUR, 4);
+                    complementaryArrivingCalendar.add(GregorianCalendar.HOUR, 4 + hours);
+                    complementaryArrivingCalendar.add(GregorianCalendar.MINUTE, mins);
+                    complementaryFS.setArrivalTime(complementaryArrivingCalendar);
+                    complementaryFS.setDepartureTime(complementaryDepartingCalendar);
+                    complementaryFS.setEstimatedFlightHour(hours);
+                    complementaryFS.setEstimatedFlightMinute(mins);
                     complementaryFSP.getFlightSchedules().add(complementaryFS);
-                    complementaryFSP.setFlight(flight.getComplementary());
+                    complementaryFS.setFlightSchedulePlan(complementaryFSP);
 
                     for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
                         CabinClassEnum cabinClassEnum = cabinClassConfiguration.getCabinClass();
@@ -350,12 +269,173 @@ public class FlightOperationModule {
                         SeatInventory seatInventory = new SeatInventory(maxCabinSeatCapacity, cabinClassEnum);
                         complementaryFS.getSeatInventories().add(seatInventory);
                         seatInventory.setFlightSchedule(complementaryFS);
+                    }
+
+                }
+            } else if (res == 2) {
+                complementaryFSP.setScheduleType(ScheduleTypeEnum.MULTIPLE);
+                flightSchedulePlan.setScheduleType(ScheduleTypeEnum.MULTIPLE);
+                System.out.println("Enter estimated flight hours> ");
+                int hours = scanner.nextInt();
+                scanner.nextLine();
+                System.out.println("Enter estimated flight minutes> ");
+                int mins = scanner.nextInt();
+                scanner.nextLine();
+                System.out.println("Enter number of schedules> ");
+                int numSchedules = scanner.nextInt();
+                scanner.nextLine();
+                for (int i = 0; i < numSchedules; i++) {
+                    Calendar departingCalendar = new GregorianCalendar();
+                    Calendar arrivingCalendar = new GregorianCalendar();
+                    Calendar complementaryDepartingCalendar = new GregorianCalendar();
+                    Calendar complementaryArrivingCalendar = new GregorianCalendar();
+                    FlightSchedule flightSchedule = new FlightSchedule();
+                    System.out.println("Creating flight schedule: " + i);
+                    System.out.print("Enter Departure Date (yyyy-mm-dd HH:MM)> ");
+                    departureDate = inputDateFormat.parse(scanner.nextLine().trim());
+                    departingCalendar.setTime(departureDate);
+                    complementaryArrivingCalendar.setTime(departureDate);
+                    arrivingCalendar.setTime(departureDate);
+                    complementaryDepartingCalendar.setTime(departureDate);
+                    arrivingCalendar.add(GregorianCalendar.HOUR, timeDifference);
+                    complementaryDepartingCalendar.add(GregorianCalendar.HOUR, timeDifference);
+                    arrivingCalendar.add(GregorianCalendar.HOUR, hours);
+                    complementaryDepartingCalendar.add(GregorianCalendar.HOUR, hours);
+                    complementaryArrivingCalendar.add(GregorianCalendar.HOUR, hours);
+                    arrivingCalendar.add(GregorianCalendar.MINUTE, mins);
+                    complementaryDepartingCalendar.add(GregorianCalendar.MINUTE, mins);
+                    complementaryArrivingCalendar.add(GregorianCalendar.MINUTE, mins);
+                    flightSchedule.setDepartureTime(departingCalendar);
+                    flightSchedule.setArrivalTime(arrivingCalendar);
+                    flightSchedule.setEstimatedFlightHour(hours);
+                    flightSchedule.setEstimatedFlightMinute(mins);
+                    flightSchedulePlan.getFlightSchedules().add(flightSchedule);
+                    flightSchedule.setFlightSchedulePlan(flightSchedulePlan);
+
+                    for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
+                        CabinClassEnum cabinClassEnum = cabinClassConfiguration.getCabinClass();
+                        int maxCabinSeatCapacity = cabinClassConfiguration.getMaxCabinSeatCapacity();
+                        SeatInventory seatInventory = new SeatInventory(maxCabinSeatCapacity, cabinClassEnum);
+                        flightSchedule.getSeatInventories().add(seatInventory);
+                        seatInventory.setFlightSchedule(flightSchedule);
+                    }
+                    if (complementary) {
+
+                        FlightSchedule complementaryFS = new FlightSchedule();
+                        complementaryDepartingCalendar.add(GregorianCalendar.HOUR, 4);
+                        complementaryArrivingCalendar.add(GregorianCalendar.HOUR, 4 + hours);
+                        complementaryArrivingCalendar.add(GregorianCalendar.MINUTE, mins);
+                        complementaryFS.setArrivalTime(complementaryArrivingCalendar);
+                        complementaryFS.setDepartureTime(complementaryDepartingCalendar);
+                        complementaryFS.setEstimatedFlightHour(hours);
+                        complementaryFS.setEstimatedFlightMinute(mins);
+                        complementaryFSP.getFlightSchedules().add(complementaryFS);
+                        complementaryFS.setFlightSchedulePlan(complementaryFSP);
+
+                        for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
+                            CabinClassEnum cabinClassEnum = cabinClassConfiguration.getCabinClass();
+                            int maxCabinSeatCapacity = cabinClassConfiguration.getMaxCabinSeatCapacity();
+                            SeatInventory seatInventory = new SeatInventory(maxCabinSeatCapacity, cabinClassEnum);
+                            complementaryFS.getSeatInventories().add(seatInventory);
+                            seatInventory.setFlightSchedule(complementaryFS);
+                        }
+
+                    }
+                }
+
+            } else if (res == 3) {
+
+                complementaryFSP.setScheduleType(ScheduleTypeEnum.RECURRENT);
+                flightSchedulePlan.setScheduleType(ScheduleTypeEnum.RECURRENT);
+                System.out.println("Enter estimated flight hours> ");
+                int hours = scanner.nextInt();
+                scanner.nextLine();
+                System.out.println("Enter estimated flight minutes> ");
+                int mins = scanner.nextInt();
+                scanner.nextLine();
+                System.out.println("Enter n> ");
+                int n = scanner.nextInt();
+                scanner.nextLine();
+                System.out.println("Enter effective date (ddMMyyyy) >");
+                Date date = sdf.parse(scanner.nextLine().trim());
+                cal1.setTime(date);
+                System.out.println("Enter end date (ddMMyyyy) >");
+                date = sdf.parse(scanner.nextLine().trim());
+                cal2.setTime(date);
+                int daysBetween = daysBetween(cal1.getTime(), cal2.getTime()) + 1;
+                System.out.print("Enter Departure Date (yyyy-mm-dd HH:MM)> ");
+                departureDate = inputDateFormat.parse(scanner.nextLine().trim());
+                Calendar counterCal = new GregorianCalendar();
+                counterCal.setTime(departureDate);
+
+                for (int i = 0; i < daysBetween; i = i + n) {
+                    Calendar departingCalendar = new GregorianCalendar();
+                    Calendar arrivingCalendar = new GregorianCalendar();
+                    Calendar complementaryDepartingCalendar = new GregorianCalendar();
+                    Calendar complementaryArrivingCalendar = new GregorianCalendar();
+                    departingCalendar.setTime(departureDate);
+                    complementaryArrivingCalendar.setTime(departureDate);
+                    arrivingCalendar.setTime(departureDate);
+                    complementaryDepartingCalendar.setTime(departureDate);
+                    counterCal.add(Calendar.DATE, n);
+                    String str = inputDateFormat.format(counterCal.getTime());
+                    departureDate = inputDateFormat.parse(str);
+                    arrivingCalendar.add(GregorianCalendar.HOUR, timeDifference);
+                    complementaryDepartingCalendar.add(GregorianCalendar.HOUR, timeDifference);
+                    arrivingCalendar.add(GregorianCalendar.HOUR, hours);
+                    complementaryDepartingCalendar.add(GregorianCalendar.HOUR, hours);
+                    complementaryArrivingCalendar.add(GregorianCalendar.HOUR, hours);
+                    arrivingCalendar.add(GregorianCalendar.MINUTE, mins);
+                    complementaryDepartingCalendar.add(GregorianCalendar.MINUTE, mins);
+                    complementaryArrivingCalendar.add(GregorianCalendar.MINUTE, mins);
+                    FlightSchedule flightSchedule = new FlightSchedule();
+                    arrivingCalendar.add(Calendar.DATE, i);
+                    complementaryDepartingCalendar.add(Calendar.DATE, i);
+                    departingCalendar.add(Calendar.DATE, i);
+                    complementaryArrivingCalendar.add(Calendar.DATE, i);
+                    flightSchedule.setDepartureTime(departingCalendar);
+                    flightSchedule.setArrivalTime(arrivingCalendar);
+                    flightSchedule.setEstimatedFlightHour(hours);
+                    flightSchedule.setEstimatedFlightMinute(mins);
+                    flightSchedulePlan.getFlightSchedules().add(flightSchedule);
+                    flightSchedule.setFlightSchedulePlan(flightSchedulePlan);
+
+                    for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
+                        CabinClassEnum cabinClassEnum = cabinClassConfiguration.getCabinClass();
+                        int maxCabinSeatCapacity = cabinClassConfiguration.getMaxCabinSeatCapacity();
+                        SeatInventory seatInventory = new SeatInventory(maxCabinSeatCapacity, cabinClassEnum);
+                        flightSchedule.getSeatInventories().add(seatInventory);
+                        seatInventory.setFlightSchedule(flightSchedule);
+                    }
+
+                    if (complementary) {
+                        FlightSchedule complementaryFS = new FlightSchedule();
+                        complementaryDepartingCalendar.add(GregorianCalendar.HOUR, 4);
+                        complementaryArrivingCalendar.add(GregorianCalendar.HOUR, 4 + hours);
+                        complementaryArrivingCalendar.add(GregorianCalendar.MINUTE, mins);
+                        complementaryFS.setArrivalTime(complementaryArrivingCalendar);
+                        complementaryFS.setDepartureTime(complementaryDepartingCalendar);
+                        complementaryFS.setEstimatedFlightHour(hours);
+                        complementaryFS.setEstimatedFlightMinute(mins);
+                        complementaryFSP.getFlightSchedules().add(complementaryFS);
+                        complementaryFS.setFlightSchedulePlan(complementaryFSP);
+
+                        for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
+                            CabinClassEnum cabinClassEnum = cabinClassConfiguration.getCabinClass();
+                            int maxCabinSeatCapacity = cabinClassConfiguration.getMaxCabinSeatCapacity();
+                            SeatInventory seatInventory = new SeatInventory(maxCabinSeatCapacity, cabinClassEnum);
+                            complementaryFS.getSeatInventories().add(seatInventory);
+                            seatInventory.setFlightSchedule(complementaryFS);
+                        }
                     }
                 }
 
             } else if (res == 4) {
-                GregorianCalendar departingCalendar = new GregorianCalendar(TimeZone.getTimeZone(originAirport.getGMT()));
-                GregorianCalendar arrivingCalendar = new GregorianCalendar(TimeZone.getTimeZone(destinationAirport.getGMT()));
+                Calendar departingCalendar = new GregorianCalendar();
+                Calendar arrivingCalendar = new GregorianCalendar();
+                Calendar complementaryDepartingCalendar = new GregorianCalendar();
+                Calendar complementaryArrivingCalendar = new GregorianCalendar();
+                complementaryFSP.setScheduleType(ScheduleTypeEnum.RECURRENT);
                 flightSchedulePlan.setScheduleType(ScheduleTypeEnum.MULTIPLE);
                 System.out.println("Enter estimated flight hours> ");
                 int hours = scanner.nextInt();
@@ -368,29 +448,33 @@ public class FlightOperationModule {
                 date = sdf.parse(scanner.nextLine().trim());
                 cal2.setTime(date);
                 int daysBetween = daysBetween(cal1.getTime(), cal2.getTime()) + 1;
-                System.out.print("Enter Departure Date (dd/mm/yy HH:MM)> ");
+                System.out.print("Enter Departure Date (yyyy-mm-dd HH:MM)> ");
                 departureDate = inputDateFormat.parse(scanner.nextLine().trim());
                 departingCalendar.setTime(departureDate);
+                complementaryArrivingCalendar.setTime(departureDate);
                 arrivingCalendar.setTime(departureDate);
+                complementaryDepartingCalendar.setTime(departureDate);
+                arrivingCalendar.add(GregorianCalendar.HOUR, timeDifference);
+                complementaryDepartingCalendar.add(GregorianCalendar.HOUR, timeDifference);
                 arrivingCalendar.add(GregorianCalendar.HOUR, hours);
-                departingCalendar.add(GregorianCalendar.HOUR, hours);
+                complementaryDepartingCalendar.add(GregorianCalendar.HOUR, hours);
+                complementaryArrivingCalendar.add(GregorianCalendar.HOUR, hours);
                 arrivingCalendar.add(GregorianCalendar.MINUTE, mins);
-                departingCalendar.add(GregorianCalendar.MINUTE, mins);
-                if (flight.getComplementary() != null) {
-                    System.out.println("Would you like to create a complementary return flight schedule plan? Y/N >");
-                    String response = scanner.nextLine().trim();
-                    if (response.equals("Y")) {
-                        complementary = true;
-                    }
-                }
+                complementaryDepartingCalendar.add(GregorianCalendar.MINUTE, mins);
+                complementaryArrivingCalendar.add(GregorianCalendar.MINUTE, mins);
+
                 for (int i = 0; i < daysBetween; i = i + 7) {
                     FlightSchedule flightSchedule = new FlightSchedule();
-                    arrivingCalendar.add(GregorianCalendar.DAY_OF_MONTH, i);
-                    departingCalendar.add(GregorianCalendar.DAY_OF_MONTH, i);
-                    flightSchedule.setArrivalDate(arrivingCalendar.getTime());
-                    flightSchedule.setDepartureDate(departingCalendar.getTime());
+                    arrivingCalendar.add(Calendar.DATE, i);
+                    complementaryDepartingCalendar.add(Calendar.DATE, i);
+                    departingCalendar.add(Calendar.DATE, i);
+                    complementaryArrivingCalendar.add(Calendar.DATE, i);
+                    flightSchedule.setDepartureTime(departingCalendar);
                     flightSchedule.setArrivalTime(arrivingCalendar);
+                    flightSchedule.setEstimatedFlightHour(hours);
+                    flightSchedule.setEstimatedFlightMinute(mins);
                     flightSchedulePlan.getFlightSchedules().add(flightSchedule);
+                    flightSchedule.setFlightSchedulePlan(flightSchedulePlan);
 
                     for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
                         CabinClassEnum cabinClassEnum = cabinClassConfiguration.getCabinClass();
@@ -399,33 +483,35 @@ public class FlightOperationModule {
                         flightSchedule.getSeatInventories().add(seatInventory);
                         seatInventory.setFlightSchedule(flightSchedule);
                     }
-                }
-                if (complementary) {
-                    FlightSchedule complementaryFS = new FlightSchedule();
-                    arrivingCalendar.add(GregorianCalendar.HOUR, 4);
-                    departingCalendar.add(GregorianCalendar.HOUR, 4 + hours);
-                    departingCalendar.add(GregorianCalendar.MINUTE, mins);
-                    complementaryFS.setArrivalDate(departingCalendar.getTime());
-                    complementaryFS.setDepartureDate(arrivingCalendar.getTime());
-                    complementaryFS.setArrivalTime(departingCalendar);
-                    complementaryFSP.getFlightSchedules().add(complementaryFS);
-                    complementaryFSP.setFlight(flight.getComplementary());
+                    if (complementary) {
+                        FlightSchedule complementaryFS = new FlightSchedule();
+                        complementaryDepartingCalendar.add(GregorianCalendar.HOUR, 4);
+                        complementaryArrivingCalendar.add(GregorianCalendar.HOUR, 4 + hours);
+                        complementaryArrivingCalendar.add(GregorianCalendar.MINUTE, mins);
+                        complementaryFS.setArrivalTime(complementaryArrivingCalendar);
+                        complementaryFS.setDepartureTime(complementaryDepartingCalendar);
+                        complementaryFS.setEstimatedFlightHour(hours);
+                        complementaryFS.setEstimatedFlightMinute(mins);
+                        complementaryFSP.getFlightSchedules().add(complementaryFS);
+                        complementaryFS.setFlightSchedulePlan(complementaryFSP);
 
-                    for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
-                        CabinClassEnum cabinClassEnum = cabinClassConfiguration.getCabinClass();
-                        int maxCabinSeatCapacity = cabinClassConfiguration.getMaxCabinSeatCapacity();
-                        SeatInventory seatInventory = new SeatInventory(maxCabinSeatCapacity, cabinClassEnum);
-                        complementaryFS.getSeatInventories().add(seatInventory);
-                        seatInventory.setFlightSchedule(complementaryFS);
+                        for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
+                            CabinClassEnum cabinClassEnum = cabinClassConfiguration.getCabinClass();
+                            int maxCabinSeatCapacity = cabinClassConfiguration.getMaxCabinSeatCapacity();
+                            SeatInventory seatInventory = new SeatInventory(maxCabinSeatCapacity, cabinClassEnum);
+                            complementaryFS.getSeatInventories().add(seatInventory);
+                            seatInventory.setFlightSchedule(complementaryFS);
+                        }
                     }
                 }
+
             }
 
-            
             for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
                 List<Fare> fares = cabinClassConfiguration.getFares();
                 System.out.println("Enter number of fares for " + cabinClassConfiguration.getCabinClass() + " Class >");
                 int numFares = scanner.nextInt();
+                scanner.nextLine();
                 for (int i = 0; i < numFares; i++) {
                     Fare fare = new Fare();
                     fare.setCabinClass(cabinClassConfiguration.getCabinClass());
@@ -437,14 +523,18 @@ public class FlightOperationModule {
                     fare.setFareAmount(amt);
                     cabinClassConfiguration.getFares().add(fare);
                     flightSchedulePlan.getFares().add(fare);
+                    fare.setCabinClassConfiguration(cabinClassConfiguration);
+                    fare.setFlightSchedulePlan(flightSchedulePlan);
                 }
             }
             if (complementary) {
-                List<CabinClassConfiguration> cabinClassConfigurationsCom = complementaryFSP.getFlight().getAircraftConfiguration().getCabinClassConfigurations();
+                flightSchedulePlan.setComplementaryRFSP(true);
+                List<CabinClassConfiguration> cabinClassConfigurationsCom = complementaryFSP.getFlight().getCabinClassConfiguration();
                 for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurationsCom) {
                     List<Fare> fares = cabinClassConfiguration.getFares();
-                    System.out.println("Enter number of fares for " + cabinClassConfiguration.getCabinClass() + " Class >");
+                    System.out.println("Enter number of fares for complementary" + cabinClassConfiguration.getCabinClass() + " Class >");
                     int numFares = scanner.nextInt();
+                    scanner.nextLine();
                     for (int i = 0; i < numFares; i++) {
                         Fare fare = new Fare();
                         fare.setCabinClass(cabinClassConfiguration.getCabinClass());
@@ -456,15 +546,28 @@ public class FlightOperationModule {
                         fare.setFareAmount(amt);
                         cabinClassConfiguration.getFares().add(fare);
                         complementaryFSP.getFares().add(fare);
-                        flightSchedulePlan.setComplementary(complementaryFSP);
+                        fare.setCabinClassConfiguration(cabinClassConfiguration);
+                        fare.setFlightSchedulePlan(complementaryFSP);
                     }
                 }
             }
             Set<ConstraintViolation<FlightSchedulePlan>> constraintViolations = validator.validate(flightSchedulePlan);
             if (constraintViolations.isEmpty()) {
+                Long comFspId = -1L;
+                if (complementary) {
+                    try {
+                        comFspId = flightSchedulePlanSessionBeanRemote.createNewFlightSchedulePlan(complementaryFSP);
+                        System.out.println("New complementary fsp created successfully!: " + comFspId + "\n");
+                        flightSchedulePlan.setComplementaryID(comFspId);
+                    } catch (InputDataValidationException ex) {
+                        System.out.println(ex.getMessage() + "\n");
+                    }
+                }
+
                 try {
-                    Long fspId = flightSchedulePlanSessionBeanRemote.createNewFlightSchedulePlan(flightSchedulePlan, flight.getFlightId());
-                    System.out.println("New Aircraft configuration created successfully!: " + fspId + "\n");
+                    Long fspId = flightSchedulePlanSessionBeanRemote.createNewFlightSchedulePlan(flightSchedulePlan);
+                    System.out.println("New fsp created successfully!: " + fspId + "\n");
+                    flightSchedulePlan.setComplementaryID(comFspId);
                 } catch (InputDataValidationException ex) {
                     System.out.println(ex.getMessage() + "\n");
                 }
@@ -502,27 +605,33 @@ public class FlightOperationModule {
                         .getName()).log(Level.SEVERE, null, ex);
             }
             List<FlightSchedulePlan> flightSchedulePlans1 = flight.getFlightSchedulePlan();
-            List<GregorianCalendar> departureDate = new ArrayList<>();
+            List<Calendar> departureDate = new ArrayList<>();
             for (FlightSchedulePlan flightSchedulePlan : flightSchedulePlans1) {
                 List<FlightSchedule> flightSchedules = flightSchedulePlan.getFlightSchedules();
                 for (FlightSchedule flightSchedule : flightSchedules) {
                     departureDate.add(flightSchedule.getDepartureTime());
                 }
                 Collections.sort(departureDate, Collections.reverseOrder());
-                for (GregorianCalendar calendar : departureDate) {
+                for (Calendar calendar : departureDate) {
                     System.out.println(flightNumber + "      " + calendar);
                 }
             }
-            if (flight.getComplementary() != null) {
-                List<FlightSchedulePlan> flightSchedulePlans2 = flight.getComplementary().getFlightSchedulePlan();
-                List<GregorianCalendar> departureDate1 = new ArrayList<>();
+            if (flight.getComplementaryFlightNumber().length() > 0) {
+                Flight complementaryFlight = new Flight();
+                try {
+                    complementaryFlight = flightSessionBeanRemote.retrieveFlightByFlightNumber(flight.getComplementaryFlightNumber());
+                } catch (FlightNumberExistException ex) {
+                    System.out.println("Error getting complementary flight");
+                }
+                List<FlightSchedulePlan> flightSchedulePlans2 = complementaryFlight.getFlightSchedulePlan();
+                List<Calendar> departureDate1 = new ArrayList<>();
                 for (FlightSchedulePlan flightSchedulePlan : flightSchedulePlans2) {
                     List<FlightSchedule> flightSchedules = flightSchedulePlan.getFlightSchedules();
                     for (FlightSchedule flightSchedule : flightSchedules) {
                         departureDate1.add(flightSchedule.getDepartureTime());
                     }
                     Collections.sort(departureDate1, Collections.reverseOrder());
-                    for (GregorianCalendar calendar : departureDate1) {
+                    for (Calendar calendar : departureDate1) {
                         System.out.println(flightNumber + "      " + calendar);
                     }
                 }
@@ -540,7 +649,8 @@ public class FlightOperationModule {
 
         try {
             FlightSchedulePlan flightSchedulePlan = flightSchedulePlanSessionBeanRemote.viewFlightSchedulePlanDetails(flightSchedulePlanId);
-            System.out.println("OD Pair: " + flightSchedulePlan.getFlight().getFlightRoute().getOD());
+            System.out.println("Origin: " + flightSchedulePlan.getFlight().getFlightRoute().getOrigin().getCountry());
+            System.out.println("Destination: " + flightSchedulePlan.getFlight().getFlightRoute().getDestination().getCountry());
             System.out.printf("%20s%20s%20s\n", "Flight Schedule ID", "Departing date/time", "Arriving date/time");
             for (FlightSchedule flightSchedule : flightSchedulePlan.getFlightSchedules()) {
                 System.out.printf("%20s%20s%20s\n", flightSchedule.getFlightScheduleId(), flightSchedule.getDepartureTime(), flightSchedule.getArrivalTime());
@@ -576,6 +686,7 @@ public class FlightOperationModule {
 
         Airport originAirport = flight.getFlightRoute().getOrigin();
         Airport destinationAirport = flight.getFlightRoute().getDestination();
+        int timeDifference = originAirport.getGMT() - destinationAirport.getGMT();
 
         System.out.println("*** FRS :: Flight Operation Module :: View Flight Schedule Plan Details :: Update Flight Schedule plan ***\n");
         System.out.println("1: Add flight schedule");
@@ -585,13 +696,14 @@ public class FlightOperationModule {
         int res = scanner.nextInt();
         if (res == 1) {
             try {
-                GregorianCalendar departingCalendar = new GregorianCalendar(TimeZone.getTimeZone(originAirport.getGMT()));
-                GregorianCalendar arrivingCalendar = new GregorianCalendar(TimeZone.getTimeZone(destinationAirport.getGMT()));
+                Calendar departingCalendar = new GregorianCalendar();
+                Calendar arrivingCalendar = new GregorianCalendar();
                 FlightSchedule flightSchedule = new FlightSchedule();
                 System.out.print("Enter Departure Date (dd/mm/yy HH:MM)> ");
                 departureDate = inputDateFormat.parse(scanner.nextLine().trim());
                 departingCalendar.setTime(departureDate);
                 arrivingCalendar.setTime(departureDate);
+                arrivingCalendar.add(GregorianCalendar.HOUR, timeDifference);
                 System.out.println("Enter estimated flight hours> ");
                 int hours = scanner.nextInt();
                 arrivingCalendar.add(GregorianCalendar.HOUR, hours);
@@ -600,10 +712,13 @@ public class FlightOperationModule {
                 int mins = scanner.nextInt();
                 arrivingCalendar.add(GregorianCalendar.MINUTE, mins);
                 departingCalendar.add(GregorianCalendar.MINUTE, mins);
-                flightSchedule.setArrivalDate(arrivingCalendar.getTime());
-                flightSchedule.setDepartureDate(departingCalendar.getTime());
+
+                flightSchedule.setEstimatedFlightMinute(mins);
+                flightSchedule.setEstimatedFlightHour(hours);
+                flightSchedule.setDepartureTime(departingCalendar);
                 flightSchedule.setArrivalTime(arrivingCalendar);
                 flightSchedulePlan.getFlightSchedules().add(flightSchedule);
+                flightSchedule.setFlightSchedulePlan(flightSchedulePlan);
             } catch (ParseException ex) {
                 System.out.println("Invalid date input!\n");
             }
@@ -712,41 +827,116 @@ public class FlightOperationModule {
 
     public void doCreateFlight() {
         Scanner scanner = new Scanner(System.in);
-
+        int res = 0;
         System.out.println("*** FRS ::  Flight Operation Module :: Create Flight ***\n");
         System.out.print("Enter Flight Number> ");
         String flightNumber = scanner.nextLine().trim();
+        Flight flight = new Flight(flightNumber);
         System.out.print("Enter Aircraft Configuration Name> ");
         String aircraftConfigName = scanner.nextLine().trim();
-        System.out.println("Enter OD Pair> ");
-        String od = scanner.nextLine().trim();
+        AircraftConfiguration aircraftConfiguration = new AircraftConfiguration();
+        try {
+            aircraftConfiguration = aircraftConfigurationSessionBeanRemote.retrieveAircraftConfigurationByName(aircraftConfigName);
+        } catch (AircraftConfigurationNotFoundException ex) {
+            Logger.getLogger(FlightOperationModule.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        flight.setAircraftConfiguration(aircraftConfiguration);
+        aircraftConfiguration.getFlights().add(flight);
+        List<CabinClassConfiguration> cabinClassConfigurations = cabinClassConfigurationSessionBeanRemote.retrieveCabinClassConfigurationsByAircraftConfiguration(aircraftConfigName);
 
-        Flight flight = new Flight(flightNumber);
+        List<CabinClassConfiguration> cabinClassConfigurations1 = new ArrayList<>();
+        List<CabinClassEnum> cabinClassEnums = new ArrayList<>();
+        for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
+            if (!cabinClassEnums.contains(cabinClassConfiguration.getCabinClass())) {
+                cabinClassConfigurations1.add(cabinClassConfiguration);
+            }
+            cabinClassEnums.add(cabinClassConfiguration.getCabinClass());
+        }
+        for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations1) {
+            cabinClassConfiguration.getFlights().add(flight);
+            flight.getCabinClassConfiguration().add(cabinClassConfiguration);
+        }
+        System.out.println("Enter Origin Airport Code> ");
+        String originAirportCode = scanner.nextLine().trim();
+        Airport origin = new Airport();
+        try {
+            origin = airportSessionBeanRemote.retrieveAirportByAirportCode(originAirportCode);
+        } catch (AirportNotFoundException ex) {
+            Logger.getLogger(FlightPlanningModule.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println("Enter destination airport code> ");
+        String destinationAirportCode = scanner.nextLine().trim();
+        Airport destination = new Airport();
+        try {
+            destination = airportSessionBeanRemote.retrieveAirportByAirportCode(destinationAirportCode);
+        } catch (AirportNotFoundException ex) {
+            Logger.getLogger(FlightPlanningModule.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
-        System.out.println("Create complementary Flight? >  ");
-        System.out.println("1: Yes");
-        System.out.println("2: No");
-        int res = scanner.nextInt();
+        FlightRoute flightRoute = new FlightRoute();
+
+        try {
+            flightRoute = flightRouteSessionBeanRemote.retrieveFlightRouteByOD(origin, destination);
+        } catch (FlightRouteDoesNotExistException ex) {
+            Logger.getLogger(FlightOperationModule.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        flight.setFlightRoute(flightRoute);
+        flightRoute.getFlights().add(flight);
+        FlightRoute complementaryflightRoute = new FlightRoute();
         Flight complementary = new Flight();
-        if (res == 1) {
-            System.out.println("Enter Complementary flight number> ");
-            complementary.setFlightNumber(scanner.nextLine().trim());
-            flight.setComplementary(complementary);
+        if (flightRoute.getComplementary()) {
+            System.out.println("Create complementary Flight? >  ");
+            System.out.println("1: Yes");
+            System.out.println("2: No");
+            res = scanner.nextInt();
+            scanner.nextLine();
+
+            if (res == 1) {
+                System.out.println("Enter Complementary flight number> ");
+                String fN = scanner.nextLine().trim();
+                complementary.setFlightNumber(fN);
+                flight.setComplementaryFlightNumber(fN);
+                try {
+                    complementaryflightRoute = flightRouteSessionBeanRemote.retrieveFlightRouteByOD(destination, origin);
+                } catch (FlightRouteDoesNotExistException ex) {
+                    Logger.getLogger(FlightOperationModule.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                complementary.setFlightRoute(complementaryflightRoute);
+                complementaryflightRoute.getFlights().add(complementary);
+                complementary.setAircraftConfiguration(aircraftConfiguration);
+                aircraftConfiguration.getFlights().add(complementary);
+                for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations1) {
+                    cabinClassConfiguration.getFlights().add(complementary);
+                    complementary.getCabinClassConfiguration().add(cabinClassConfiguration);
+                }
+
+            }
         }
 
         Set<ConstraintViolation<Flight>> constraintViolations = validator.validate(flight);
 
         if (constraintViolations.isEmpty()) {
             try {
-                Long flightId = flightSessionBeanRemote.createNewFlight(flight, aircraftConfigName, od);
+                Long flightId = flightSessionBeanRemote.createNewFlight(flight);
                 System.out.println("New Flight created successfully!: " + flightId + "\n");
-
             } catch (FlightNumberExistException ex) {
                 System.out.println("An error has occurred while creating the new flight!: The flight number already exist\n");
             } catch (UnknownPersistenceException ex) {
                 System.out.println("An unknown error has occurred while creating the new flight!: " + ex.getMessage() + "\n");
             } catch (InputDataValidationException ex) {
                 System.out.println(ex.getMessage() + "\n");
+            }
+            if (res == 1) {
+                try {
+                    Long flightId = flightSessionBeanRemote.createNewFlight(complementary);
+                    System.out.println("New Flight created successfully!: " + flightId + "\n");
+                } catch (FlightNumberExistException ex) {
+                    System.out.println("An error has occurred while creating the new flight!: The flight number already exist\n");
+                } catch (UnknownPersistenceException ex) {
+                    System.out.println("An unknown error has occurred while creating the new flight!: " + ex.getMessage() + "\n");
+                } catch (InputDataValidationException ex) {
+                    System.out.println(ex.getMessage() + "\n");
+                }
             }
         } else {
             showInputDataValidationErrorsForFlight(constraintViolations);
@@ -765,8 +955,14 @@ public class FlightOperationModule {
             flightNumbers.add(flightNumber);
         }
         Collections.sort(flightNumbers);
-        System.out.printf("%20s%20s%20s\n", "Flight Number", "Flight Route", "Aircraft Config");
-        for (String flightNumber : flightNumbers) {
+        System.out.printf("%20s%20s%20s%20s\n", "Flight Number", "Origin", "Destination", "Aircraft Config");
+        int size = flightNumbers.size();
+        System.out.println(size);
+        for (int i = 0; i < size; i++) {
+            if (flightNumbers.isEmpty()) {
+                break;
+            }
+            String flightNumber = flightNumbers.remove(0);
             Flight flight = new Flight();
             try {
                 flight = flightSessionBeanRemote.retrieveFlightByFlightNumber(flightNumber);
@@ -774,9 +970,17 @@ public class FlightOperationModule {
                 Logger.getLogger(FlightPlanningModule.class
                         .getName()).log(Level.SEVERE, null, ex);
             }
-            System.out.printf("%20s%20s%20s\n", flight.getFlightNumber(), flight.getFlightRoute(), flight.getAircraftConfiguration().getName());
-            if (flight.getComplementary() != null) {
-                System.out.printf("%20s%20s%20s\n", flight.getComplementary().getFlightNumber(), flight.getComplementary().getFlightRoute(), flight.getComplementary().getAircraftConfiguration().getName());
+            System.out.printf("%20s%20s%20s%20s\n", flight.getFlightNumber(), flight.getFlightRoute().getOrigin().getName(), flight.getFlightRoute().getDestination().getName(), flight.getAircraftConfiguration().getName());
+            if (flight.getComplementaryFlightNumber().length() > 0) {
+                Flight complementary = new Flight();
+                try {
+                    complementary = flightSessionBeanRemote.retrieveFlightByFlightNumber(flight.getComplementaryFlightNumber());
+                } catch (FlightNumberExistException ex) {
+                    System.out.println("Error getting complementary flight");
+                }
+                System.out.printf("%20s%20s%20s%20s\n", complementary.getFlightNumber(), complementary.getFlightRoute().getOrigin().getName(), complementary.getFlightRoute().getDestination().getName(), complementary.getAircraftConfiguration().getName());
+                flightNumbers.remove(flight.getComplementaryFlightNumber());
+
             }
         }
     }
@@ -791,8 +995,22 @@ public class FlightOperationModule {
 
         try {
             Flight flight = flightSessionBeanRemote.retrieveFlightByFlightNumber(flightNumber);
-            System.out.printf("%20s%20s%20s\n", "Flight Number", "Flight Route", "Aircraft Config");
-            System.out.printf("%20s%20s%20s\n", flight.getFlightNumber(), flight.getFlightRoute(), flight.getAircraftConfiguration().getName());
+            System.out.printf("%40s%40s%40s%40s\n", "Flight Number", "Origin", "Destination", "Aircraft Config");
+            System.out.printf("%40s%40s%40s%40s\n", flight.getFlightNumber(), flight.getFlightRoute().getOrigin().getName(), flight.getFlightRoute().getDestination().getName(), flight.getAircraftConfiguration().getName());
+            System.out.println("");
+            System.out.printf("%40s%40s\n", "Cabin class", "Number of seats");
+            AircraftConfiguration aircraftConfiguration = new AircraftConfiguration();
+            try {
+                aircraftConfiguration = aircraftConfigurationSessionBeanRemote.retrieveAircraftConfigurationByName(flight.getAircraftConfiguration().getName());
+            } catch (AircraftConfigurationNotFoundException ex) {
+                System.out.println("Aircraft config not found.");
+            }
+            List<CabinClassConfiguration> cabinClassConfigurations = flight.getCabinClassConfiguration();
+
+            for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
+
+                System.out.printf("%40s%40s\n", cabinClassConfiguration.getCabinClass(), cabinClassConfiguration.getMaxCabinSeatCapacity());
+            }
             System.out.println("------------------------");
             System.out.println("1: Update flight");
             System.out.println("2: Delete flight");
@@ -817,7 +1035,7 @@ public class FlightOperationModule {
         String flightNumber = flight.getFlightNumber();
 
         System.out.println("*** FRS :: Flight Operation Module :: View Flight Details :: Delete Flight***\n");
-        System.out.printf("Confirm Delete Flight %s %s (Flight Id: %d) (Enter 'Y' to Delete)> ", flight.getFlightNumber(), flight.getFlightRoute().getOD(), flight.getFlightId());
+        System.out.printf("Confirm Delete Flight %s %s %s (Flight Id: %d) (Enter 'Y' to Delete)> ", flight.getFlightNumber(), flight.getFlightRoute().getOrigin(), flight.getFlightRoute().getDestination(), flight.getFlightId());
         input = scanner.nextLine().trim();
 
         if (input.equals("Y")) {
@@ -837,7 +1055,6 @@ public class FlightOperationModule {
     private void doUpdateFlight(Flight flight) {
         Scanner scanner = new Scanner(System.in);
         String input;
-
         System.out.println("*** FRS :: Flight Operation Module :: View Flight Details :: Update Flight ***\n");
         System.out.print("Enter new Flight Number (blank if no change)> ");
         input = scanner.nextLine().trim();
@@ -845,25 +1062,17 @@ public class FlightOperationModule {
             flight.setFlightNumber(input);
         }
 
-        System.out.print("Enter new Flight Route OD pair (blank if no change)> ");
-        input = scanner.nextLine().trim();
-        if (input.length() > 0) {
-            FlightRoute flightRoute = flight.getFlightRoute();
-            flightRoute.getFlights().remove(flight);
-            try {
-                flightRoute = flightRouteSessionBeanRemote.retrieveFlightRouteByOD(input);
-            } catch (FlightRouteDoesNotExistException ex) {
-                Logger.getLogger(FlightOperationModule.class
-                        .getName()).log(Level.SEVERE, null, ex);
-            }
-
-            flight.setFlightRoute(flightRoute);
-            flightRoute.getFlights().add(flight);
-        }
         System.out.print("Enter name of new Aircraft Configuration (blank if no change)> ");
         input = scanner.nextLine().trim();
+        String aircraftConfigName = flight.getAircraftConfiguration().getName();
+
         if (input.length() > 0) {
-            AircraftConfiguration aircraftConfiguration = flight.getAircraftConfiguration();
+            AircraftConfiguration aircraftConfiguration = new AircraftConfiguration();
+            try {
+                aircraftConfiguration = aircraftConfigurationSessionBeanRemote.retrieveAircraftConfigurationByName(aircraftConfigName);
+            } catch (AircraftConfigurationNotFoundException ex) {
+                System.out.println("Original aircraft configuration not found");
+            }
             aircraftConfiguration.getFlights().remove(flight);
             try {
                 aircraftConfiguration = aircraftConfigurationSessionBeanRemote.retrieveAircraftConfigurationByName(input);

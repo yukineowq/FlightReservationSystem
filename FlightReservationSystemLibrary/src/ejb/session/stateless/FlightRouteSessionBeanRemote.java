@@ -5,6 +5,7 @@
  */
 package ejb.session.stateless;
 
+import entity.Airport;
 import entity.FlightRoute;
 import java.util.List;
 import javax.ejb.Remote;
@@ -22,6 +23,6 @@ public interface FlightRouteSessionBeanRemote {
      public Long createNewFlightRoute(FlightRoute newFlightRoute, String originAirportCode, String destinationAirportCode) throws FlightRouteNotFoundException, UnknownPersistenceException, AirportNotFoundException;
     FlightRoute retrieveFlightRouteByFlightRouteId(Long flightRouteId, Boolean fetchFlight, Boolean fetchAirport) throws FlightRouteNotFoundException;
     List<FlightRoute> retrieveAllFlightRoutes();
-    void deleteFlightRoute(String OD) throws FlightRouteDoesNotExistException;
-    FlightRoute retrieveFlightRouteByOD(String OD) throws FlightRouteDoesNotExistException;
+    void deleteFlightRoute(Airport origin, Airport destination) throws FlightRouteDoesNotExistException;
+    FlightRoute retrieveFlightRouteByOD(Airport origin, Airport destination) throws FlightRouteDoesNotExistException;
 }

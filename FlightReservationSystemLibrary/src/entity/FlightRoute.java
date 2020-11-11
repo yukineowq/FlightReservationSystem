@@ -8,6 +8,7 @@ package entity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -32,39 +33,34 @@ public class FlightRoute implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightRouteId;
-    @Column(nullable = false, unique = true, length = 10)
-    private String OD;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 64)
     private StatusEnum status;
             
-    @OneToMany(mappedBy = "flightRoute")
+    @OneToMany(mappedBy = "flightRoute", cascade = CascadeType.PERSIST)
     private List<Flight> flights;
     
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Airport origin;
     
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Airport destination;
     
-    @OneToOne(optional = true)
-    @JoinColumn(nullable = false)
-    private FlightRoute complementary;
+
+    private boolean complementary;
     
     public FlightRoute() {
         flights = new ArrayList<>();
+        this.status = StatusEnum.ENABLED;
     }
 
-    public FlightRoute(Airport origin, Airport destination) {
-        this();
+    public FlightRoute(Airport origin, Airport destination, boolean complementary) {
+        this();        
         this.origin = origin;
-        this.destination = destination;
-        String o = origin.getAirportCode();
-        String d = destination.getAirportCode();
-        this.OD = o + "-" + d;
-        this.status = StatusEnum.ENABLED;
+        this.destination = destination; 
+        this.complementary = complementary;
     }
     
     public Long getFlightRouteId() {
@@ -124,14 +120,6 @@ public class FlightRoute implements Serializable {
         this.status = status;
     }
 
-    public String getOD() {
-        return OD;
-    } 
-    
-    public void setOD(String OD) {
-        this.OD = OD;
-    }
-
     public List<Flight> getFlights() {
         return flights;
     }
@@ -140,11 +128,11 @@ public class FlightRoute implements Serializable {
         this.flights = flights;
     }
 
-    public FlightRoute getComplementary() {
+    public boolean getComplementary() {
         return complementary;
     }
 
-    public void setComplementary(FlightRoute complementary) {
+    public void setComplementary(boolean complementary) {
         this.complementary = complementary;
     }
     

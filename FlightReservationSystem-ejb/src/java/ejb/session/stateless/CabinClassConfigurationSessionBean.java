@@ -7,10 +7,13 @@ package ejb.session.stateless;
 
 import entity.AircraftConfiguration;
 import entity.CabinClassConfiguration;
+import entity.Flight;
+import java.util.List;
 import java.util.Set;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -51,6 +54,34 @@ public class CabinClassConfigurationSessionBean implements CabinClassConfigurati
         } else {
             throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
         }
+    }
+
+    @Override
+    public List<CabinClassConfiguration> retrieveCabinClassConfigurationsByFlight(String flightNumber) {
+        Query query = entityManager.createQuery("SELECT mg FROM CabinClassConfiguration mg WHERE mg.flights.flightNumber = :inFlightNumber");
+        query.setParameter("inFlightNumber", flightNumber);
+        List<CabinClassConfiguration> cabinClassConfigurations = query.getResultList();
+        for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
+            cabinClassConfiguration.getFares().size();
+            cabinClassConfiguration.getFlights().size();
+            cabinClassConfiguration.getAircraftConfiguration();
+        }
+        cabinClassConfigurations.size();
+        return cabinClassConfigurations;
+    }
+
+    @Override
+    public List<CabinClassConfiguration> retrieveCabinClassConfigurationsByAircraftConfiguration(String airConfigName) {
+        Query query = entityManager.createQuery("SELECT mg FROM CabinClassConfiguration mg WHERE mg.aircraftConfiguration.name = :inAirConfigName");
+        query.setParameter("inAirConfigName", airConfigName);
+        List<CabinClassConfiguration> cabinClassConfigurations = query.getResultList();
+
+        for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
+            cabinClassConfiguration.getFares().size();
+            cabinClassConfiguration.getFlights().size();
+        }
+        cabinClassConfigurations.size();
+        return cabinClassConfigurations;
     }
 
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<CabinClassConfiguration>> constraintViolations) {

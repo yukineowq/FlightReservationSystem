@@ -7,9 +7,11 @@ package entity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,6 +21,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -34,27 +38,31 @@ public class FlightSchedule implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightScheduleId;
+
     @Column(nullable = false)
-    @NotNull
-    @Future
-    private Date departureDate;
+    private Calendar departureTime;
+
     @Column(nullable = false)
-    private GregorianCalendar departureTime;
-    private Date arrivalDate;
-    private GregorianCalendar arrivalTime;
+    private Calendar arrivalTime;
+    
     @Column(nullable = false)
     @NotNull
     @Min(0)
-    private int estimatedFlightDuration;
+    private int estimatedFlightHour;
+    @Column(nullable = false)
+    @NotNull
+    @Min(0)
+    private int estimatedFlightMinute;
+    
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private FlightSchedulePlan flightSchedulePlan;
     
-    @OneToMany(mappedBy = "flightSchedule")
+    @OneToMany(mappedBy = "flightSchedule", cascade = CascadeType.PERSIST)
     private List<FlightReservation> flightReservations;
     
-    @OneToMany(mappedBy = "flightSchedule")
+    @OneToMany(mappedBy = "flightSchedule", cascade = CascadeType.PERSIST)
     private List<SeatInventory> seatInventories;
 
     
@@ -63,10 +71,11 @@ public class FlightSchedule implements Serializable {
         seatInventories = new ArrayList<>();
     }
 
-    public FlightSchedule(Date departureDate, GregorianCalendar departureTime, int estimatedFlightDuration) {
-        this.departureDate = departureDate;
+    public FlightSchedule(GregorianCalendar departureTime, int estimatedHour, int estimatedMins) {
+        this();
         this.departureTime = departureTime;
-        this.estimatedFlightDuration = estimatedFlightDuration;
+        this.estimatedFlightHour = estimatedHour;
+        this.estimatedFlightMinute = estimatedMins;
     }
     
     public Long getFlightScheduleId() {
@@ -102,16 +111,12 @@ public class FlightSchedule implements Serializable {
         return "entity.FlightSchedule[ id=" + flightScheduleId + " ]";
     }
 
-    public Date getDepartureDate() {
-        return departureDate;
-    }
 
-
-    public GregorianCalendar getDepartureTime() {
+    public Calendar getDepartureTime() {
         return departureTime;
     }
 
-    public void setDepartureTime(GregorianCalendar departureTime) {
+    public void setDepartureTime(Calendar departureTime) {
         this.departureTime = departureTime;
     }
 
@@ -123,13 +128,7 @@ public class FlightSchedule implements Serializable {
         this.flightSchedulePlan = flightSchedulePlan;
     }
 
-    public int getEstimatedFlightDuration() {
-        return estimatedFlightDuration;
-    }
-
-    public void setEstimatedFlightDuration(int estimatedFlightDuration) {
-        this.setEstimatedFlightDuration(estimatedFlightDuration);
-    }
+    
     
     public List<FlightReservation> getFlightReservations() {
         return flightReservations;
@@ -139,23 +138,12 @@ public class FlightSchedule implements Serializable {
         this.flightReservations = flightReservations;
     }
 
-    public void setDepartureDate(Date departureDate) {
-        this.departureDate = departureDate;
-    }
 
-    public Date getArrivalDate() {
-        return arrivalDate;
-    }
-
-    public void setArrivalDate(Date arrivalDate) {
-        this.arrivalDate = arrivalDate;
-    }
-
-    public GregorianCalendar getArrivalTime() {
+    public Calendar getArrivalTime() {
         return arrivalTime;
     }
 
-    public void setArrivalTime(GregorianCalendar arrivalTime) {
+    public void setArrivalTime(Calendar arrivalTime) {
         this.arrivalTime = arrivalTime;
     }
 
@@ -165,6 +153,22 @@ public class FlightSchedule implements Serializable {
 
     public void setSeatInventories(List<SeatInventory> seatInventories) {
         this.seatInventories = seatInventories;
+    }
+
+    public int getEstimatedFlightHour() {
+        return estimatedFlightHour;
+    }
+
+    public void setEstimatedFlightHour(int estimatedFlightHour) {
+        this.estimatedFlightHour = estimatedFlightHour;
+    }
+
+    public int getEstimatedFlightMinute() {
+        return estimatedFlightMinute;
+    }
+
+    public void setEstimatedFlightMinute(int estimatedFlightMinute) {
+        this.estimatedFlightMinute = estimatedFlightMinute;
     }
 
 

@@ -9,6 +9,7 @@ import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -61,26 +62,28 @@ public class FlightSchedulePlan implements Serializable {
     @JoinColumn(nullable = false)
     private Flight flight;
     
-    @OneToMany(mappedBy = "flightSchedulePlan")
+    @OneToMany(mappedBy = "flightSchedulePlan", cascade = CascadeType.PERSIST)
     private List<FlightSchedule> flightSchedules;
     
-    @OneToMany(mappedBy = "flightSchedulePlan")
+    @OneToMany(mappedBy = "flightSchedulePlan", cascade = CascadeType.PERSIST)
     private List<Fare> fares;
 
-    @OneToOne(optional = true)
-    @JoinColumn(nullable = false)
-    private FlightSchedulePlan complementary;
+    @Column(nullable = false, length = 64)
+    private long complementaryID;
     
     public FlightSchedulePlan() {
         flightSchedules = new ArrayList<>();
         fares = new ArrayList<>();
+        this.complementaryRFSP = false;
+        this.status = StatusEnum.ENABLED;
+        this.complementaryID = -1L;
     }
 
-    public FlightSchedulePlan(Boolean complementaryRFSP, ScheduleTypeEnum scheduleType) {
+    public FlightSchedulePlan(ScheduleTypeEnum scheduleType) {
         this();
-        this.complementaryRFSP = complementaryRFSP;
+        
         this.scheduleType = scheduleType;
-        this.status = StatusEnum.ENABLED;
+        
     }
     
     public Long getFlightSchedulePlanId() {
@@ -164,12 +167,14 @@ public class FlightSchedulePlan implements Serializable {
         this.status = status;
     }
 
-    public FlightSchedulePlan getComplementary() {
-        return complementary;
+    public long getComplementaryID() {
+        return complementaryID;
     }
 
-    public void setComplementary(FlightSchedulePlan complementary) {
-        this.complementary = complementary;
+    public void setComplementaryID(long complementaryID) {
+        this.complementaryID = complementaryID;
     }
+
+    
     
 }

@@ -44,15 +44,11 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
     }
 
     @Override
-    public Long createNewFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId) throws InputDataValidationException {
+    public Long createNewFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan) throws InputDataValidationException {
         Set<ConstraintViolation<FlightSchedulePlan>> constraintViolations = validator.validate(newFlightSchedulePlan);
 
         if (constraintViolations.isEmpty()) {
-            Flight flight = entityManager.find(Flight.class, flightId);
-            if (flight != null) {
-                flight.getFlightSchedulePlan().add(newFlightSchedulePlan);
-                newFlightSchedulePlan.setFlight(flight);
-            }
+
             entityManager.persist(newFlightSchedulePlan);
             entityManager.flush();
 

@@ -8,6 +8,8 @@ package entity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import static javax.persistence.CascadeType.PERSIST;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -16,11 +18,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import org.omg.CORBA.PERSIST_STORE;
 import util.enumeration.StatusEnum;
 
 /**
@@ -42,24 +46,29 @@ public class Flight implements Serializable {
     @Column(nullable = false, length = 64)
     private StatusEnum status;
     
-    @OneToMany(mappedBy = "flight")
+    @OneToMany(mappedBy = "flight", cascade = CascadeType.PERSIST)
     private List<FlightSchedulePlan> flightSchedulePlan; 
     
     @ManyToOne(optional = true)
     @JoinColumn(nullable = false)
     private FlightRoute flightRoute;
     
+    @ManyToMany
+    @JoinColumn(nullable = false)
+    private List<CabinClassConfiguration> cabinClassConfiguration;
+    
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private AircraftConfiguration aircraftConfiguration;
     
-    @OneToOne(optional = true)
-    @JoinColumn(nullable = false)
-    private Flight complementary;
+    @Column(nullable = false, length = 64)
+    private String complementaryFlightNumber;
 
     public Flight() {
         flightSchedulePlan = new ArrayList<>();
+        cabinClassConfiguration = new ArrayList<>();
         this.status = StatusEnum.ENABLED;
+        this.complementaryFlightNumber = "";
     }
 
     public Flight(String flightNumber) {
@@ -140,12 +149,23 @@ public class Flight implements Serializable {
         this.flightRoute = flightRoute;
     }
 
-    public Flight getComplementary() {
-        return complementary;
+    public String getComplementaryFlightNumber() {
+        return complementaryFlightNumber;
     }
 
-    public void setComplementary(Flight complementary) {
-        this.complementary = complementary;
+    public void setComplementaryFlightNumber(String complementaryFlightNumber) {
+        this.complementaryFlightNumber = complementaryFlightNumber;
     }
+
+    public List<CabinClassConfiguration> getCabinClassConfiguration() {
+        return cabinClassConfiguration;
+    }
+
+    public void setCabinClassConfiguration(List<CabinClassConfiguration> cabinClassConfiguration) {
+        this.cabinClassConfiguration = cabinClassConfiguration;
+    }
+
+
+    
     
 }

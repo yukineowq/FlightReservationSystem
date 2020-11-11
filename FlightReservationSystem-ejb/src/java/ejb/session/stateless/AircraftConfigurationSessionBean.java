@@ -98,6 +98,10 @@ public class AircraftConfigurationSessionBean implements AircraftConfigurationSe
             AircraftConfiguration aircraftConfiguration = (AircraftConfiguration) query.getSingleResult();
             aircraftConfiguration.getFlights().size();
             aircraftConfiguration.getCabinClassConfigurations().size();
+            List<CabinClassConfiguration> cabinClassConfigurations = aircraftConfiguration.getCabinClassConfigurations();
+            for(CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
+                cabinClassConfiguration.getFares().size();
+            }
             return aircraftConfiguration;
         } catch (NoResultException | NonUniqueResultException ex) {
             throw new AircraftConfigurationNotFoundException("Aircraft Configuration name:" + name + " does not exist!");

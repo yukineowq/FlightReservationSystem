@@ -6,6 +6,8 @@
 package ejb.session.stateless;
 
 import entity.AircraftConfiguration;
+import entity.Airport;
+import entity.CabinClassConfiguration;
 import entity.Flight;
 import entity.FlightRoute;
 import entity.FlightSchedulePlan;
@@ -61,29 +63,10 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
     }
 
     @Override
-    public Long createNewFlight(Flight newFlight, String aircraftConfigurationName, String flightRouteOD) throws FlightNumberExistException, UnknownPersistenceException, InputDataValidationException {
+    public Long createNewFlight(Flight newFlight) throws FlightNumberExistException, UnknownPersistenceException, InputDataValidationException {
         Set<ConstraintViolation<Flight>> constraintViolations = validator.validate(newFlight);
         if (constraintViolations.isEmpty()) {
-            AircraftConfiguration aircraftConfiguration = new AircraftConfiguration();
-            try {
-                aircraftConfiguration = aircraftConfigurationSessionBeanLocal.retrieveAircraftConfigurationByName(aircraftConfigurationName);
-            } catch (AircraftConfigurationNotFoundException ex) {
-                Logger.getLogger(FlightSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            if (aircraftConfiguration != null) {
-                newFlight.setAircraftConfiguration(aircraftConfiguration);
-                aircraftConfiguration.getFlights().add(newFlight);
-            }
-            FlightRoute flightRoute = new FlightRoute();
-            try {
-                flightRoute = flightRouteSessionBeanLocal.retrieveFlightRouteByOD(flightRouteOD);
-            } catch (FlightRouteDoesNotExistException ex) {
-                Logger.getLogger(FlightSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            if (flightRoute != null) {
-                newFlight.setFlightRoute(flightRoute);
-                flightRoute.getFlights().add(newFlight);
-            }
+
             try {
                 entityManager.persist(newFlight);
                 entityManager.flush();
@@ -117,8 +100,14 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         query.setParameter("inFlightNumber", flightNumber);
 
         try {
-            Flight flight = (Flight) query.getResultList();
+            Flight flight = (Flight) query.getSingleResult();
+            flight.getAircraftConfiguration().getCabinClassConfigurations().size();
             flight.getFlightSchedulePlan().size();
+            List<CabinClassConfiguration> cabinClassConfigurations = flight.getCabinClassConfiguration();
+            cabinClassConfigurations.size();
+            for(CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
+                cabinClassConfiguration.getFares().size();
+            }
             return flight;
         } catch (NoResultException | NonUniqueResultException ex) {
             throw new FlightNumberExistException("Flight number:" + flightNumber + " does not exist!");
@@ -134,22 +123,17 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
             if (constraintViolations.isEmpty()) {
                 Flight flightToUpdate = new Flight();
 
-                    flightToUpdate = entityManager.find(Flight.class, flight.getFlightId());
+                flightToUpdate = entityManager.find(Flight.class, flight.getFlightId());
 
-
-                if (flightToUpdate.getFlightNumber().equals(flight.getFlightNumber())) {
-                    flightToUpdate.setFlightNumber(flight.getFlightNumber());
-                    flightToUpdate.setAircraftConfiguration(flight.getAircraftConfiguration());
-                    flightToUpdate.setStatus(flight.getStatus());
-                    flightToUpdate.setFlightSchedulePlan(flight.getFlightSchedulePlan());
-                    flightToUpdate.setFlightRoute(flight.getFlightRoute());
-                    if (flight.getComplementary() != null) {
-                        flightToUpdate.setComplementary(flight.getComplementary());
-                    }
-
-                } else {
-                    throw new UpdateFlightException("Flight number does not match retrieved flight.");
+                flightToUpdate.setFlightNumber(flight.getFlightNumber());
+                flightToUpdate.setAircraftConfiguration(flight.getAircraftConfiguration());
+                flightToUpdate.setStatus(flight.getStatus());
+                flightToUpdate.setFlightSchedulePlan(flight.getFlightSchedulePlan());
+                flightToUpdate.setFlightRoute(flight.getFlightRoute());
+                if (flight.getComplementaryFlightNumber().length() > 0) {
+                    flightToUpdate.setComplementaryFlightNumber(flight.getComplementaryFlightNumber());
                 }
+
             } else {
                 throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
             }
@@ -162,9 +146,7 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
     public void deleteFlight(String flightNumber) throws FlightNumberExistException, FlightDeleteException {
         Flight flight = retrieveFlightByFlightNumber(flightNumber);
         List<FlightSchedulePlan> flightSchedulePlan = flight.getFlightSchedulePlan();
-        FlightRoute flightRoute = flight.getFlightRoute();
-        AircraftConfiguration aircraftConfiguration = flight.getAircraftConfiguration();
-        if (flightSchedulePlan.isEmpty() && flightRoute == null && aircraftConfiguration == null) {
+        if (flightSchedulePlan.isEmpty()) {
             entityManager.remove(flight);
         } else {
             flight.setStatus(StatusEnum.DISABLED);

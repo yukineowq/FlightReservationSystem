@@ -20,7 +20,7 @@ import util.exception.InputDataValidationException;
  */
 @Local
 public interface FlightSchedulePlanSessionBeanLocal {
-    Long createNewFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId) throws InputDataValidationException; 
+    Long createNewFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan) throws InputDataValidationException; 
     List<FlightSchedulePlan> viewAllFlightSchedulePlans();
     FlightSchedulePlan viewFlightSchedulePlanDetails(Long flightSchedulePlanId) throws FlightSchedulePlanDoesNotExistException;
     void updateFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) throws FlightSchedulePlanDoesNotExistException, FlightScheduleContainsReservationException, InputDataValidationException;

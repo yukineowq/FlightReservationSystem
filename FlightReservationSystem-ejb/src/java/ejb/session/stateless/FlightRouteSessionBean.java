@@ -57,7 +57,6 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
         try {
             entityManager.persist(newFlightRoute);
             entityManager.flush();
-            newFlightRoute.setStatus(StatusEnum.ENABLED);
 
             return newFlightRoute.getFlightRouteId();
         } catch (PersistenceException ex) {
@@ -98,23 +97,24 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
     }
 
     @Override
-    public FlightRoute retrieveFlightRouteByOD(String OD) throws FlightRouteDoesNotExistException {
-        Query query = entityManager.createQuery("SELECT fr FROM FlightRoute fr WHERE fr.OD = :inOD");
-        query.setParameter("inOD", OD);
+    public FlightRoute retrieveFlightRouteByOD(Airport origin, Airport destination) throws FlightRouteDoesNotExistException {
+        Query query = entityManager.createQuery("SELECT fr FROM FlightRoute fr WHERE fr.origin = :inOrigin AND fr.destination = :inDestination");
+        query.setParameter("inOrigin", origin);
+        query.setParameter("inDestination", destination);
 
         try {
             FlightRoute flightRoute = (FlightRoute) query.getSingleResult();
             flightRoute.getFlights().size();
             return  flightRoute;
         } catch (NoResultException | NonUniqueResultException ex) {
-            throw new FlightRouteDoesNotExistException("Flight route  " + OD + " does not exist!");
+            throw new FlightRouteDoesNotExistException("Flight route  " + origin + "  to " + destination+ " does not exist!");
         }
     }
     
-    public void deleteFlightRoute(String OD) throws FlightRouteDoesNotExistException {
-        FlightRoute flightRoute = retrieveFlightRouteByOD(OD);
+    public void deleteFlightRoute(Airport origin, Airport destination) throws FlightRouteDoesNotExistException {
+        FlightRoute flightRoute = retrieveFlightRouteByOD(origin, destination);
         List<Flight> flights = flightRoute.getFlights();
-        if (!flights.isEmpty()) {
+        if (flights.isEmpty()) {
             entityManager.remove(flightRoute);
         } else {
             System.out.println("Flight route is currently in use. Flight route set to disabled instead.");

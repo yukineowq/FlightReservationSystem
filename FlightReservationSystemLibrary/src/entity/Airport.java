@@ -10,12 +10,14 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import util.exception.EntityInstanceExistsInCollectionException;
@@ -52,19 +54,18 @@ public class Airport implements Serializable {
     @NotNull
     @Size(max = 64)
     private String country;
-    @Column(nullable = false, length = 6)
-    private GregorianCalendar gregorianCalendar;
+
     @Column(nullable = false, length = 64)
     @NotNull
-    @Size(min = 9, max = 9)
-    private String GMT;
+    @Min(0)
+    private int GMT;
 
     
     //List of flight routes with this airport as the destination
-    @OneToMany(mappedBy = "destination")
+    @OneToMany(mappedBy = "destination", cascade = CascadeType.PERSIST)
     private List<FlightRoute> flightRouteDestinations;
     
-    @OneToMany(mappedBy = "origin")
+    @OneToMany(mappedBy = "origin", cascade = CascadeType.PERSIST)
     private List<FlightRoute> flightRouteOrigins;
     
     public Airport() {
@@ -72,14 +73,13 @@ public class Airport implements Serializable {
         flightRouteOrigins = new ArrayList<>();
     }
 
-    public Airport(String name, String airportCode, String city, String state, String country, String GMT) {
+    public Airport(String name, String airportCode, String city, String state, String country, int GMT) {
         this.name = name;
         this.airportCode = airportCode;
         this.city = city;
         this.state = state;
         this.country = country;
         this.GMT = GMT;
-        this.gregorianCalendar = new GregorianCalendar(TimeZone.getTimeZone(GMT));
     }
 
     
@@ -158,21 +158,12 @@ public class Airport implements Serializable {
         this.country = country;
     }
 
-    public String getGMT() {
+    public int getGMT() {
         return GMT;
     }
 
-    public void setGMT(String GMT) {
+    public void setGMT(int GMT) {
         this.GMT = GMT;
-        this.setGregorianCalendar(new GregorianCalendar(TimeZone.getTimeZone(GMT)));
-    }
-
-    public GregorianCalendar getGregorianCalendar() {
-        return gregorianCalendar;
-    }
-
-    public void setGregorianCalendar(GregorianCalendar gregorianCalendar) {
-        this.gregorianCalendar = gregorianCalendar;
     }
 
     public List<FlightRoute> getFlightRouteDestinations() {
