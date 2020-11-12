@@ -24,7 +24,7 @@ import util.enumeration.CabinClassEnum;
 
 /**
  *
- * @author Yuki
+ * @author Yuki Neo Wei Qian
  */
 @Entity
 public class Fare implements Serializable {

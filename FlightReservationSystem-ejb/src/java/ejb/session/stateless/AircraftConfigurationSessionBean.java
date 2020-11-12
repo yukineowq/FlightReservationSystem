@@ -30,7 +30,7 @@ import util.exception.UnknownPersistenceException;
 
 /**
  *
- * @author reuben
+ * @author Reuben Ang Wen Zheng
  */
 @Stateless
 public class AircraftConfigurationSessionBean implements AircraftConfigurationSessionBeanRemote, AircraftConfigurationSessionBeanLocal {

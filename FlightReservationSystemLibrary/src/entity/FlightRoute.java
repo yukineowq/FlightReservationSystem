@@ -24,7 +24,7 @@ import util.enumeration.StatusEnum;
 
 /**
  *
- * @author Reuben
+ * @author Yuki Neo Wei Qian
  */
 @Entity
 public class FlightRoute implements Serializable {

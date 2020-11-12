@@ -8,6 +8,7 @@ package entity;
 import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -28,7 +29,7 @@ import util.enumeration.StatusEnum;
 
 /**
  *
- * @author Reuben
+ * @author Yuki Neo Wei Qian
  */
 @Entity
 public class FlightSchedulePlan implements Serializable {
@@ -57,6 +58,9 @@ public class FlightSchedulePlan implements Serializable {
     @Column(nullable = false, length = 64)
     @NotNull
     private ScheduleTypeEnum scheduleType;
+    
+    @Column(nullable = false)
+    private String firstDepartureDate;
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
@@ -173,6 +177,14 @@ public class FlightSchedulePlan implements Serializable {
 
     public void setComplementaryID(long complementaryID) {
         this.complementaryID = complementaryID;
+    }
+
+    public String getFirstDepartureDate() {
+        return firstDepartureDate;
+    }
+
+    public void setFirstDepartureDate(String firstDepartureDate) {
+        this.firstDepartureDate = firstDepartureDate;
     }
 
     

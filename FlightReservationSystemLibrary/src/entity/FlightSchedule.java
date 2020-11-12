@@ -29,7 +29,7 @@ import javax.validation.constraints.NotNull;
 
 /**
  *
- * @author Reuben
+ * @author Yuki Neo Wei Qian
  */
 @Entity
 public class FlightSchedule implements Serializable {

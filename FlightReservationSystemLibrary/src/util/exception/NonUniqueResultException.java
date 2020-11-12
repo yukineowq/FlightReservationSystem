@@ -7,7 +7,7 @@ package util.exception;
 
 /**
  *
- * @author reuben
+ * @author Reuben Ang Wen Zheng
  */
 public class NonUniqueResultException extends Exception {
 

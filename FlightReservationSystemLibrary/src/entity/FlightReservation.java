@@ -19,7 +19,7 @@ import javax.validation.constraints.Size;
 
 /**
  *
- * @author Yuki
+ * @author Yuki Neo Wei Qian
  */
 @Entity
 public class FlightReservation implements Serializable {

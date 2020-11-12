@@ -16,7 +16,7 @@ import util.exception.UnknownPersistenceException;
 
 /**
  *
- * @author Yuki
+ * @author Reuben Ang Wen Zheng
  */
 @Local
 public interface FlightReservationSessionBeanLocal {

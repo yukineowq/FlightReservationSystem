@@ -21,7 +21,7 @@ import javax.ejb.EJB;
 
 /**
  *
- * @author reuben
+ * @author Reuben Ang Wen Zheng
  */
 public class Main
 {

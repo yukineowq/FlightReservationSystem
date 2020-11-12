@@ -40,7 +40,7 @@ import util.exception.FlightDeleteException;
 
 /**
  *
- * @author Reuben
+ * @author Reuben Ang Wen Zheng
  */
 @Stateless
 public class FlightSessionBean implements FlightSessionBeanRemote, FlightSessionBeanLocal {
@@ -102,7 +102,11 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         try {
             Flight flight = (Flight) query.getSingleResult();
             flight.getAircraftConfiguration().getCabinClassConfigurations().size();
-            flight.getFlightSchedulePlan().size();
+            List<FlightSchedulePlan> flightSchedulePlans = flight.getFlightSchedulePlan();
+            flightSchedulePlans.size();
+            for(FlightSchedulePlan flightSchedulePlan : flightSchedulePlans) {
+                flightSchedulePlan.getFlightSchedules().size();
+            }
             List<CabinClassConfiguration> cabinClassConfigurations = flight.getCabinClassConfiguration();
             cabinClassConfigurations.size();
             for(CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {

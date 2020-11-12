@@ -14,7 +14,7 @@ import util.exception.InvalidLoginCredentialException;
 
 /**
  *
- * @author reuben
+ * @author Reuben Ang Wen Zheng
  */
 @Remote
 public interface EmployeeSessionBeanRemote {

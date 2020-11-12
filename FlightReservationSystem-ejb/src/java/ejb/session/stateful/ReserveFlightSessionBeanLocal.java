@@ -9,7 +9,7 @@ import javax.ejb.Local;
 
 /**
  *
- * @author reuben
+ * @author Reuben Ang Wen Zheng
  */
 @Local
 public interface ReserveFlightSessionBeanLocal {

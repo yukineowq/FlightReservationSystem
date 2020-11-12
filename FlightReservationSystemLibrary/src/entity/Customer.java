@@ -20,7 +20,7 @@ import javax.validation.constraints.Size;
 
 /**
  *
- * @author reuben
+ * @author Reuben Ang Wen Zheng
  */
 @Entity
 public class Customer implements Serializable {
@@ -60,6 +60,10 @@ public class Customer implements Serializable {
     
     @OneToMany(mappedBy = "customer", cascade = CascadeType.PERSIST)
     private List<FlightReservation> flightReservations;
+    
+    public Customer() {
+        flightReservations = new ArrayList<>();
+    }
 
     public Customer(String firstName, String lastName, String email, String mobileNumber, String address, String userName, String password, List<FlightReservation> flightReservations) {
         this.firstName = firstName;
@@ -70,10 +74,6 @@ public class Customer implements Serializable {
         this.userName = userName;
         this.password = password;
         this.flightReservations = flightReservations;
-    }
-
-    public Customer() {
-        flightReservations = new ArrayList<>();
     }
 
     public Long getCustomerId() {

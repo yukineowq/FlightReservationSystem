@@ -15,7 +15,7 @@ import util.exception.InputDataValidationException;
 
 /**
  *
- * @author Yuki
+ * @author Yuki Neo Wei Qian
  */
 @Remote
 public interface FlightSchedulePlanSessionBeanRemote {
@@ -24,4 +24,5 @@ public interface FlightSchedulePlanSessionBeanRemote {
     FlightSchedulePlan viewFlightSchedulePlanDetails(Long flightSchedulePlanId) throws FlightSchedulePlanDoesNotExistException;
     void updateFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) throws FlightSchedulePlanDoesNotExistException, FlightScheduleContainsReservationException, InputDataValidationException;
     void deleteFlightSchedulePlan(Long flightSchedulePlanId) throws FlightSchedulePlanDoesNotExistException, FlightSchedulePlanDeleteException;    
+    FlightSchedulePlan retrieveFlightSchedulePlanById(Long fspId);
 }

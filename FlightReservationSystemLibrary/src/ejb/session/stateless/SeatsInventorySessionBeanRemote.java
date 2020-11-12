@@ -11,7 +11,7 @@ import javax.ejb.Remote;
 
 /**
  *
- * @author Reuben
+ * @author Reuben Ang Wen Zheng
  */
 @Remote
 public interface SeatsInventorySessionBeanRemote {

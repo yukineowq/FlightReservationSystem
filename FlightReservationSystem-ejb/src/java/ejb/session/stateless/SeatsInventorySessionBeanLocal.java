@@ -11,7 +11,7 @@ import javax.ejb.Local;
 
 /**
  *
- * @author Reuben
+ * @author Reuben Ang Wen Zheng
  */
 @Local
 public interface SeatsInventorySessionBeanLocal {

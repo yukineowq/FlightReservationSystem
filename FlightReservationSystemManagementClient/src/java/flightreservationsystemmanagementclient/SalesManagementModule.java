@@ -27,7 +27,7 @@ import util.exception.InvalidAccessRightException;
 
 /**
  *
- * @author reuben
+ * @author Reuben Ang Wen Zheng
  */
 public class SalesManagementModule {
 

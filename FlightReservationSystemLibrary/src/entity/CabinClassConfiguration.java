@@ -32,7 +32,7 @@ import util.exception.EntityInstanceMissingInCollectionException;
 
 /**
  *
- * @author reuben
+ * @author Reuben Ang Wen Zheng
  */
 @Entity
 public class CabinClassConfiguration implements Serializable {

@@ -30,7 +30,7 @@ import util.exception.UnknownPersistenceException;
 
 /**
  *
- * @author Yuki
+ * @author Reuben Ang Wen Zheng
  */
 @Stateless
 public class FlightReservationSessionBean implements FlightReservationSessionBeanRemote, FlightReservationSessionBeanLocal {
@@ -45,6 +45,7 @@ public class FlightReservationSessionBean implements FlightReservationSessionBea
         validator = validatorFactory.getValidator();
     }
 
+    @Override
     public Long createNewFlightReservation(FlightReservation newFlightReservation, Long flightScheduleId) throws FlightReservationNotFoundException, UnknownPersistenceException, InputDataValidationException {
         Set<ConstraintViolation<FlightReservation>> constraintViolations = validator.validate(newFlightReservation);
         if (constraintViolations.isEmpty()) {
@@ -74,6 +75,7 @@ public class FlightReservationSessionBean implements FlightReservationSessionBea
         }
     }
 
+    @Override
     public FlightReservation retrieveFlightReservationBySeatNumber(String seatNumber) throws SeatNumberNotFoundException {
         Query query = entityManager.createQuery("SELECT r FROM FlightReservation r WHERE r.seatNumber = :inSeatNumber");
         query.setParameter("inSeatNumber", seatNumber);

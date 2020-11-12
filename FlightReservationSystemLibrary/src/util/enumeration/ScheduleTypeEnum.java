@@ -7,7 +7,7 @@ package util.enumeration;
 
 /**
  *
- * @author Yuki
+ * @author Yuki Neo Wei Qian
  */
 public enum ScheduleTypeEnum {
     SINGLE,

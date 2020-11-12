@@ -7,7 +7,7 @@ package util.exception;
 
 /**
  *
- * @author reuben
+ * @author Reuben Ang Wen Zheng
  */
 public class CustomerUsernameExistException extends Exception {
 

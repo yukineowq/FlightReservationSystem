@@ -7,26 +7,26 @@ package util.exception;
 
 /**
  *
- * @author Reuben Ang Wen Zheng
+ * @author reuben
  */
-public class EntityInstanceExistsInCollectionException extends Exception {
+public class AircraftTypeMaxSeatCapacityExceededException extends Exception {
 
     /**
      * Creates a new instance of
-     * <code>EntityInstanceExistsInCollectionException</code> without detail
+     * <code>AircraftTypeMaxSeatCapacityExceededException</code> without detail
      * message.
      */
-    public EntityInstanceExistsInCollectionException() {
+    public AircraftTypeMaxSeatCapacityExceededException() {
     }
 
     /**
      * Constructs an instance of
-     * <code>EntityInstanceExistsInCollectionException</code> with the specified
-     * detail message.
+     * <code>AircraftTypeMaxSeatCapacityExceededException</code> with the
+     * specified detail message.
      *
      * @param msg the detail message.
      */
-    public EntityInstanceExistsInCollectionException(String msg) {
+    public AircraftTypeMaxSeatCapacityExceededException(String msg) {
         super(msg);
     }
 }

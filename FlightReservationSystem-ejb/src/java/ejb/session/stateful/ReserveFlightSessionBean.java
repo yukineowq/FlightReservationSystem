@@ -9,7 +9,7 @@ import javax.ejb.Stateful;
 
 /**
  *
- * @author reuben
+ * @author Reuben Ang Wen Zheng
  */
 @Stateful
 public class ReserveFlightSessionBean implements ReserveFlightSessionBeanRemote, ReserveFlightSessionBeanLocal {

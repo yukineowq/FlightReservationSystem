@@ -7,7 +7,7 @@ package util.exception;
 
 /**
  *
- * @author Yuki
+ * @author Yuki Neo Wei Qian
  */
 public class FlightNumberExistException extends Exception {
 

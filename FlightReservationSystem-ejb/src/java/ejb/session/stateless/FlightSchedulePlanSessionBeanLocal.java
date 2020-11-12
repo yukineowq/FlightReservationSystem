@@ -16,7 +16,7 @@ import util.exception.InputDataValidationException;
 
 /**
  *
- * @author Yuki
+ * @author Reuben Ang Wen Zheng
  */
 @Local
 public interface FlightSchedulePlanSessionBeanLocal {
@@ -25,5 +25,5 @@ public interface FlightSchedulePlanSessionBeanLocal {
     FlightSchedulePlan viewFlightSchedulePlanDetails(Long flightSchedulePlanId) throws FlightSchedulePlanDoesNotExistException;
     void updateFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) throws FlightSchedulePlanDoesNotExistException, FlightScheduleContainsReservationException, InputDataValidationException;
     void deleteFlightSchedulePlan(Long flightSchedulePlanId) throws FlightSchedulePlanDoesNotExistException, FlightSchedulePlanDeleteException;
-    
+    FlightSchedulePlan retrieveFlightSchedulePlanById(Long fspId);
 }

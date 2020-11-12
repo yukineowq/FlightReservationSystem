@@ -27,7 +27,7 @@ import util.exception.FlightSchedulePlanDeleteException;
 
 /**
  *
- * @author Yuki
+ * @author Reuben Ang Wen Zheng
  */
 @Stateless
 public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionBeanRemote, FlightSchedulePlanSessionBeanLocal {
@@ -118,6 +118,15 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             flightSchedulePlan.setStatus(StatusEnum.DISABLED);
             throw new FlightSchedulePlanDeleteException();
         }
+    }
+
+    @Override
+    public FlightSchedulePlan retrieveFlightSchedulePlanById(Long fspId) {
+        FlightSchedulePlan flightSchedulePlan = entityManager.find(FlightSchedulePlan.class, fspId);
+
+        flightSchedulePlan.getFares().size();
+        flightSchedulePlan.getFlightSchedules().size();
+        return flightSchedulePlan;
     }
 
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<FlightSchedulePlan>> constraintViolations) {

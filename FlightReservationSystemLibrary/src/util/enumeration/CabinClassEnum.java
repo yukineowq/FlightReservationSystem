@@ -7,7 +7,7 @@ package util.enumeration;
 
 /**
  *
- * @author reuben
+ * @author Reuben Ang Wen Zheng
  */
 public enum CabinClassEnum {
     ECONOMY,

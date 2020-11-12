@@ -21,7 +21,7 @@ import util.enumeration.CabinClassEnum;
 
 /**
  *
- * @author reuben
+ * @author Reuben Ang Wen Zheng
  */
 @Entity
 public class SeatInventory implements Serializable {

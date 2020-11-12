@@ -18,7 +18,7 @@ import util.exception.UpdateFlightException;
 
 /**
  *
- * @author Yuki
+ * @author Reuben Ang Wen Zheng
  */
 @Local
 public interface FlightSessionBeanLocal {

@@ -2,6 +2,34 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/AircraftConfigurationSessionBean.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/CabinClassConfigurationSessionBean.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FlightSchedulePlanSessionBeanLocal.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/singleton/DataInitializationSessionBean.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/AirportSessionBeanLocal.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/AirportSessionBean.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FareSessionBean.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FlightReservationSessionBean.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FlightSchedulePlanSessionBean.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FlightReservationSessionBeanLocal.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/EmployeeSessionBean.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/SeatsInventorySessionBean.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FlightScheduleSessionBeanLocal.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FlightSessionBeanLocal.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/EmployeeSessionBeanLocal.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FlightSessionBean.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/SeatsInventorySessionBeanLocal.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/CustomerSessionBean.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FlightRouteSessionBeanLocal.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FlightRouteSessionBean.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/CabinClassConfigurationSessionBeanLocal.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/AircraftTypeSessionBean.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/CustomerSessionBeanLocal.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/AircraftConfigurationSessionBeanLocal.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/AircraftTypeSessionBeanLocal.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FareSessionBeanLocal.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FlightScheduleSessionBean.java</file>
+        </group>
     </open-files>
 </project-private>
