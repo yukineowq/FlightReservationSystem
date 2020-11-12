@@ -26,6 +26,7 @@ public class CustomerOperationModule {
     }
 
     public CustomerOperationModule(Customer customer, FlightSessionBeanRemote flightSessionBeanRemote, ReserveFlightSessionBeanRemote reserveFlightSessionBeanRemote, FlightReservationSessionBeanRemote flightReservationSessionBeanRemote) {
+        this();
         this.customer = customer;
         this.flightSessionBeanRemote = flightSessionBeanRemote;
         this.reserveFlightSessionBeanRemote = reserveFlightSessionBeanRemote;

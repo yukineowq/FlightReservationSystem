@@ -820,6 +820,8 @@ public class FlightOperationModule {
                 System.out.println("An error has occurred while deleting the flight: " + ex.getMessage() + "\n");
             } catch (FlightSchedulePlanDeleteException ex) {
                 System.out.println("Flight schdule plan is used, cannot be deleted, marked as disabled instead.");
+            } catch (Exception ex) {
+                System.out.println("Error occured while deleting flight schedule plan.");
             }
         } else {
             System.out.println("Flight NOT deleted!\n");
@@ -1018,6 +1020,7 @@ public class FlightOperationModule {
             System.out.println("3: Back\n");
             System.out.print("> ");
             response = scanner.nextInt();
+            scanner.nextLine();
 
             if (response == 1) {
                 doUpdateFlight(flight);

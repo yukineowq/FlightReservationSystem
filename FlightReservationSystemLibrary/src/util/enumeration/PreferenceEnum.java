@@ -7,12 +7,10 @@ package util.enumeration;
 
 /**
  *
- * @author Reuben Ang Wen Zheng
+ * @author reuben
  */
-public enum CabinClassEnum {
-    ECONOMY,
-    PREMIUMECONOMY,
-    BUSINESS,
-    FIRSTCLASS,
+public enum PreferenceEnum {
+    CONNECTING,
+    DIRECT,
     NA
 }

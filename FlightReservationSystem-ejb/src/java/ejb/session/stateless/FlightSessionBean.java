@@ -10,6 +10,7 @@ import entity.Airport;
 import entity.CabinClassConfiguration;
 import entity.Flight;
 import entity.FlightRoute;
+import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
 import java.util.List;
 import java.util.Set;
@@ -106,6 +107,11 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
             flightSchedulePlans.size();
             for(FlightSchedulePlan flightSchedulePlan : flightSchedulePlans) {
                 flightSchedulePlan.getFlightSchedules().size();
+                List<FlightSchedule> flightSchedules = flightSchedulePlan.getFlightSchedules();
+                for(FlightSchedule flightSchedule : flightSchedules) {
+                    flightSchedule.getSeatInventories().size();
+                    flightSchedule.getFlightReservations().size();
+                }
             }
             List<CabinClassConfiguration> cabinClassConfigurations = flight.getCabinClassConfiguration();
             cabinClassConfigurations.size();

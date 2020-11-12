@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -40,6 +41,11 @@ public class FlightReservation implements Serializable {
     @NotNull
     @Size(max = 64)
     private String fareBasisCode;
+    
+    @Column(nullable = false, length = 64)
+    @NotNull
+    @Min(0)
+    private double fareAmount;
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
@@ -130,6 +136,14 @@ public class FlightReservation implements Serializable {
 
     public void setCustomer(Customer customer) {
         this.customer = customer;
+    }
+
+    public double getFareAmount() {
+        return fareAmount;
+    }
+
+    public void setFareAmount(double fareAmount) {
+        this.fareAmount = fareAmount;
     }
     
 }

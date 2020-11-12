@@ -5,17 +5,25 @@
  */
 package ejb.session.stateless;
 
+import entity.Airport;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import javax.persistence.Query;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import util.enumeration.CabinClassEnum;
+import util.enumeration.PreferenceEnum;
 import util.exception.FlightReservationNotFoundException;
 import util.exception.FlightScheduleNotFoundException;
 import util.exception.InputDataValidationException;
@@ -68,6 +76,48 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
         } else {
             throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
         }
+
+    }
+
+    public List<List<FlightSchedule>> searchFlightSchedule(Airport origin, Airport destination, Date departureDate, int numPassenger, PreferenceEnum preferenceEnum, CabinClassEnum cabinClassEnum) {
+        List<List<FlightSchedule>> flightScheduleList = new ArrayList<>();
+        Query query = entityManager.createQuery("SELECT fs FROM FlightSchedule fs");
+        List<FlightSchedule> allFlightSchedules = query.getResultList();
+        List<Date> dates = new ArrayList<>();
+        dates.add(departureDate);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(departureDate);
+        Calendar cal2 = Calendar.getInstance();
+        cal2.setTime(departureDate);
+        cal.add(Calendar.DATE, -1);
+        Date dateBefore1Days = cal.getTime();
+        dates.add(dateBefore1Days);
+        cal.add(Calendar.DATE, -1);
+        Date dateBefore2Days = cal.getTime();
+        dates.add(dateBefore2Days);
+        cal.add(Calendar.DATE, -1);
+        Date dateBefore3Days = cal.getTime();
+        dates.add(dateBefore3Days);
+        cal2.add(Calendar.DATE, 1);
+        Date dateAfter1Days = cal2.getTime();
+        dates.add(dateAfter1Days);
+        cal2.add(Calendar.DATE, 1);
+        Date dateAfter2Days = cal2.getTime();
+        dates.add(dateAfter2Days);
+        cal2.add(Calendar.DATE, 1);
+        Date dateAfter3Days = cal2.getTime();
+        dates.add(dateAfter3Days);
+        if (preferenceEnum.equals(PreferenceEnum.NA)) {
+            for (Date date : dates) {
+                 query = entityManager.createQuery("SELECT f FROM Flight f");
+                List<FlightSchedule> flightSchedules = query.getResultList();
+            }
+        } else if (preferenceEnum.equals(PreferenceEnum.DIRECT)) {
+
+        } else {
+
+        }
+        return flightScheduleList;
 
     }
 

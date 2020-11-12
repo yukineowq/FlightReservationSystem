@@ -66,10 +66,10 @@ public class FlightSchedulePlan implements Serializable {
     @JoinColumn(nullable = false)
     private Flight flight;
     
-    @OneToMany(mappedBy = "flightSchedulePlan", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "flightSchedulePlan", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<FlightSchedule> flightSchedules;
     
-    @OneToMany(mappedBy = "flightSchedulePlan", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "flightSchedulePlan", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Fare> fares;
 
     @Column(nullable = false, length = 64)

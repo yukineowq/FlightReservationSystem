@@ -101,7 +101,8 @@ public class SalesManagementModule {
         for (FlightSchedulePlan flightSchedulePlan : flightSchedulePlans) {
             List<FlightSchedule> flightSchedules = flightSchedulePlan.getFlightSchedules();
             for (FlightSchedule flightSchedule : flightSchedules) {
-                System.out.println(counter + ": " + flightSchedule.getFlightScheduleId());
+                System.out.printf("%30s%30s%30s\n", "ID", "Departure time", "Arrival Time");
+                System.out.printf("%30s%30s%30s\n",counter, flightSchedule.getDepartureTime().getTime(), flightSchedule.getArrivalTime().getTime());
                 flightSchedules1.add(flightSchedule);
                 counter++;
             }
@@ -138,7 +139,8 @@ public class SalesManagementModule {
         for (FlightSchedulePlan flightSchedulePlan : flightSchedulePlans) {
             List<FlightSchedule> flightSchedules = flightSchedulePlan.getFlightSchedules();
             for (FlightSchedule flightSchedule : flightSchedules) {
-                System.out.println(counter + ": " + flightSchedule.getFlightScheduleId());
+                System.out.printf("%30s%30s%30s\n", "ID", "Departure time", "Arrival Time");
+                System.out.printf("%30s%30s%30s\n",counter, flightSchedule.getDepartureTime().getTime(), flightSchedule.getArrivalTime().getTime());
                 flightSchedules1.add(flightSchedule);
                 counter++;
             }

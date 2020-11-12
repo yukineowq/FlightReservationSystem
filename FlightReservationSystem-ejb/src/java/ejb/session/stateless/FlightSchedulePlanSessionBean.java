@@ -65,6 +65,10 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
         flightSchedulePlans.size();
         for (FlightSchedulePlan flightSchedulePlan : flightSchedulePlans) {
             flightSchedulePlan.getFlightSchedules().size();
+            List<FlightSchedule> flightSchedules = flightSchedulePlan.getFlightSchedules();
+            for (FlightSchedule flightSchedule : flightSchedules) {
+                flightSchedule.getFlightReservations().size();
+            }
             flightSchedulePlan.getFlight();
             flightSchedulePlan.getFares().size();
         }
@@ -107,8 +111,43 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
         }
     }
 
+    //Assuming that not used means there's no flight reservation associated with any of the flight schedules in the flight schedule plan
     @Override
     public void deleteFlightSchedulePlan(Long flightSchedulePlanId) throws FlightSchedulePlanDoesNotExistException, FlightSchedulePlanDeleteException {
+        /*
+        FlightSchedulePlan flightSchedulePlan = viewFlightSchedulePlanDetails(flightSchedulePlanId);
+        boolean notUsed = true;
+        List<FlightSchedule> flightSchedules = flightSchedulePlan.getFlightSchedules();
+        for (FlightSchedule flightSchedule : flightSchedules) {
+            if (!flightSchedule.getFlightReservations().isEmpty()) {
+                notUsed = false;
+            }
+        }
+        if (notUsed) {
+            try {
+                for (FlightSchedule flightSchedule : flightSchedules) {
+                    flightSchedule.setFlightSchedulePlan(null);
+                    flightSchedulePlan.getFlightSchedules().remove(flightSchedule);
+                }
+                List<Fare> fares = flightSchedulePlan.getFares();
+                for (Fare fare : fares) {
+                    fare.setFlightSchedulePlan(null);
+                    flightSchedulePlan.getFares().remove(fare);
+                }
+                Flight flight = flightSchedulePlan.getFlight();
+                flight.getFlightSchedulePlan().remove(flightSchedulePlan);
+                flightSchedulePlan.setFlight(null);
+                entityManager.remove(flightSchedulePlan);
+            } catch (Exception ex) {
+                System.out.println("Flight is associated with a complementary flight, cannot be removed. Flight schedule plan set to disabled instead.");
+                flightSchedulePlan.setStatus(StatusEnum.DISABLED);
+                throw new FlightSchedulePlanDeleteException();
+            }
+        } else {
+            flightSchedulePlan.setStatus(StatusEnum.DISABLED);
+            throw new FlightSchedulePlanDeleteException();
+        }
+         */
         FlightSchedulePlan flightSchedulePlan = viewFlightSchedulePlanDetails(flightSchedulePlanId);
         List<Fare> fares = flightSchedulePlan.getFares();
         List<FlightSchedule> flightSchedules = flightSchedulePlan.getFlightSchedules();

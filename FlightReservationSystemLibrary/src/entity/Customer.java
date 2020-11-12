@@ -15,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -38,8 +39,7 @@ public class Customer implements Serializable {
     @Size(max = 64)
     private String lastName;
     @Column(nullable = false, length = 64)
-    @NotNull
-    @Size(max = 64)
+    @Email(message = "Email should be valid")
     private String email;
     @Column(nullable = false, length = 64)
     @NotNull
@@ -66,6 +66,7 @@ public class Customer implements Serializable {
     }
 
     public Customer(String firstName, String lastName, String email, String mobileNumber, String address, String userName, String password, List<FlightReservation> flightReservations) {
+        this();
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

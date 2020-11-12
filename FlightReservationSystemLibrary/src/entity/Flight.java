@@ -46,7 +46,7 @@ public class Flight implements Serializable {
     @Column(nullable = false, length = 64)
     private StatusEnum status;
     
-    @OneToMany(mappedBy = "flight", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "flight", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<FlightSchedulePlan> flightSchedulePlan; 
     
     @ManyToOne(optional = true)
