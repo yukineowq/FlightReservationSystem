@@ -6,6 +6,7 @@
 package flightreservationsystemreservationclient;
 
 import ejb.session.stateful.ReserveFlightSessionBeanRemote;
+import ejb.session.stateless.AirportSessionBeanRemote;
 import ejb.session.stateless.CustomerSessionBeanRemote;
 import ejb.session.stateless.FlightReservationSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
@@ -25,8 +26,10 @@ public class Main {
     private static ReserveFlightSessionBeanRemote reserveFlightSessionBeanRemote;
     @EJB
     private static FlightReservationSessionBeanRemote flightReservationSessionBeanRemote;
+    @EJB
+    private static AirportSessionBeanRemote airportSessionBeanRemote;
     public static void main(String[] args) {
-       MainApp mainApp = new MainApp(customerSessionBeanRemote, flightSessionBeanRemote, reserveFlightSessionBeanRemote, flightReservationSessionBeanRemote);
+       MainApp mainApp = new MainApp(customerSessionBeanRemote, flightSessionBeanRemote, reserveFlightSessionBeanRemote, flightReservationSessionBeanRemote, airportSessionBeanRemote);
        mainApp.runApp();
     }
     

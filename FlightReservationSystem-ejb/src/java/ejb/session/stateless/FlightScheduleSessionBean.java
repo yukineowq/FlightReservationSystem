@@ -8,6 +8,7 @@ package ejb.session.stateless;
 import entity.Airport;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
+import entity.SeatInventory;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -107,18 +108,147 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
         cal2.add(Calendar.DATE, 1);
         Date dateAfter3Days = cal2.getTime();
         dates.add(dateAfter3Days);
-        if (preferenceEnum.equals(PreferenceEnum.NA)) {
+        if (preferenceEnum.equals(PreferenceEnum.DIRECT)) {
             for (Date date : dates) {
-                 query = entityManager.createQuery("SELECT f FROM Flight f");
+                query = entityManager.createQuery("SELECT f FROM FlightSchedule f WHERE f.flightSchedulePlan.flight.flightRoute.origin = :inOrigin AND f.flightSchedulePlan.flight.flightRoute.destination = :inDestination AND f.departureDate = :inDepartureDate");
+                query.setParameter("inOrigin", origin);
+                query.setParameter("inDestination", destination);
+                query.setParameter("inDepartureDate", date);
                 List<FlightSchedule> flightSchedules = query.getResultList();
+                List<FlightSchedule> flightSchedulesToBeAdded = new ArrayList<>();
+                for (FlightSchedule flightSchedule : flightSchedules) {
+                    List<SeatInventory> seatInventories = flightSchedule.getSeatInventories();
+                    for (SeatInventory seatInventory : seatInventories) {
+                        if (seatInventory.getCabinClass().equals(cabinClassEnum)) {
+                            if (seatInventory.getAvailable() > numPassenger) {
+                                flightSchedulesToBeAdded.add(flightSchedule);
+                            }
+                        }
+                    }
+                }
+                flightScheduleList.add(flightSchedulesToBeAdded);
             }
-        } else if (preferenceEnum.equals(PreferenceEnum.DIRECT)) {
+        } else if (preferenceEnum.equals(PreferenceEnum.CONNECTING)) {
+            for (Date date : dates) {
+                List<FlightSchedule> flightSchedulesToBeAdded = new ArrayList<>();
+                query = entityManager.createQuery("SELECT f FROM FlightSchedule f WHERE f.flightSchedulePlan.flight.flightRoute.origin = :inOrigin AND f.departureDate = :inDepartureDate");
+                query.setParameter("inOrigin", origin);
+                query.setParameter("inDepartureDate", date);
+                List<FlightSchedule> flightSchedulesOrigins = query.getResultList();
+                query = entityManager.createQuery("SELECT f FROM FlightSchedule f WHERE f.flightSchedulePlan.flight.flightRoute.destination = :inDestination AND f.departureDate = :inDepartureDate");
+                query.setParameter("inDestination", destination);
+                query.setParameter("inDepartureDate", date);
+                List<FlightSchedule> flightSchedulesDestinations = query.getResultList();
+                for (FlightSchedule flightScheduleOrigin : flightSchedulesOrigins) {
+                    Airport originDestination = flightScheduleOrigin.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination();
+                    Calendar arrivingCalendar = flightScheduleOrigin.getArrivalTime();
+                    arrivingCalendar.add(Calendar.HOUR_OF_DAY, 2); //Assumption that 2 hours is needed to transit from one flight to another
+                    for (FlightSchedule flightScheduleDestination : flightSchedulesDestinations) {
+                        Airport destinationOrigin = flightScheduleDestination.getFlightSchedulePlan().getFlight().getFlightRoute().getOrigin();
+                        Calendar departingCalendar = flightScheduleDestination.getDepartureTime();
+                        if ((originDestination.getAirportCode().equals(destinationOrigin.getAirportCode())) && departingCalendar.after(arrivingCalendar)) {
+                            boolean cabinClassPreference = true;
+                            int counter = 0;
+                            List<SeatInventory> seatInventoriesOrigin = flightScheduleOrigin.getSeatInventories();
+                            for (SeatInventory seatInventory : seatInventoriesOrigin) {
+                                if (seatInventory.getCabinClass().equals(cabinClassEnum)) {
+                                    if (seatInventory.getAvailable() < numPassenger) {
+                                        cabinClassPreference = false;
+                                    } else {
+                                        counter++;
+                                    }
+                                }
+                            }
+                            List<SeatInventory> seatInventoriesDestination = flightScheduleDestination.getSeatInventories();
+                            for (SeatInventory seatInventory : seatInventoriesDestination) {
+                                if (seatInventory.getCabinClass().equals(cabinClassEnum)) {
+                                    if (seatInventory.getAvailable() < numPassenger) {
+                                        cabinClassPreference = false;
+                                    } else {
+                                        counter++;
+                                    }
+                                }
+                            }
+                            if (cabinClassPreference && counter == 2) {
+                                flightSchedulesToBeAdded.add(flightScheduleOrigin);
+                                flightSchedulesToBeAdded.add(flightScheduleDestination);
+
+                            }
+                        }
+                    }
+                }
+                flightScheduleList.add(flightSchedulesToBeAdded);
+            }
 
         } else {
+            for (Date date : dates) {
+                query = entityManager.createQuery("SELECT f FROM FlightSchedule f WHERE f.flightSchedulePlan.flight.flightRoute.origin = :inOrigin AND f.flightSchedulePlan.flight.flightRoute.destination = :inDestination AND f.departureDate = :inDepartureDate");
+                query.setParameter("inOrigin", origin);
+                query.setParameter("inDestination", destination);
+                query.setParameter("inDepartureDate", date);
+                List<FlightSchedule> flightSchedules = query.getResultList();
+                List<FlightSchedule> flightSchedulesToBeAdded = new ArrayList<>();
+                for (FlightSchedule flightSchedule : flightSchedules) {
+                    List<SeatInventory> seatInventories = flightSchedule.getSeatInventories();
+                    for (SeatInventory seatInventory : seatInventories) {
+                        if (seatInventory.getCabinClass().equals(cabinClassEnum)) {
+                            if (seatInventory.getAvailable() > numPassenger) {
+                                flightSchedulesToBeAdded.add(flightSchedule);
+                            }
+                        }
+                    }
+                }
+                flightScheduleList.add(flightSchedulesToBeAdded);
+                query = entityManager.createQuery("SELECT f FROM FlightSchedule f WHERE f.flightSchedulePlan.flight.flightRoute.origin = :inOrigin AND f.departureDate = :inDepartureDate");
+                query.setParameter("inOrigin", origin);
+                query.setParameter("inDepartureDate", date);
+                List<FlightSchedule> flightSchedulesOrigins = query.getResultList();
+                query = entityManager.createQuery("SELECT f FROM FlightSchedule f WHERE f.flightSchedulePlan.flight.flightRoute.destination = :inDestination AND f.departureDate = :inDepartureDate");
+                query.setParameter("inDestination", destination);
+                query.setParameter("inDepartureDate", date);
+                List<FlightSchedule> flightSchedulesDestinations = query.getResultList();
+                for (FlightSchedule flightScheduleOrigin : flightSchedulesOrigins) {
+                    Airport originDestination = flightScheduleOrigin.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination();
+                    Calendar arrivingCalendar = flightScheduleOrigin.getArrivalTime();
+                    arrivingCalendar.add(Calendar.HOUR_OF_DAY, 2); //Assumption that 2 hours is needed to transit from one flight to another
+                    for (FlightSchedule flightScheduleDestination : flightSchedulesDestinations) {
+                        Airport destinationOrigin = flightScheduleDestination.getFlightSchedulePlan().getFlight().getFlightRoute().getOrigin();
+                        Calendar departingCalendar = flightScheduleDestination.getDepartureTime();
+                        if ((originDestination.getAirportCode().equals(destinationOrigin.getAirportCode())) && departingCalendar.after(arrivingCalendar)) {
+                            boolean cabinClassPreference = true;
+                            int counter = 0;
+                            List<SeatInventory> seatInventoriesOrigin = flightScheduleOrigin.getSeatInventories();
+                            for (SeatInventory seatInventory : seatInventoriesOrigin) {
+                                if (seatInventory.getCabinClass().equals(cabinClassEnum)) {
+                                    if (seatInventory.getAvailable() < numPassenger) {
+                                        cabinClassPreference = false;
+                                    } else {
+                                        counter++;
+                                    }
+                                }
+                            }
+                            List<SeatInventory> seatInventoriesDestination = flightScheduleDestination.getSeatInventories();
+                            for (SeatInventory seatInventory : seatInventoriesDestination) {
+                                if (seatInventory.getCabinClass().equals(cabinClassEnum)) {
+                                    if (seatInventory.getAvailable() < numPassenger) {
+                                        cabinClassPreference = false;
+                                    } else {
+                                        counter++;
+                                    }
+                                }
+                            }
+                            if (cabinClassPreference && counter == 2) {
+                                flightSchedulesToBeAdded.add(flightScheduleOrigin);
+                                flightSchedulesToBeAdded.add(flightScheduleDestination);
 
+                            }
+                        }
+                    }
+                }
+                flightScheduleList.add(flightSchedulesToBeAdded);
+            }
         }
         return flightScheduleList;
-
     }
 
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<FlightSchedule>> constraintViolations) {

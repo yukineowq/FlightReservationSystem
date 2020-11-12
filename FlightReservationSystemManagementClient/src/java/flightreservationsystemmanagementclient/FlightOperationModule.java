@@ -155,6 +155,7 @@ public class FlightOperationModule {
             Calendar cal1 = new GregorianCalendar();
             Calendar cal2 = new GregorianCalendar();
             SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
+            SimpleDateFormat fsd = new SimpleDateFormat("yyyy-MM-dd");
 
             SimpleDateFormat inputDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             Date departureDate;
@@ -243,6 +244,8 @@ public class FlightOperationModule {
                 flightSchedule.setEstimatedFlightMinute(mins);
                 flightSchedule.setEstimatedFlightHour(hours);
                 flightSchedule.setDepartureTime(departingCalendar);
+                String formattedDate = fsd.format(departingCalendar.getTime());
+                flightSchedule.setDepartureDate(fsd.parse(formattedDate));
                 flightSchedule.setArrivalTime(arrivingCalendar);
                 flightSchedulePlan.getFlightSchedules().add(flightSchedule);
                 flightSchedule.setFlightSchedulePlan(flightSchedulePlan);
@@ -263,6 +266,8 @@ public class FlightOperationModule {
                     complementaryArrivingCalendar.add(GregorianCalendar.MINUTE, mins);
                     complementaryFS.setArrivalTime(complementaryArrivingCalendar);
                     complementaryFS.setDepartureTime(complementaryDepartingCalendar);
+                    formattedDate = fsd.format(complementaryDepartingCalendar.getTime());
+                complementaryFS.setDepartureDate(fsd.parse(formattedDate));
                     complementaryFS.setEstimatedFlightHour(hours);
                     complementaryFS.setEstimatedFlightMinute(mins);
                     complementaryFSP.getFlightSchedules().add(complementaryFS);
@@ -314,6 +319,8 @@ public class FlightOperationModule {
                     complementaryDepartingCalendar.add(GregorianCalendar.MINUTE, mins);
                     complementaryArrivingCalendar.add(GregorianCalendar.MINUTE, mins);
                     flightSchedule.setDepartureTime(departingCalendar);
+                    String formattedDate = fsd.format(departingCalendar.getTime());
+                flightSchedule.setDepartureDate(fsd.parse(formattedDate));
                     flightSchedule.setArrivalTime(arrivingCalendar);
                     flightSchedule.setEstimatedFlightHour(hours);
                     flightSchedule.setEstimatedFlightMinute(mins);
@@ -335,6 +342,8 @@ public class FlightOperationModule {
                         complementaryArrivingCalendar.add(GregorianCalendar.MINUTE, mins);
                         complementaryFS.setArrivalTime(complementaryArrivingCalendar);
                         complementaryFS.setDepartureTime(complementaryDepartingCalendar);
+                        formattedDate = fsd.format(complementaryDepartingCalendar.getTime());
+                complementaryFS.setDepartureDate(fsd.parse(formattedDate));
                         complementaryFS.setEstimatedFlightHour(hours);
                         complementaryFS.setEstimatedFlightMinute(mins);
                         complementaryFSP.getFlightSchedules().add(complementaryFS);
@@ -403,6 +412,8 @@ public class FlightOperationModule {
                     complementaryArrivingCalendar.add(GregorianCalendar.MINUTE, mins);
                     FlightSchedule flightSchedule = new FlightSchedule();
                     flightSchedule.setDepartureTime(departingCalendar);
+                    String formattedDate = fsd.format(departingCalendar.getTime());
+                flightSchedule.setDepartureDate(fsd.parse(formattedDate));
                     flightSchedule.setArrivalTime(arrivingCalendar);
                     flightSchedule.setEstimatedFlightHour(hours);
                     flightSchedule.setEstimatedFlightMinute(mins);
@@ -424,6 +435,8 @@ public class FlightOperationModule {
                         complementaryArrivingCalendar.add(GregorianCalendar.MINUTE, mins);
                         complementaryFS.setArrivalTime(complementaryArrivingCalendar);
                         complementaryFS.setDepartureTime(complementaryDepartingCalendar);
+                        formattedDate = fsd.format(complementaryDepartingCalendar.getTime());
+                complementaryFS.setDepartureDate(fsd.parse(formattedDate));
                         complementaryFS.setEstimatedFlightHour(hours);
                         complementaryFS.setEstimatedFlightMinute(mins);
                         complementaryFSP.getFlightSchedules().add(complementaryFS);
@@ -485,6 +498,8 @@ public class FlightOperationModule {
                     complementaryArrivingCalendar.add(GregorianCalendar.MINUTE, mins);
                     FlightSchedule flightSchedule = new FlightSchedule();
                     flightSchedule.setDepartureTime(departingCalendar);
+                    String formattedDate = fsd.format(departingCalendar.getTime());
+                flightSchedule.setDepartureDate(fsd.parse(formattedDate));
                     flightSchedule.setArrivalTime(arrivingCalendar);
                     flightSchedule.setEstimatedFlightHour(hours);
                     flightSchedule.setEstimatedFlightMinute(mins);
@@ -506,6 +521,8 @@ public class FlightOperationModule {
                         complementaryArrivingCalendar.add(GregorianCalendar.MINUTE, mins);
                         complementaryFS.setArrivalTime(complementaryArrivingCalendar);
                         complementaryFS.setDepartureTime(complementaryDepartingCalendar);
+                        formattedDate = fsd.format(complementaryDepartingCalendar.getTime());
+                complementaryFS.setDepartureDate(fsd.parse(formattedDate));
                         complementaryFS.setEstimatedFlightHour(hours);
                         complementaryFS.setEstimatedFlightMinute(mins);
                         complementaryFSP.getFlightSchedules().add(complementaryFS);
