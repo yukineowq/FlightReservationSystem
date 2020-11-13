@@ -73,18 +73,10 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
     }
 
     @Override
-    public FlightRoute retrieveFlightRouteByFlightRouteId(Long flightRouteId, Boolean fetchFlight, Boolean fetchAirport) throws FlightRouteNotFoundException {
+    public FlightRoute retrieveFlightRouteByFlightRouteId(Long flightRouteId) throws FlightRouteNotFoundException {
         FlightRoute flightRoute = entityManager.find(FlightRoute.class, flightRouteId);
 
-        if (fetchFlight) {
-            flightRoute.getFlights().size();
-        }
-
-        if (fetchAirport) {
-            flightRoute.getOrigin();
-            flightRoute.getDestination();
-        }
-
+        flightRoute.getFlights().size();
         return flightRoute;
     }
 

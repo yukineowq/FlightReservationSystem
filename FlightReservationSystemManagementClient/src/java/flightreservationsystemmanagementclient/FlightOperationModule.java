@@ -123,7 +123,11 @@ public class FlightOperationModule {
                 response = scanner.nextInt();
 
                 if (response == 1) {
-                    doCreateFlight();
+                    try {
+                        doCreateFlight();
+                    } catch (FlightNumberExistException ex) {
+                        System.out.println("Flight number already exist in database. Flight number must be unique!");
+                    }
                 } else if (response == 2) {
                     doViewAllFlights();
                 } else if (response == 3) {
@@ -845,12 +849,18 @@ public class FlightOperationModule {
         }
     }
 
-    public void doCreateFlight() {
+    public void doCreateFlight() throws FlightNumberExistException {
         Scanner scanner = new Scanner(System.in);
         int res = 0;
         System.out.println("*** FRS ::  Flight Operation Module :: Create Flight ***\n");
         System.out.print("Enter Flight Number> ");
         String flightNumber = scanner.nextLine().trim();
+        List<Flight> flights = flightSessionBeanRemote.retrieveAllFlights();
+        for(Flight flight : flights) {
+            if (flight.getFlightNumber().equals(flightNumber)) {
+                throw new FlightNumberExistException("Flight number already exist in database!");
+            }
+        }
         Flight flight = new Flight(flightNumber);
         System.out.print("Enter Aircraft Configuration Name> ");
         String aircraftConfigName = scanner.nextLine().trim();

@@ -36,6 +36,7 @@ import util.exception.AircraftTypeMaxSeatCapacityExceededException;
 import util.exception.AircraftTypeNotFoundException;
 import util.exception.AirportNotFoundException;
 import util.exception.FlightRouteDoesNotExistException;
+import util.exception.FlightRouteAlreadyExistException;
 import util.exception.FlightRouteNotFoundException;
 import util.exception.InputDataValidationException;
 import util.exception.InvalidAccessRightException;
@@ -139,7 +140,11 @@ public class FlightPlanningModule {
                 response = scanner.nextInt();
 
                 if (response == 1) {
-                    doCreateFlightRoute();
+                    try {
+                        doCreateFlightRoute();
+                    } catch (FlightRouteAlreadyExistException ex) {
+                        System.out.println("Flight route already exist in database!");
+                    }
                 } else if (response == 2) {
                     doViewAllFlightRoute();
                 } else if (response == 3) {
@@ -200,7 +205,7 @@ public class FlightPlanningModule {
         }
     }
 
-    private void doCreateFlightRoute() {
+    private void doCreateFlightRoute() throws FlightRouteAlreadyExistException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("*** FRS :: Flight Planning Module - Flight Route :: Create Flight Route ***\n");
         System.out.print("Enter origin Airport Code> ");
@@ -212,56 +217,63 @@ public class FlightPlanningModule {
         try {
             originAirport = airportSessionBeanRemote.retrieveAirportByAirportCode(origin);
             destinationAirport = airportSessionBeanRemote.retrieveAirportByAirportCode(destination);
-        } catch (AirportNotFoundException ex) {
-            System.out.println("Airport not found with code provided.");
-        }
-        FlightRoute flightRoute = new FlightRoute();
-        flightRoute.setOrigin(originAirport);
-        flightRoute.setDestination(destinationAirport);
-        /*
+            List<FlightRoute> flightRoutes = flightRouteSessionBeanRemote.retrieveAllFlightRoutes();
+            for (FlightRoute flightRoute : flightRoutes) {
+                if (flightRoute.getOrigin().getAirportCode().equals(origin) && flightRoute.getDestination().getAirportCode().equals(destination)) {
+                    throw new FlightRouteAlreadyExistException("Flight route already exist in database!");
+                }
+            }
+            FlightRoute flightRoute = new FlightRoute();
+            flightRoute.setOrigin(originAirport);
+            flightRoute.setDestination(destinationAirport);
+            /*
        FlightRoute flightRoute = new FlightRoute();
        flightRoute.setOrigin(originAirport);
        flightRoute.setDestination(destinationAirport);
        flightRoute.setOD(OD);
-         */
-        System.out.println("Create complemantary return flight?> ");
-        System.out.println("1: Yes");
-        System.out.println("2: No");
-        int res = scanner.nextInt();
-        FlightRoute complementary = new FlightRoute();
-        if (res == 1) {
-            flightRoute.setComplementary(true);
-            complementary.setComplementary(true);
-        } else {
-            flightRoute.setComplementary(false);
-        }
+             */
+            System.out.println("Create complemantary return flight?> ");
+            System.out.println("1: Yes");
+            System.out.println("2: No");
+            int res = scanner.nextInt();
+            FlightRoute complementary = new FlightRoute();
+            if (res == 1) {
+                flightRoute.setComplementary(true);
+                complementary.setComplementary(true);
+            } else {
+                flightRoute.setComplementary(false);
+            }
 
-        try {
-
-            Long id = flightRouteSessionBeanRemote.createNewFlightRoute(flightRoute, origin, destination);
-
-            System.out.println("New flight route created successfully!: " + id + "\n");
-        } catch (AirportNotFoundException ex) {
-            System.out.println("Airport not found with airport code provided");
-        } catch (FlightRouteNotFoundException ex) {
-            System.out.println("Flight route not found1.");
-        } catch (UnknownPersistenceException ex) {
-            System.out.println("An unknown error has occurred while creating the new flight route!: " + ex.getMessage() + "\n");
-        }
-        if (res == 1) {
             try {
 
-            Long id = flightRouteSessionBeanRemote.createNewFlightRoute(flightRoute, destination, origin);
+                Long id = flightRouteSessionBeanRemote.createNewFlightRoute(flightRoute, origin, destination);
 
-            System.out.println("New Complementary flight route created successfully!: " + id + "\n");
+                System.out.println("New flight route created successfully!: " + id + "\n");
+            } catch (AirportNotFoundException ex) {
+                System.out.println("Airport not found with airport code provided");
+            } catch (FlightRouteNotFoundException ex) {
+                System.out.println("Flight route not found1.");
+            } catch (UnknownPersistenceException ex) {
+                System.out.println("An unknown error has occurred while creating the new flight route!: " + ex.getMessage() + "\n");
+            }
+            if (res == 1) {
+                try {
+
+                    Long id = flightRouteSessionBeanRemote.createNewFlightRoute(flightRoute, destination, origin);
+
+                    System.out.println("New Complementary flight route created successfully!: " + id + "\n");
+                } catch (AirportNotFoundException ex) {
+                    System.out.println("Airport not found with airport code provided");
+                } catch (FlightRouteNotFoundException ex) {
+                    System.out.println("Flight route not found1.");
+                } catch (UnknownPersistenceException ex) {
+                    System.out.println("An unknown error has occurred while creating the new flight route!: " + ex.getMessage() + "\n");
+                }
+            }
         } catch (AirportNotFoundException ex) {
-            System.out.println("Airport not found with airport code provided");
-        } catch (FlightRouteNotFoundException ex) {
-            System.out.println("Flight route not found1.");
-        } catch (UnknownPersistenceException ex) {
-            System.out.println("An unknown error has occurred while creating the new flight route!: " + ex.getMessage() + "\n");
+            System.out.println("Airport not found with code provided.");
         }
-        }
+
     }
 
     private void doCreateAircraftConfiguration() throws AircraftTypeMaxSeatCapacityExceededException {
@@ -402,20 +414,24 @@ public class FlightPlanningModule {
                 return r1.getOrigin().getName().compareTo(r2.getOrigin().getName());
             }
         });
-        System.out.printf("%20s%20s%20s%20s\n", "Origin Country", "Origin Airport", "Destination Country", "Destination Airport");
+        List<FlightRoute> flightRoutes1 = new ArrayList<>();
         for (FlightRoute flightRoute : flightRoutes) {
+            if (!flightRoutes1.contains(flightRoute)) {
+                flightRoutes1.add(flightRoute);
+                Airport origin = flightRoute.getOrigin();
+                Airport destination = flightRoute.getDestination();
+                for (FlightRoute flightRoute1 : flightRoutes) {
+                    if (flightRoute1.getOrigin() == destination && flightRoute1.getDestination() == origin) {
+                        flightRoutes1.add(flightRoute1);
+                    }
+                }
+            }
+        }
+        System.out.printf("%20s%20s%20s%20s\n", "Origin Country", "Origin Airport", "Destination Country", "Destination Airport");
+        for (FlightRoute flightRoute : flightRoutes1) {
 
             System.out.printf("%20s%20s%20s%20s\n", flightRoute.getOrigin().getCountry(), flightRoute.getOrigin().getName(), flightRoute.getDestination().getCountry(), flightRoute.getDestination().getName());
-            if (flightRoute.getComplementary() == true) {
-                FlightRoute complementaryRoute = new FlightRoute();
-                try {
-                        complementaryRoute= flightRouteSessionBeanRemote.retrieveFlightRouteByOD(flightRoute.getDestination(), flightRoute.getOrigin());
-                } catch (FlightRouteDoesNotExistException ex) {
-                        System.out.println("Complementary route does not exist");
-                }
-                System.out.printf("%20s%20s%20s%20s\n", complementaryRoute.getOrigin().getCountry(), complementaryRoute.getOrigin().getName(), complementaryRoute.getDestination().getCountry(), complementaryRoute.getDestination().getName());
-                flightRoutes.remove(complementaryRoute);
-            }
+
         }
 
     }

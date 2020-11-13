@@ -74,6 +74,7 @@ public class Airport implements Serializable {
     }
 
     public Airport(String name, String airportCode, String city, String state, String country, int GMT) {
+        this();
         this.name = name;
         this.airportCode = airportCode;
         this.city = city;

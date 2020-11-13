@@ -32,7 +32,7 @@ import util.exception.UnknownPersistenceException;
  */
 @Singleton
 @LocalBean
-@Startup
+//@Startup
 public class DataInitializationSessionBean {
     @EJB
     private EmployeeSessionBeanLocal employeeSessionBeanLocal;

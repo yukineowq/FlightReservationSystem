@@ -92,6 +92,9 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
     public List<Flight> retrieveAllFlights() {
         Query query = entityManager.createQuery("SELECT fl FROM Flight fl");
         List<Flight> flights = query.getResultList();
+        for (Flight flight: flights) {
+            flight.getAircraftConfiguration();
+        }
         flights.size();
         return flights;
     }

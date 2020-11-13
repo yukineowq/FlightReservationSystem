@@ -21,7 +21,7 @@ import util.exception.UnknownPersistenceException;
 @Remote
 public interface FlightRouteSessionBeanRemote {
      public Long createNewFlightRoute(FlightRoute newFlightRoute, String originAirportCode, String destinationAirportCode) throws FlightRouteNotFoundException, UnknownPersistenceException, AirportNotFoundException;
-    FlightRoute retrieveFlightRouteByFlightRouteId(Long flightRouteId, Boolean fetchFlight, Boolean fetchAirport) throws FlightRouteNotFoundException;
+    FlightRoute retrieveFlightRouteByFlightRouteId(Long flightRouteId) throws FlightRouteNotFoundException;
     List<FlightRoute> retrieveAllFlightRoutes();
     void deleteFlightRoute(Airport origin, Airport destination) throws FlightRouteDoesNotExistException;
     FlightRoute retrieveFlightRouteByOD(Airport origin, Airport destination) throws FlightRouteDoesNotExistException;
