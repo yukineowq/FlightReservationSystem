@@ -23,7 +23,7 @@ import util.exception.UnknownPersistenceException;
 @Remote
 public interface FlightScheduleSessionBeanRemote {
 
-    public List<List<FlightSchedule>> searchFlightSchedule(Airport origin, Airport destination, Date departureDate, int numPassenger, PreferenceEnum preferenceEnum, CabinClassEnum cabinClassEnum);
+    public List<List<FlightSchedule>> searchFlightSchedule(Airport origin, Airport destination, String departureDate, int numPassenger, PreferenceEnum preferenceEnum, CabinClassEnum cabinClassEnum);
 
     public Long createNewFlightSchedule(FlightSchedule newFlightSchedule, Long flightSchedulePlanId) throws FlightScheduleNotFoundException, UnknownPersistenceException, InputDataValidationException;
 }

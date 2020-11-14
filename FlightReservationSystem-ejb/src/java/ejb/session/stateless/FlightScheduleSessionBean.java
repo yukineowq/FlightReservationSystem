@@ -9,11 +9,15 @@ import entity.Airport;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
 import entity.SeatInventory;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -80,19 +84,28 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
         }
 
     }
-    
+
     @Override
-    public List<List<FlightSchedule>> searchFlightSchedule(Airport origin, Airport destination, Date departureDate, int numPassenger, PreferenceEnum preferenceEnum, CabinClassEnum cabinClassEnum) {
+    public List<List<FlightSchedule>> searchFlightSchedule(Airport origin, Airport destination, String departureDate, int numPassenger, PreferenceEnum preferenceEnum, CabinClassEnum cabinClassEnum) {
 
         List<List<FlightSchedule>> flightScheduleList = new ArrayList<>();
         Query query = entityManager.createQuery("SELECT fs FROM FlightSchedule fs");
         List<FlightSchedule> allFlightSchedules = query.getResultList();
         List<Date> dates = new ArrayList<>();
-        dates.add(departureDate);
+        SimpleDateFormat fsd = new SimpleDateFormat("yyyy-MM-dd");
+        Date date1 = new Date();
+        String originCode = origin.getAirportCode();
+        String destinationCode = destination.getAirportCode();
+        try {
+            date1 = fsd.parse(departureDate);
+        } catch (ParseException ex) {
+            Logger.getLogger(FlightScheduleSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        dates.add(date1);
         Calendar cal = Calendar.getInstance();
-        cal.setTime(departureDate);
+        cal.setTime(date1);
         Calendar cal2 = Calendar.getInstance();
-        cal2.setTime(departureDate);
+        cal2.setTime(date1);
         cal.add(Calendar.DATE, -1);
         Date dateBefore1Days = cal.getTime();
         dates.add(dateBefore1Days);
@@ -114,18 +127,29 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
 
         if (preferenceEnum.equals(PreferenceEnum.DIRECT)) {
             for (Date date : dates) {
-                query = entityManager.createQuery("SELECT f FROM FlightSchedule f WHERE f.flightSchedulePlan.flight.flightRoute.origin = :inOrigin AND f.flightSchedulePlan.flight.flightRoute.destination = :inDestination AND f.departureDate =:inDepartureDate");
-                query.setParameter("inOrigin", origin);
-                query.setParameter("inDestination", destination);
-                query.setParameter("inDepartureDate", date, TemporalType.DATE);
+                String dateString = fsd.format(date);
+                query = entityManager.createQuery("SELECT f FROM FlightSchedule f WHERE f.flightSchedulePlan.flight.flightRoute.origin.airportCode = :inOrigin AND f.flightSchedulePlan.flight.flightRoute.destination.airportCode = :inDestination AND f.departureDate= :inDepartureDate");
+                query.setParameter("inOrigin", originCode);
+                query.setParameter("inDestination", destinationCode);
+                query.setParameter("inDepartureDate", dateString);
                 List<FlightSchedule> flightSchedules = query.getResultList();
                 List<FlightSchedule> flightSchedulesToBeAdded = new ArrayList<>();
                 for (FlightSchedule flightSchedule : flightSchedules) {
+                    flightSchedule.getFlightSchedulePlan().getFares().size();
                     List<SeatInventory> seatInventories = flightSchedule.getSeatInventories();
-                    for (SeatInventory seatInventory : seatInventories) {
-                        if (seatInventory.getCabinClass().equals(cabinClassEnum)) {
+                    if (cabinClassEnum.equals(CabinClassEnum.NA)) {
+                        for (SeatInventory seatInventory : seatInventories) {
                             if (seatInventory.getAvailable() > numPassenger) {
                                 flightSchedulesToBeAdded.add(flightSchedule);
+                            }
+                            break;
+                        }
+                    } else {
+                        for (SeatInventory seatInventory : seatInventories) {
+                            if (seatInventory.getCabinClass().equals(cabinClassEnum)) {
+                                if (seatInventory.getAvailable() > numPassenger) {
+                                    flightSchedulesToBeAdded.add(flightSchedule);
+                                }
                             }
                         }
                     }
@@ -134,43 +158,73 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
             }
         } else if (preferenceEnum.equals(PreferenceEnum.CONNECTING)) {
             for (Date date : dates) {
+                String dateString = fsd.format(date);
                 List<FlightSchedule> flightSchedulesToBeAdded = new ArrayList<>();
-                query = entityManager.createQuery("SELECT f FROM FlightSchedule f WHERE f.flightSchedulePlan.flight.flightRoute.origin = :inOrigin AND f.departureDate = :inDepartureDate");
-                query.setParameter("inOrigin", origin);
-                query.setParameter("inDepartureDate", date);
+                query = entityManager.createQuery("SELECT f FROM FlightSchedule f WHERE f.flightSchedulePlan.flight.flightRoute.origin.airportCode = :inOrigin AND f.departureDate = :inDepartureDate");
+                query.setParameter("inOrigin", originCode);
+                query.setParameter("inDepartureDate", dateString);
                 List<FlightSchedule> flightSchedulesOrigins = query.getResultList();
-                query = entityManager.createQuery("SELECT f FROM FlightSchedule f WHERE f.flightSchedulePlan.flight.flightRoute.destination = :inDestination AND f.departureDate = :inDepartureDate");
-                query.setParameter("inDestination", destination);
-                query.setParameter("inDepartureDate", date);
+                query = entityManager.createQuery("SELECT f FROM FlightSchedule f WHERE f.flightSchedulePlan.flight.flightRoute.destination.airportCode = :inDestination AND f.departureDate = :inDepartureDate");
+                query.setParameter("inDestination", destinationCode);
+                query.setParameter("inDepartureDate", dateString);
                 List<FlightSchedule> flightSchedulesDestinations = query.getResultList();
+
                 for (FlightSchedule flightScheduleOrigin : flightSchedulesOrigins) {
+                    flightScheduleOrigin.getFlightSchedulePlan().getFares().size();
                     Airport originDestination = flightScheduleOrigin.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination();
                     Calendar arrivingCalendar = flightScheduleOrigin.getArrivalTime();
                     arrivingCalendar.add(Calendar.HOUR_OF_DAY, 2); //Assumption that 2 hours is needed to transit from one flight to another
+
                     for (FlightSchedule flightScheduleDestination : flightSchedulesDestinations) {
+                        flightScheduleDestination.getFlightSchedulePlan().getFares().size();
                         Airport destinationOrigin = flightScheduleDestination.getFlightSchedulePlan().getFlight().getFlightRoute().getOrigin();
                         Calendar departingCalendar = flightScheduleDestination.getDepartureTime();
+
                         if ((originDestination.getAirportCode().equals(destinationOrigin.getAirportCode())) && departingCalendar.after(arrivingCalendar)) {
                             boolean cabinClassPreference = true;
                             int counter = 0;
                             List<SeatInventory> seatInventoriesOrigin = flightScheduleOrigin.getSeatInventories();
-                            for (SeatInventory seatInventory : seatInventoriesOrigin) {
-                                if (seatInventory.getCabinClass().equals(cabinClassEnum)) {
-                                    if (seatInventory.getAvailable() < numPassenger) {
-                                        cabinClassPreference = false;
-                                    } else {
+                            if (cabinClassEnum.equals(CabinClassEnum.NA)) {
+                                boolean unvisited = true;
+                                for (SeatInventory seatInventory : seatInventoriesOrigin) {
+                                    if ((seatInventory.getAvailable() > numPassenger) && unvisited) {
                                         counter++;
+                                        unvisited = false;
+                                    }
+                                }
+                            } else {
+
+                                for (SeatInventory seatInventory : seatInventoriesOrigin) {
+                                    if (seatInventory.getCabinClass().equals(cabinClassEnum)) {
+                                        if (seatInventory.getAvailable() < numPassenger) {
+                                            cabinClassPreference = false;
+                                        } else {
+                                            counter++;
+                                            break;
+                                        }
                                     }
                                 }
                             }
                             List<SeatInventory> seatInventoriesDestination = flightScheduleDestination.getSeatInventories();
-                            for (SeatInventory seatInventory : seatInventoriesDestination) {
-                                if (seatInventory.getCabinClass().equals(cabinClassEnum)) {
-                                    if (seatInventory.getAvailable() < numPassenger) {
-                                        cabinClassPreference = false;
-                                    } else {
+                            if (cabinClassEnum.equals(CabinClassEnum.NA)) {
+                                for (SeatInventory seatInventory : seatInventoriesDestination) {
+                                    boolean unvisited = true;
+                                    if ((seatInventory.getAvailable() > numPassenger) && unvisited) {
                                         counter++;
+                                        unvisited = false;
                                     }
+                                }
+                            } else {
+                                for (SeatInventory seatInventory : seatInventoriesDestination) {
+                                    if (seatInventory.getCabinClass().equals(cabinClassEnum)) {
+                                        if (seatInventory.getAvailable() < numPassenger) {
+                                            cabinClassPreference = false;
+                                        } else {
+                                            counter++;
+                                            break;
+                                        }
+                                    }
+
                                 }
                             }
                             if (cabinClassPreference && counter == 2) {

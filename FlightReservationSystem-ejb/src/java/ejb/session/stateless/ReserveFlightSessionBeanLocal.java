@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ejb.session.stateful;
+package ejb.session.stateless;
 
 import javax.ejb.Local;
 
 /**
  *
- * @author Reuben Ang Wen Zheng
+ * @author reuben
  */
 @Local
 public interface ReserveFlightSessionBeanLocal {

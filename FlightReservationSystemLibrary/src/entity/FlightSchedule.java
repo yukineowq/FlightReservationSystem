@@ -46,7 +46,7 @@ public class FlightSchedule implements Serializable {
     private Calendar arrivalTime;
     
     @Column(nullable = false)
-    private Date departureDate;
+    private String departureDate;
     
     @Column(nullable = false)
     @NotNull
@@ -174,11 +174,11 @@ public class FlightSchedule implements Serializable {
         this.estimatedFlightMinute = estimatedFlightMinute;
     }
 
-    public Date getDepartureDate() {
+    public String getDepartureDate() {
         return departureDate;
     }
 
-    public void setDepartureDate(Date departureDate) {
+    public void setDepartureDate(String departureDate) {
         this.departureDate = departureDate;
     }
 

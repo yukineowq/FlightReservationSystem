@@ -3,15 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ejb.session.stateful;
+package ejb.session.stateless;
 
-import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 
 /**
  *
- * @author Reuben Ang Wen Zheng
+ * @author reuben
  */
-@Stateful
+@Stateless
 public class ReserveFlightSessionBean implements ReserveFlightSessionBeanRemote, ReserveFlightSessionBeanLocal {
 
     // Add business logic below. (Right-click in editor and choose

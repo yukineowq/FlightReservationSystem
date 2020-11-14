@@ -5,7 +5,7 @@
  */
 package flightreservationsystemreservationclient;
 
-import ejb.session.stateful.ReserveFlightSessionBeanRemote;
+import ejb.session.stateless.ReserveFlightSessionBeanRemote;
 import ejb.session.stateless.AirportSessionBeanRemote;
 import ejb.session.stateless.CustomerSessionBeanRemote;
 import ejb.session.stateless.FlightReservationSessionBeanRemote;
@@ -121,8 +121,8 @@ public class MainApp {
         Scanner scanner = new Scanner(System.in);
         Airport originAirport = new Airport();
         Airport destinationAirport = new Airport();
-        Date departureDate = new Date();
-        Date returnDate = new Date();
+        String departureDate = "";
+        String returnDate = "";
         CabinClassEnum cabinClass = CabinClassEnum.NA;
         PreferenceEnum preference = PreferenceEnum.NA;
         int numPassenger = 1;
@@ -152,11 +152,9 @@ public class MainApp {
                 Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
             }
             System.out.println("Enter departure date (yyyy-mm-dd)> ");
-            try {
-                departureDate = inputDateFormat.parse(scanner.nextLine().trim());
-            } catch (ParseException ex) {
-                System.out.println("Invalid date input!\n");
-            }
+          
+                departureDate = scanner.nextLine().trim();
+           
             System.out.println("Enter number of passengers> ");
             numPassenger = scanner.nextInt();
             scanner.nextLine();
@@ -218,17 +216,13 @@ public class MainApp {
                 Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
             }
             System.out.println("Enter departure date (yyyy-mm-dd)> ");
-            try {
-                departureDate = inputDateFormat.parse(scanner.nextLine().trim());
-            } catch (ParseException ex) {
-                System.out.println("Invalid date input!\n");
-            }
+        
+                departureDate = scanner.nextLine().trim();
+          
             System.out.println("Enter return date (yyyy-mm-dd)> ");
-            try {
-                returnDate = inputDateFormat.parse(scanner.nextLine().trim());
-            } catch (ParseException ex) {
-                System.out.println("Invalid date input!\n");
-            }
+           
+                returnDate = scanner.nextLine().trim();
+            
             System.out.println("Enter number of passengers> ");
             numPassenger = scanner.nextInt();
             scanner.nextLine();
@@ -278,16 +272,16 @@ public class MainApp {
         System.out.printf("%30s%30s%30s\n", "Flight Schedule ID", "Departure time", "Arrival Time");
 
         for (List<FlightSchedule> flightSchedulesList : flightSchedules) {
-
+            System.out.println("");
             for (int i = 0; i < flightSchedulesList.size(); i++) {
                 boolean connecting = false;
                 FlightSchedule flightSchedule = flightSchedulesList.get(i);
                 //if destination is not the same, means current flight schedule is a connecting flight, and the next flight schedule will be the flight containing the destination
-                if (flightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination() != destinationAirport) {
+                if (!flightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination().getAirportCode().equals(destinationAirport.getAirportCode())) {
                     connecting = true;
                 }
                 if (!connecting) {
-                    System.out.printf("%30s%30s%30s\n", flightSchedule.getFlightScheduleId(), flightSchedule.getDepartureTime(), flightSchedule.getArrivalTime());
+                    System.out.printf("%30s%30s%30s\n", flightSchedule.getFlightScheduleId(), flightSchedule.getDepartureTime().getTime(), flightSchedule.getArrivalTime().getTime());
                     List<SeatInventory> seatInventories = flightSchedule.getSeatInventories();
                     System.out.printf("%30s%30s%30s%30s\n", "Cabin class", "Available seats", "Reserved seats", "Balanced");
                     for (SeatInventory seatInventory : seatInventories) {
@@ -318,7 +312,7 @@ public class MainApp {
                     }
 
                 } else {
-                    System.out.printf("%30s%30s%30s\n", flightSchedule.getFlightScheduleId(), flightSchedule.getDepartureTime(), flightSchedule.getArrivalTime());
+                    System.out.printf("%30s%30s%30s%30s%30s\n", flightSchedule.getFlightScheduleId(), flightSchedule.getDepartureTime().getTime(), flightSchedule.getArrivalTime().getTime(), flightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getOrigin().getCity(), flightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination().getCity());
                     List<SeatInventory> seatInventories = flightSchedule.getSeatInventories();
                     System.out.printf("%30s%30s%30s%30s\n", "Cabin class", "Available seats", "Reserved seats", "Balanced");
                     for (SeatInventory seatInventory : seatInventories) {
@@ -347,13 +341,13 @@ public class MainApp {
 
                     FlightSchedule flightSchedule2 = flightSchedulesList.get(i + 1);
                     i++;
-                    System.out.printf("%30s%30s%30s\n", flightSchedule2.getFlightScheduleId(), flightSchedule2.getDepartureTime(), flightSchedule2.getArrivalTime());
+                    System.out.printf("%30s%30s%30s%30s%30s\n", flightSchedule2.getFlightScheduleId(), flightSchedule2.getDepartureTime().getTime(), flightSchedule2.getArrivalTime().getTime(), flightSchedule2.getFlightSchedulePlan().getFlight().getFlightRoute().getOrigin().getCity(), flightSchedule2.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination().getCity());
                     List<SeatInventory> seatInventories2 = flightSchedule2.getSeatInventories();
                     System.out.printf("%30s%30s%30s%30s\n", "Cabin class", "Available seats", "Reserved seats", "Balanced");
                     for (SeatInventory seatInventory : seatInventories2) {
                         System.out.printf("%30s%30s%30s\n", seatInventory.getCabinClass(), seatInventory.getAvailable(), seatInventory.getReserved(), seatInventory.getBalance());
                     }
-
+                    System.out.println("");
                     List<Fare> fares2 = flightSchedule2.getFlightSchedulePlan().getFares();
                     List<Fare> filteredFares2 = new ArrayList<>();
                     List<CabinClassEnum> cabinClassEnums2 = new ArrayList<>();
@@ -381,28 +375,35 @@ public class MainApp {
                             }
                         }
                     }
+                    System.out.println("");
+                    System.out.println("                         ========================Fare=====================");
                     System.out.printf("%30s%30s%30s\n", "Cabin class", "Price per passenger", "Total price");
-                    for (int index = 0; index < prices.size(); i++) {
-                        System.out.printf("%30s%30s%30s\n", filteredFares.get(index).getCabinClass(), filteredFares.get(index).getFareAmount(), filteredFares.get(index).getFareAmount() * numPassenger);
+                    for (int index = 0; index < prices.size(); index++) {
+                        System.out.printf("%30s%30s%30s\n", filteredFares.get(index).getCabinClass(), prices.get(index), prices.get(index) * numPassenger);
                     }
                 }
             }
         }
         //Return trip
         if (trip == 2) {
+            System.out.println("");
+            System.out.println("==================Return Trip==================");
+            System.out.println("");
             List<List<FlightSchedule>> flightSchedules2 = flightScheduleSessionBeanRemote.searchFlightSchedule(destinationAirport, originAirport, returnDate, numPassenger, preference, cabinClass);
             System.out.printf("%30s%30s%30s\n", "Flight Schedule ID", "Departure time", "Arrival Time");
             for (List<FlightSchedule> flightSchedulesList : flightSchedules2) {
                 
                 for (int i = 0; i < flightSchedulesList.size(); i++) {
+                    System.out.println("");
                     boolean connecting = false;
                     FlightSchedule flightSchedule = flightSchedulesList.get(i);
                     //if destination is not the same, means current flight schedule is a connecting flight, and the next flight schedule will be the flight containing the destination
-                    if (flightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination() != destinationAirport) {
+                    if (!flightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination().getAirportCode().equals(originAirport.getAirportCode())) {
                         connecting = true;
                     }
+
                     if (!connecting) {
-                        System.out.printf("%30s%30s%30s\n", flightSchedule.getFlightScheduleId(), flightSchedule.getDepartureTime(), flightSchedule.getArrivalTime());
+                        System.out.printf("%30s%30s%30s\n", flightSchedule.getFlightScheduleId(), flightSchedule.getDepartureTime().getTime(), flightSchedule.getArrivalTime().getTime());
                         List<SeatInventory> seatInventories = flightSchedule.getSeatInventories();
                         System.out.printf("%30s%30s%30s%30s\n", "Cabin class", "Available seats", "Reserved seats", "Balanced");
                         for (SeatInventory seatInventory : seatInventories) {
@@ -418,7 +419,9 @@ public class MainApp {
                                 filteredFares.add(fare);
                                 cabinClassEnums.add(fare.getCabinClass());
                             } else {
-                                for (Fare filteredFare : filteredFares) {
+                                int fareSize = filteredFares.size();
+                                for (int id = 0; id < fareSize; id++) {
+                                    Fare filteredFare = filteredFares.get(id);
                                     if (filteredFare.getCabinClass().equals(fare.getCabinClass())) {
                                         if (filteredFare.getFareAmount() > fare.getFareAmount()) {
                                             filteredFares.remove(filteredFare);
