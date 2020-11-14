@@ -3,7 +3,7 @@ This pair project is one of NUS School of Computing (Information Systems [IS] ma
 
 ## Business Rules
 1. Every entity class has a unique key identifier.
-2. Not all entities must perform CRUD (Create, Remove, Update & Delete) operations, only FlightSchedulePlan entity has to.
+2. Not all entities must perform CRUD (Create, Remove, Update & Delete) operations, only FlightSchedulePlan entity must.
 3. The core logic lies in *Create Flight Schedule Plan* and *Search Flights*.
 
 ## Rationales
@@ -15,7 +15,7 @@ This pair project is one of NUS School of Computing (Information Systems [IS] ma
 Such that it is not essential to skip letters that may be confused with numbers (e.g. I, O, Q, S or Z).
 3. We assume that Merlion Airlines does not operates only in its home hub in Singapore Changi Airport and Taoyuan International Airport,
 it can also operate in other airports like Narita and Incheon International Airport.
-4. We have to take into account that different countries have different time zones. 
+4. We must consider that different countries have different time zones. 
 
 # High-level architecture of Flight Reservation System [FRS] 
 This project also known as FRS, consists of 3 parts:
@@ -52,15 +52,15 @@ This project also known as FRS, consists of 3 parts:
 - [X] View Flight Details
 - [X] Update Flight
 - [X] Delete Flight
-- [ ] Search Flight 
+- [X] Search Flight 
 - [ ] Reserve Flight
 
 ### Flight Schedule Plan Session Bean [Flight Operation Module]
 - [X] Create Flight Schedule Plan
 - [X] View All Flight Schedule Plans
-- [ ] View Flight Schedule Plan Details
-- [ ] Update Flight Schedule Plan
-- [ ] Delete Flight Schedule Plan
+- [X] View Flight Schedule Plan Details
+- [X] Update Flight Schedule Plan
+- [X] Delete Flight Schedule Plan
 
 ### Seats Inventory Session Bean [Sales Management Module]
 - [X] View Seats Inventory
@@ -78,7 +78,7 @@ This project also known as FRS, consists of 3 parts:
 
 ![Alt Text](https://i.imgur.com/X4sptXo.png)
 
-## Holiday Resevation System (tbc)
+## Holiday Reservation System (tbc)
 ...
 
 
