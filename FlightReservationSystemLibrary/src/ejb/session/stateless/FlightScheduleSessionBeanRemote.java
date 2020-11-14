@@ -5,8 +5,13 @@
  */
 package ejb.session.stateless;
 
+import entity.Airport;
 import entity.FlightSchedule;
+import java.util.Date;
+import java.util.List;
 import javax.ejb.Remote;
+import util.enumeration.CabinClassEnum;
+import util.enumeration.PreferenceEnum;
 import util.exception.FlightScheduleNotFoundException;
 import util.exception.InputDataValidationException;
 import util.exception.UnknownPersistenceException;
@@ -17,5 +22,8 @@ import util.exception.UnknownPersistenceException;
  */
 @Remote
 public interface FlightScheduleSessionBeanRemote {
-    public Long createNewFlightSchedule(FlightSchedule newFlightSchedule, Long flightSchedulePlanId)throws FlightScheduleNotFoundException, UnknownPersistenceException, InputDataValidationException;
+
+    public List<List<FlightSchedule>> searchFlightSchedule(Airport origin, Airport destination, Date departureDate, int numPassenger, PreferenceEnum preferenceEnum, CabinClassEnum cabinClassEnum);
+
+    public Long createNewFlightSchedule(FlightSchedule newFlightSchedule, Long flightSchedulePlanId) throws FlightScheduleNotFoundException, UnknownPersistenceException, InputDataValidationException;
 }

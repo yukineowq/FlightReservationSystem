@@ -135,6 +135,7 @@ public class SalesManagementModule {
         List<FlightSchedulePlan> flightSchedulePlans = flight.getFlightSchedulePlan();
         List<FlightSchedule> flightSchedules1 = new ArrayList<>();
         int counter = 0;
+        //System.out.println("Num flight schedule plans associated; "+ flightSchedulePlans);
         System.out.println("List of flight schedules associated with this flight:");
         for (FlightSchedulePlan flightSchedulePlan : flightSchedulePlans) {
             List<FlightSchedule> flightSchedules = flightSchedulePlan.getFlightSchedules();

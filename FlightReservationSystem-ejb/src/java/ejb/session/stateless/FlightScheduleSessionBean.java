@@ -19,6 +19,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.persistence.TemporalType;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -79,8 +80,10 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
         }
 
     }
-
+    
+    @Override
     public List<List<FlightSchedule>> searchFlightSchedule(Airport origin, Airport destination, Date departureDate, int numPassenger, PreferenceEnum preferenceEnum, CabinClassEnum cabinClassEnum) {
+
         List<List<FlightSchedule>> flightScheduleList = new ArrayList<>();
         Query query = entityManager.createQuery("SELECT fs FROM FlightSchedule fs");
         List<FlightSchedule> allFlightSchedules = query.getResultList();
@@ -108,12 +111,13 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
         cal2.add(Calendar.DATE, 1);
         Date dateAfter3Days = cal2.getTime();
         dates.add(dateAfter3Days);
+
         if (preferenceEnum.equals(PreferenceEnum.DIRECT)) {
             for (Date date : dates) {
-                query = entityManager.createQuery("SELECT f FROM FlightSchedule f WHERE f.flightSchedulePlan.flight.flightRoute.origin = :inOrigin AND f.flightSchedulePlan.flight.flightRoute.destination = :inDestination AND f.departureDate = :inDepartureDate");
+                query = entityManager.createQuery("SELECT f FROM FlightSchedule f WHERE f.flightSchedulePlan.flight.flightRoute.origin = :inOrigin AND f.flightSchedulePlan.flight.flightRoute.destination = :inDestination AND f.departureDate =:inDepartureDate");
                 query.setParameter("inOrigin", origin);
                 query.setParameter("inDestination", destination);
-                query.setParameter("inDepartureDate", date);
+                query.setParameter("inDepartureDate", date, TemporalType.DATE);
                 List<FlightSchedule> flightSchedules = query.getResultList();
                 List<FlightSchedule> flightSchedulesToBeAdded = new ArrayList<>();
                 for (FlightSchedule flightSchedule : flightSchedules) {
