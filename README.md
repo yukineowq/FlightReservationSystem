@@ -76,9 +76,14 @@ This project also known as FRS, consists of 3 parts:
 - [X] Customer Login
 - [ ] Customer Logout
 
-![Alt Text](https://i.imgur.com/X4sptXo.png)
+![Alt Text](https://i.imgur.com/VvnPuPr.jpg)
 
-## Holiday Reservation System (tbc)
-...
+## Holiday Reservation System (External Party - Web Services)
+- [ ] Partner Login
+- [ ] Partner Search Flight
+- [ ] Partner Reserve Flight
+- [ ] View Partner Flight Reservations
+- [ ] View Partner Flight Reservation Details
+- [ ] Partner Logout
 
 
