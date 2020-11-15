@@ -96,7 +96,7 @@ public class MainApp {
                         System.out.println("Login successful!\n");
                         flightOperationModule = new FlightOperationModule(currentEmployee, flightSessionBeanRemote, flightScheduleSessionBeanRemote, flightSchedulePlanSessionBeanRemote, fareSessionBeanRemote, aircraftConfigurationSessionBeanRemote, flightRouteSessionBeanRemote, airportSessionBeanRemote, cabinClassConfigurationSessionBeanRemote);
                         flightPlanningModule = new FlightPlanningModule(currentEmployee, aircraftConfigurationSessionBeanRemote, flightRouteSessionBeanRemote, cabinClassConfigurationSessionBeanRemote, aircraftTypeSessionBeanRemote, airportSessionBeanRemote);
-                        salesManagementModule = new SalesManagementModule(currentEmployee, seatsInventorySessionBeanRemote, flightReservationSessionBeanRemote, flightSessionBeanRemote);
+                        salesManagementModule = new SalesManagementModule(currentEmployee, seatsInventorySessionBeanRemote, flightReservationSessionBeanRemote, flightSessionBeanRemote, flightScheduleSessionBeanRemote);
                         menuMain();
                     } catch (InvalidLoginCredentialException ex) {
                         System.out.println("Invalid login credential: " + ex.getMessage() + "\n");

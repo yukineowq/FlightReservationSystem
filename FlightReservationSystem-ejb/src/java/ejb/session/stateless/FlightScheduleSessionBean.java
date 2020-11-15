@@ -312,6 +312,18 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
         }
         return flightScheduleList;
     }
+    
+    @Override
+    public FlightSchedule retrieveFlightScheduleById(Long fspId) {
+        FlightSchedule flightSchedule= entityManager.find(FlightSchedule.class, fspId);
+        flightSchedule.getSeatInventories().size();
+        flightSchedule.getFlightReservations().size();
+        for (SeatInventory seatInventory : flightSchedule.getSeatInventories()) {
+            seatInventory.getCabinClassConfiguration();
+        }
+        
+        return flightSchedule;
+    }
 
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<FlightSchedule>> constraintViolations) {
         String msg = "Input data validation error!:";

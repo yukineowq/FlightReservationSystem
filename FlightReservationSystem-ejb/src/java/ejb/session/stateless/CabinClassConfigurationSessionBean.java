@@ -64,6 +64,7 @@ public class CabinClassConfigurationSessionBean implements CabinClassConfigurati
         for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
             cabinClassConfiguration.getFares().size();
             cabinClassConfiguration.getFlights().size();
+            cabinClassConfiguration.getSeatInventories().size();
             cabinClassConfiguration.getAircraftConfiguration();
         }
         cabinClassConfigurations.size();
@@ -79,6 +80,7 @@ public class CabinClassConfigurationSessionBean implements CabinClassConfigurati
         for (CabinClassConfiguration cabinClassConfiguration : cabinClassConfigurations) {
             cabinClassConfiguration.getFares().size();
             cabinClassConfiguration.getFlights().size();
+            cabinClassConfiguration.getSeatInventories().size();
         }
         cabinClassConfigurations.size();
         return cabinClassConfigurations;

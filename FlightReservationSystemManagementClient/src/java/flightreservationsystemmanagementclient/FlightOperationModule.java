@@ -266,6 +266,8 @@ public class FlightOperationModule {
                     SeatInventory seatInventory = new SeatInventory(maxCabinSeatCapacity, cabinClassEnum);
                     flightSchedule.getSeatInventories().add(seatInventory);
                     seatInventory.setFlightSchedule(flightSchedule);
+                    cabinClassConfiguration.getSeatInventories().add(seatInventory);
+                    seatInventory.setCabinClassConfiguration(cabinClassConfiguration);
                 }
 
                 if (complementary) {
@@ -289,6 +291,8 @@ public class FlightOperationModule {
                         SeatInventory seatInventory = new SeatInventory(maxCabinSeatCapacity, cabinClassEnum);
                         complementaryFS.getSeatInventories().add(seatInventory);
                         seatInventory.setFlightSchedule(complementaryFS);
+                        cabinClassConfiguration.getSeatInventories().add(seatInventory);
+                    seatInventory.setCabinClassConfiguration(cabinClassConfiguration);
                     }
 
                 }
@@ -343,6 +347,8 @@ public class FlightOperationModule {
                         SeatInventory seatInventory = new SeatInventory(maxCabinSeatCapacity, cabinClassEnum);
                         flightSchedule.getSeatInventories().add(seatInventory);
                         seatInventory.setFlightSchedule(flightSchedule);
+                        cabinClassConfiguration.getSeatInventories().add(seatInventory);
+                    seatInventory.setCabinClassConfiguration(cabinClassConfiguration);
                     }
                     if (complementary) {
 
@@ -365,6 +371,8 @@ public class FlightOperationModule {
                             SeatInventory seatInventory = new SeatInventory(maxCabinSeatCapacity, cabinClassEnum);
                             complementaryFS.getSeatInventories().add(seatInventory);
                             seatInventory.setFlightSchedule(complementaryFS);
+                            cabinClassConfiguration.getSeatInventories().add(seatInventory);
+                    seatInventory.setCabinClassConfiguration(cabinClassConfiguration);
                         }
 
                     }
@@ -436,6 +444,8 @@ public class FlightOperationModule {
                         SeatInventory seatInventory = new SeatInventory(maxCabinSeatCapacity, cabinClassEnum);
                         flightSchedule.getSeatInventories().add(seatInventory);
                         seatInventory.setFlightSchedule(flightSchedule);
+                        cabinClassConfiguration.getSeatInventories().add(seatInventory);
+                    seatInventory.setCabinClassConfiguration(cabinClassConfiguration);
                     }
 
                     if (complementary) {
@@ -458,6 +468,8 @@ public class FlightOperationModule {
                             SeatInventory seatInventory = new SeatInventory(maxCabinSeatCapacity, cabinClassEnum);
                             complementaryFS.getSeatInventories().add(seatInventory);
                             seatInventory.setFlightSchedule(complementaryFS);
+                            cabinClassConfiguration.getSeatInventories().add(seatInventory);
+                    seatInventory.setCabinClassConfiguration(cabinClassConfiguration);
                         }
                     }
                 }
@@ -522,6 +534,8 @@ public class FlightOperationModule {
                         SeatInventory seatInventory = new SeatInventory(maxCabinSeatCapacity, cabinClassEnum);
                         flightSchedule.getSeatInventories().add(seatInventory);
                         seatInventory.setFlightSchedule(flightSchedule);
+                        cabinClassConfiguration.getSeatInventories().add(seatInventory);
+                    seatInventory.setCabinClassConfiguration(cabinClassConfiguration);
                     }
 
                     if (complementary) {
@@ -544,6 +558,8 @@ public class FlightOperationModule {
                             SeatInventory seatInventory = new SeatInventory(maxCabinSeatCapacity, cabinClassEnum);
                             complementaryFS.getSeatInventories().add(seatInventory);
                             seatInventory.setFlightSchedule(complementaryFS);
+                            cabinClassConfiguration.getSeatInventories().add(seatInventory);
+                    seatInventory.setCabinClassConfiguration(cabinClassConfiguration);
                         }
                     }
                 }

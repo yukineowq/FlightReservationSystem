@@ -25,5 +25,7 @@ public interface FlightScheduleSessionBeanRemote {
 
     public List<List<FlightSchedule>> searchFlightSchedule(Airport origin, Airport destination, String departureDate, int numPassenger, PreferenceEnum preferenceEnum, CabinClassEnum cabinClassEnum);
 
+    public FlightSchedule retrieveFlightScheduleById(Long fspId);
+
     public Long createNewFlightSchedule(FlightSchedule newFlightSchedule, Long flightSchedulePlanId) throws FlightScheduleNotFoundException, UnknownPersistenceException, InputDataValidationException;
 }

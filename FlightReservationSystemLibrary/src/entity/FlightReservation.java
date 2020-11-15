@@ -6,17 +6,23 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import util.enumeration.CabinClassEnum;
 
 /**
  *
@@ -32,11 +38,11 @@ public class FlightReservation implements Serializable {
     @Column(nullable = false, length = 64)
     @NotNull
     @Size(max = 64)
-    private String seatNumber;
+    private List<String> seatNumber;
     @Column(nullable = false, length = 64)
     @NotNull
     @Size(max = 64)
-    private String passengerName;
+    private List<String> passengerName;
     @Column(nullable = false, length = 64)
     @NotNull
     @Size(max = 64)
@@ -44,12 +50,21 @@ public class FlightReservation implements Serializable {
     
     @Column(nullable = false, length = 64)
     @NotNull
+    @Size(max = 64)
+    private String creditCard;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 64)
+    private CabinClassEnum cabinClassEnum;
+    
+    @Column(nullable = false, length = 64)
+    @NotNull
     @Min(0)
     private double fareAmount;
     
-    @ManyToOne(optional = false)
+     @ManyToMany
     @JoinColumn(nullable = false)
-    private FlightSchedule flightSchedule;
+    private List<FlightSchedule> flightSchedules;
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
@@ -57,11 +72,13 @@ public class FlightReservation implements Serializable {
 
     
     public FlightReservation() {
+        seatNumber = new ArrayList<>();
+        passengerName = new ArrayList<>();
+        flightSchedules = new ArrayList<>();
     }
 
-    public FlightReservation(String seatNumber, String passengerName, String fareBasisCode) {
-        this.seatNumber = seatNumber;
-        this.passengerName = passengerName;
+    public FlightReservation(String fareBasisCode) {
+
         this.fareBasisCode = fareBasisCode;
     }
 
@@ -98,19 +115,19 @@ public class FlightReservation implements Serializable {
         return "entity.FlightReservation[ id=" + flightReservationId + " ]";
     }
 
-    public String getSeatNumber() {
+    public List<String> getSeatNumber() {
         return seatNumber;
     }
 
-    public void setSeatNumber(String seatNumber) {
+    public void setSeatNumber(List<String> seatNumber) {
         this.seatNumber = seatNumber;
     }
 
-    public String getPassengerName() {
+    public List<String> getPassengerName() {
         return passengerName;
     }
 
-    public void setPassengerName(String passengerName) {
+    public void setPassengerName(List<String> passengerName) {
         this.passengerName = passengerName;
     }
 
@@ -122,12 +139,12 @@ public class FlightReservation implements Serializable {
         this.fareBasisCode = fareBasisCode;
     }
 
-    public FlightSchedule getFlightSchedule() {
-        return flightSchedule;
+    public List<FlightSchedule> getFlightSchedule() {
+        return flightSchedules;
     }
 
-    public void setFlightSchedule(FlightSchedule flightSchedule) {
-        this.flightSchedule = flightSchedule;
+    public void setFlightSchedule(List<FlightSchedule> flightSchedules) {
+        this.flightSchedules = flightSchedules;
     }
 
     public Customer getCustomer() {
@@ -144,6 +161,22 @@ public class FlightReservation implements Serializable {
 
     public void setFareAmount(double fareAmount) {
         this.fareAmount = fareAmount;
+    }
+
+    public String getCreditCard() {
+        return creditCard;
+    }
+
+    public void setCreditCard(String creditCard) {
+        this.creditCard = creditCard;
+    }
+
+    public CabinClassEnum getCabinClassEnum() {
+        return cabinClassEnum;
+    }
+
+    public void setCabinClassEnum(CabinClassEnum cabinClassEnum) {
+        this.cabinClassEnum = cabinClassEnum;
     }
     
 }

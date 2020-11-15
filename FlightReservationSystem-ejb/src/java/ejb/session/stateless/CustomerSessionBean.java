@@ -106,7 +106,7 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote, CustomerS
     @Override
     public Customer retrieveCustomerByUsername(String username) throws CustomerNotFoundException
     {
-        Query query = entityManager.createQuery("SELECT s FROM Customer s WHERE s.username = :inUsername");
+        Query query = entityManager.createQuery("SELECT s FROM Customer s WHERE s.userName =:inUsername");
         query.setParameter("inUsername", username);
         
         try
