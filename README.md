@@ -16,6 +16,8 @@ Such that it is not essential to skip letters that may be confused with numbers 
 3. We assume that Merlion Airlines does not operates only in its home hub in Singapore Changi Airport and Taoyuan International Airport,
 it can also operate in other airports like Narita and Incheon International Airport.
 4. We must consider that different countries have different time zones. 
+5. We assume that there is a fixed 4hrs period for layover.\
+6. For connecting flights, we assume that 2 hrs is needed for the transit, so flights between this period will not be taken into consideration during this 2hr period after landing of the first flight to the departing of the next flight.
 
 # High-level architecture of Flight Reservation System [FRS] 
 This project also known as FRS, consists of 3 parts:
@@ -74,16 +76,16 @@ This project also known as FRS, consists of 3 parts:
 ### Customer Session Bean 
 - [X] Register As Customer
 - [X] Customer Login
-- [ ] Customer Logout
+- [X] Customer Logout
 
 ![Alt Text](https://i.imgur.com/VvnPuPr.jpg)
 
 ## Holiday Reservation System (External Party - Web Services)
-- [ ] Partner Login
-- [ ] Partner Search Flight
+- [X] Partner Login
+- [X] Partner Search Flight
 - [ ] Partner Reserve Flight
-- [ ] View Partner Flight Reservations
-- [ ] View Partner Flight Reservation Details
-- [ ] Partner Logout
+- [X] View Partner Flight Reservations
+- [X] View Partner Flight Reservation Details
+- [X] Partner Logout
 
 
