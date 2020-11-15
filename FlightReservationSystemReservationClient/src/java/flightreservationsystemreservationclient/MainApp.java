@@ -58,7 +58,7 @@ public class MainApp {
     private CustomerOperationModule customerOperationModule;
 
     public MainApp() {
-        
+
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.getValidator();
 
@@ -152,9 +152,9 @@ public class MainApp {
                 Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
             }
             System.out.println("Enter departure date (yyyy-mm-dd)> ");
-          
-                departureDate = scanner.nextLine().trim();
-           
+
+            departureDate = scanner.nextLine().trim();
+
             System.out.println("Enter number of passengers> ");
             numPassenger = scanner.nextInt();
             scanner.nextLine();
@@ -216,13 +216,13 @@ public class MainApp {
                 Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
             }
             System.out.println("Enter departure date (yyyy-mm-dd)> ");
-        
-                departureDate = scanner.nextLine().trim();
-          
+
+            departureDate = scanner.nextLine().trim();
+
             System.out.println("Enter return date (yyyy-mm-dd)> ");
-           
-                returnDate = scanner.nextLine().trim();
-            
+
+            returnDate = scanner.nextLine().trim();
+
             System.out.println("Enter number of passengers> ");
             numPassenger = scanner.nextInt();
             scanner.nextLine();
@@ -351,8 +351,8 @@ public class MainApp {
                     List<Fare> fares2 = flightSchedule2.getFlightSchedulePlan().getFares();
                     List<Fare> filteredFares2 = new ArrayList<>();
                     List<CabinClassEnum> cabinClassEnums2 = new ArrayList<>();
-
-                    for (Fare fare : fares) {
+//
+                    for (Fare fare : fares2) {
                         if (!cabinClassEnums2.contains(fare.getCabinClass())) {
                             filteredFares2.add(fare);
                             cabinClassEnums2.add(fare.getCabinClass());
@@ -392,7 +392,7 @@ public class MainApp {
             List<List<FlightSchedule>> flightSchedules2 = flightScheduleSessionBeanRemote.searchFlightSchedule(destinationAirport, originAirport, returnDate, numPassenger, preference, cabinClass);
             System.out.printf("%30s%30s%30s\n", "Flight Schedule ID", "Departure time", "Arrival Time");
             for (List<FlightSchedule> flightSchedulesList : flightSchedules2) {
-                
+
                 for (int i = 0; i < flightSchedulesList.size(); i++) {
                     System.out.println("");
                     boolean connecting = false;
@@ -436,7 +436,7 @@ public class MainApp {
                         }
 
                     } else {
-                        System.out.printf("%30s%30s%30s\n", flightSchedule.getFlightScheduleId(), flightSchedule.getDepartureTime(), flightSchedule.getArrivalTime());
+                        System.out.printf("%30s%30s%30s%30s%30s\n", flightSchedule.getFlightScheduleId(), flightSchedule.getDepartureTime().getTime(), flightSchedule.getArrivalTime().getTime(), flightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getOrigin().getCity(),  flightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination().getCity() );
                         List<SeatInventory> seatInventories = flightSchedule.getSeatInventories();
                         System.out.printf("%30s%30s%30s%30s\n", "Cabin class", "Available seats", "Reserved seats", "Balanced");
                         for (SeatInventory seatInventory : seatInventories) {
@@ -465,7 +465,7 @@ public class MainApp {
 
                         FlightSchedule flightSchedule2 = flightSchedulesList.get(i + 1);
                         i++;
-                        System.out.printf("%30s%30s%30s\n", flightSchedule2.getFlightScheduleId(), flightSchedule2.getDepartureTime(), flightSchedule2.getArrivalTime());
+                        System.out.printf("%30s%30s%30s%30s%30s\n", flightSchedule2.getFlightScheduleId(), flightSchedule2.getDepartureTime().getTime(), flightSchedule2.getArrivalTime().getTime(), flightSchedule2.getFlightSchedulePlan().getFlight().getFlightRoute().getOrigin().getCity(),  flightSchedule2.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination().getCity());
                         List<SeatInventory> seatInventories2 = flightSchedule2.getSeatInventories();
                         System.out.printf("%30s%30s%30s%30s\n", "Cabin class", "Available seats", "Reserved seats", "Balanced");
                         for (SeatInventory seatInventory : seatInventories2) {
@@ -476,12 +476,14 @@ public class MainApp {
                         List<Fare> filteredFares2 = new ArrayList<>();
                         List<CabinClassEnum> cabinClassEnums2 = new ArrayList<>();
 
-                        for (Fare fare : fares) {
+                        for (Fare fare : fares2) {
                             if (!cabinClassEnums2.contains(fare.getCabinClass())) {
                                 filteredFares2.add(fare);
                                 cabinClassEnums2.add(fare.getCabinClass());
                             } else {
-                                for (Fare filteredFare : filteredFares2) {
+                                int ff2Size = filteredFares2.size();
+                                for (int id2 = 0; id2< ff2Size; id2++) {
+                                    Fare filteredFare = filteredFares2.get(id2);
                                     if (filteredFare.getCabinClass().equals(fare.getCabinClass())) {
                                         if (filteredFare.getFareAmount() > fare.getFareAmount()) {
                                             filteredFares2.remove(filteredFare);
@@ -499,9 +501,12 @@ public class MainApp {
                                 }
                             }
                         }
+                        System.out.println("");
+                        System.out.println("                         ========================Fare=====================");
+
                         System.out.printf("%30s%30s%30s\n", "Cabin class", "Price per passenger", "Total price");
-                        for (int index = 0; index < prices.size(); i++) {
-                            System.out.printf("%30s%30s%30s\n", filteredFares.get(index).getCabinClass(), filteredFares.get(index).getFareAmount(), filteredFares.get(index).getFareAmount() * numPassenger);
+                        for (int index = 0; index < prices.size(); index++) {
+                            System.out.printf("%30s%30s%30s\n", filteredFares.get(index).getCabinClass(), prices.get(index), prices.get(index) * numPassenger);
                         }
                     }
                 }
@@ -509,10 +514,6 @@ public class MainApp {
 
         }
     }
-
-    
-
-    
 
     private void doLogin() throws InvalidLoginCredentialException {
         Scanner scanner = new Scanner(System.in);

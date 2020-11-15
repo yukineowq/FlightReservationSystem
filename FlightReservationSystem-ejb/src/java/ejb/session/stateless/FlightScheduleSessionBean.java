@@ -240,13 +240,15 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
 
         } else {
             for (Date date : dates) {
+                String dateString = fsd.format(date);
                 query = entityManager.createQuery("SELECT f FROM FlightSchedule f WHERE f.flightSchedulePlan.flight.flightRoute.origin = :inOrigin AND f.flightSchedulePlan.flight.flightRoute.destination = :inDestination AND f.departureDate = :inDepartureDate");
                 query.setParameter("inOrigin", origin);
                 query.setParameter("inDestination", destination);
-                query.setParameter("inDepartureDate", date);
+                query.setParameter("inDepartureDate", dateString);
                 List<FlightSchedule> flightSchedules = query.getResultList();
                 List<FlightSchedule> flightSchedulesToBeAdded = new ArrayList<>();
                 for (FlightSchedule flightSchedule : flightSchedules) {
+                    flightSchedule.getFlightSchedulePlan().getFares().size();
                     List<SeatInventory> seatInventories = flightSchedule.getSeatInventories();
                     for (SeatInventory seatInventory : seatInventories) {
                         if (seatInventory.getCabinClass().equals(cabinClassEnum)) {
@@ -259,17 +261,19 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
                 flightScheduleList.add(flightSchedulesToBeAdded);
                 query = entityManager.createQuery("SELECT f FROM FlightSchedule f WHERE f.flightSchedulePlan.flight.flightRoute.origin = :inOrigin AND f.departureDate = :inDepartureDate");
                 query.setParameter("inOrigin", origin);
-                query.setParameter("inDepartureDate", date);
+                query.setParameter("inDepartureDate", dateString);
                 List<FlightSchedule> flightSchedulesOrigins = query.getResultList();
                 query = entityManager.createQuery("SELECT f FROM FlightSchedule f WHERE f.flightSchedulePlan.flight.flightRoute.destination = :inDestination AND f.departureDate = :inDepartureDate");
                 query.setParameter("inDestination", destination);
-                query.setParameter("inDepartureDate", date);
+                query.setParameter("inDepartureDate", dateString);
                 List<FlightSchedule> flightSchedulesDestinations = query.getResultList();
                 for (FlightSchedule flightScheduleOrigin : flightSchedulesOrigins) {
+                    flightScheduleOrigin.getFlightSchedulePlan().getFares().size();
                     Airport originDestination = flightScheduleOrigin.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination();
                     Calendar arrivingCalendar = flightScheduleOrigin.getArrivalTime();
                     arrivingCalendar.add(Calendar.HOUR_OF_DAY, 2); //Assumption that 2 hours is needed to transit from one flight to another
                     for (FlightSchedule flightScheduleDestination : flightSchedulesDestinations) {
+                        flightScheduleDestination.getFlightSchedulePlan().getFares().size();
                         Airport destinationOrigin = flightScheduleDestination.getFlightSchedulePlan().getFlight().getFlightRoute().getOrigin();
                         Calendar departingCalendar = flightScheduleDestination.getDepartureTime();
                         if ((originDestination.getAirportCode().equals(destinationOrigin.getAirportCode())) && departingCalendar.after(arrivingCalendar)) {

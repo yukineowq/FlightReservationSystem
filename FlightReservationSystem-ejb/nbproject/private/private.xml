@@ -3,8 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/singleton/DataInitializationTestDataSessionBean.java</file>
-            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FlightSchedulePlanSessionBean.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/conf/persistence.xml</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/ReserveFlightSessionBean.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FlightScheduleSessionBean.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystem-ejb/src/java/ejb/session/stateless/FlightScheduleSessionBeanLocal.java</file>
         </group>
     </open-files>
 </project-private>
