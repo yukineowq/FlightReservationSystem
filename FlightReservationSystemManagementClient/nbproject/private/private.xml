@@ -2,6 +2,13 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+<<<<<<< HEAD
         <group/>
+=======
+        <group>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystemManagementClient/src/java/flightreservationsystemmanagementclient/MainApp.java</file>
+            <file>file:/C:/Users/reuben/Desktop/FlightReservationSystem/FlightReservationSystem/FlightReservationSystemManagementClient/src/java/flightreservationsystemmanagementclient/FlightOperationModule.java</file>
+        </group>
+>>>>>>> a135877f3872d5cfa1b80a857a87b023419e4a8c
     </open-files>
 </project-private>
