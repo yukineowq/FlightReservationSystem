@@ -22,4 +22,5 @@ public interface CustomerSessionBeanLocal {
     public Customer customerLogin(String username, String password) throws InvalidLoginCredentialException;
     public Customer retrieveCustomerByUsername(String username) throws CustomerNotFoundException; 
     public Long createNewCustomer(Customer customer) throws CustomerUsernameExistException, UnknownPersistenceException, InputDataValidationException;
+
 }
