@@ -60,25 +60,25 @@ public class HolidayReservationSystemWebService {
         return partner;
     }
  
-    @WebMethod(operationName = "searchFlightSchedule")
-    public List<List<FlightSchedule>> searchFlightSchedule
-            (@WebParam(name = "origin") Airport origin, 
-            @WebParam(name = "destination") Airport destination, @WebParam(name = "departureDate") String departureDate, 
-            @WebParam(name = "numPassenger") int numPassenger, @WebParam(name = "preferenceEnum") PreferenceEnum preferenceEnum, 
-            @WebParam(name = "cabinClassEnum") CabinClassEnum cabinClassEnum)
-    {
-        List<List<FlightSchedule>> flightScheduleList = flightScheduleSessionBeanLocal.searchFlightSchedule(origin, destination, departureDate, numPassenger, preferenceEnum, cabinClassEnum);
-         
-        Query query = entityManager.createQuery("SELECT fs FROM FlightSchedule fs");
-        List<FlightSchedule> allFlightSchedules = query.getResultList();
-        List<Date> dates = new ArrayList<>();
-        SimpleDateFormat fsd = new SimpleDateFormat("yyyy-MM-dd");
-        Date date1 = new Date();
-        String originCode = origin.getAirportCode();
-        String destinationCode = destination.getAirportCode();
-        
-        return flightScheduleList;
-    }
+//    @WebMethod(operationName = "searchFlightSchedule")
+//    public List<List<FlightSchedule>> searchFlightSchedule
+//            (@WebParam(name = "origin") Airport origin, 
+//            @WebParam(name = "destination") Airport destination, @WebParam(name = "departureDate") String departureDate, 
+//            @WebParam(name = "numPassenger") int numPassenger, @WebParam(name = "preferenceEnum") PreferenceEnum preferenceEnum, 
+//            @WebParam(name = "cabinClassEnum") CabinClassEnum cabinClassEnum)
+//    {
+//        List<List<FlightSchedule>> flightScheduleList = flightScheduleSessionBeanLocal.searchFlightSchedule(origin, destination, departureDate, numPassenger, preferenceEnum, cabinClassEnum);
+//         
+//        Query query = entityManager.createQuery("SELECT fs FROM FlightSchedule fs");
+//        List<FlightSchedule> allFlightSchedules = query.getResultList();
+//        List<Date> dates = new ArrayList<>();
+//        SimpleDateFormat fsd = new SimpleDateFormat("yyyy-MM-dd");
+//        Date date1 = new Date();
+//        String originCode = origin.getAirportCode();
+//        String destinationCode = destination.getAirportCode();
+//        
+//        return flightScheduleList;
+//    }
     
     @WebMethod(operationName = "viewFlightReservations")
     public List<FlightReservation> viewFlightReservations(@WebParam(name = "username") String username, @WebParam(name = "password") String password, @WebParam(name = "partnerId") Long partnerId) throws InvalidLoginCredentialException {
@@ -97,6 +97,6 @@ public class HolidayReservationSystemWebService {
          
         System.out.println("*** HolidayReservationSystemWebService.partnerLogin(): Partner " + partner.getUserName() + " login remotely via web service");
             
-        return flightReservationSessionBeanLocal.viewFlightReservationDetails(partnerId, reservationId);
+       return flightReservationSessionBeanLocal.viewFlightReservationDetails(partnerId, reservationId);
     }
 }
