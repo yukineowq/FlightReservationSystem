@@ -11,6 +11,7 @@ import ejb.session.stateless.CustomerSessionBeanRemote;
 import ejb.session.stateless.FlightReservationSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
 import ejb.session.stateless.FlightScheduleSessionBeanRemote;
+import ejb.session.stateless.SeatsInventorySessionBeanRemote;
 import entity.Airport;
 import entity.Customer;
 import entity.Fare;
@@ -54,7 +55,7 @@ public class MainApp {
     private FlightReservationSessionBeanRemote flightReservationSessionBeanRemote;
     private AirportSessionBeanRemote airportSessionBeanRemote;
     private FlightScheduleSessionBeanRemote flightScheduleSessionBeanRemote;
-
+    private SeatsInventorySessionBeanRemote seatsInventorySessionBeanRemote;
     private CustomerOperationModule customerOperationModule;
 
     public MainApp() {
@@ -64,7 +65,7 @@ public class MainApp {
 
     }
 
-    public MainApp(CustomerSessionBeanRemote customerSessionBeanRemote, FlightSessionBeanRemote flightSessionBeanRemote, ReserveFlightSessionBeanRemote reserveFlightSessionBeanRemote, FlightReservationSessionBeanRemote flightReservationSessionBeanRemote, AirportSessionBeanRemote airportSessionBeanRemote, FlightScheduleSessionBeanRemote flightScheduleSessionBeanRemote) {
+    public MainApp(CustomerSessionBeanRemote customerSessionBeanRemote, FlightSessionBeanRemote flightSessionBeanRemote, ReserveFlightSessionBeanRemote reserveFlightSessionBeanRemote, FlightReservationSessionBeanRemote flightReservationSessionBeanRemote, AirportSessionBeanRemote airportSessionBeanRemote, FlightScheduleSessionBeanRemote flightScheduleSessionBeanRemote, SeatsInventorySessionBeanRemote seatsInventorySessionBeanRemote) {
         this();
         this.customerSessionBeanRemote = customerSessionBeanRemote;
         this.flightSessionBeanRemote = flightSessionBeanRemote;
@@ -72,6 +73,7 @@ public class MainApp {
         this.flightReservationSessionBeanRemote = flightReservationSessionBeanRemote;
         this.airportSessionBeanRemote = airportSessionBeanRemote;
         this.flightScheduleSessionBeanRemote = flightScheduleSessionBeanRemote;
+        this.seatsInventorySessionBeanRemote = seatsInventorySessionBeanRemote;
 
     }
 
@@ -96,7 +98,8 @@ public class MainApp {
                     try {
                         doLogin();
                         System.out.println("Login successful!\n");
-                        customerOperationModule = new CustomerOperationModule(customer, flightSessionBeanRemote, reserveFlightSessionBeanRemote, flightReservationSessionBeanRemote);
+                        customerOperationModule = new CustomerOperationModule(customer, flightSessionBeanRemote, reserveFlightSessionBeanRemote, flightReservationSessionBeanRemote, flightScheduleSessionBeanRemote, seatsInventorySessionBeanRemote);
+                        menuMain();
                     } catch (InvalidLoginCredentialException ex) {
                         System.out.println("Invalid login credential: " + ex.getMessage() + "\n");
                     }
@@ -570,6 +573,46 @@ public class MainApp {
             showInputDataValidationErrorsForCustomer(constraintViolations);
         }
 
+    }
+    
+     private void menuMain() {
+        Scanner scanner = new Scanner(System.in);
+        Integer response = 0;
+
+        while (true) {
+            System.out.println("*** FRS Reservation Client ***\n");
+            System.out.println("You are login as " + " " + customer.getFirstName() + " " + customer.getLastName()+ " \n");
+            System.out.println("1: Search flights");
+            System.out.println("2: Reserve flight");
+            System.out.println("3: View all my flight reservations");
+            System.out.println("4: View flight reservation details");
+            System.out.println("5: Logout\n");
+            response = 0;
+
+            while (response < 1 || response > 5) {
+                System.out.print("> ");
+
+                response = scanner.nextInt();
+
+                if (response == 1) {
+                    search();
+                } else if (response == 2) {
+                    customerOperationModule.doReserveFlight();
+                } else if (response == 3) {
+                    customerOperationModule.doViewAllReservation();
+                } else if (response == 4) {                    
+                    customerOperationModule.doViewReservationDetails();
+                } else if (response == 5) {
+                    break;
+                } else {
+                    System.out.println("Invalid option, please try again!\n");
+                }
+            }
+
+            if (response == 5) {
+                break;
+            }
+        }
     }
 
     private void showInputDataValidationErrorsForCustomer(Set<ConstraintViolation<Customer>> constraintViolations) {

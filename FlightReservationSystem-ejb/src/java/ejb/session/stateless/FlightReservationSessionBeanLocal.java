@@ -5,6 +5,7 @@
  */
 package ejb.session.stateless;
 
+import entity.Customer;
 import entity.FlightReservation;
 import java.util.List;
 import javax.ejb.Local;
@@ -20,7 +21,8 @@ import util.exception.UnknownPersistenceException;
  */
 @Local
 public interface FlightReservationSessionBeanLocal {
-    Long createNewFlightReservation(FlightReservation newFlightReservation, Long flightScheduleId) throws FlightReservationNotFoundException, UnknownPersistenceException, InputDataValidationException;
+    Long createNewFlightReservation(FlightReservation newFlightReservation) throws FlightReservationNotFoundException, UnknownPersistenceException, InputDataValidationException;
     FlightReservation retrieveFlightReservationBySeatNumber(String seatNumber) throws SeatNumberNotFoundException;
-    List<FlightReservation> viewFlightReservations();
+    List<FlightReservation> viewFlightReservations(Long customerId);
+    List<FlightReservation> viewFlightReservationDetails(Long customerId, Long reservationId);
 }

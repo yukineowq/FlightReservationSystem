@@ -8,6 +8,7 @@ package flightreservationsystemmanagementclient;
 import ejb.session.stateless.FlightReservationSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
 import ejb.session.stateless.SeatsInventorySessionBeanRemote;
+import ejb.session.stateless.FlightScheduleSessionBeanRemote;
 import entity.Employee;
 import entity.Flight;
 import entity.FlightReservation;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import util.enumeration.CabinClassEnum;
 import util.enumeration.EmployeeAccessRightEnum;
 import util.exception.FlightNumberExistException;
 import util.exception.InvalidAccessRightException;
@@ -35,15 +37,17 @@ public class SalesManagementModule {
     private SeatsInventorySessionBeanRemote seatsInventorySessionBeanRemote;
     private FlightReservationSessionBeanRemote flightReservationSessionBeanRemote;
     private FlightSessionBeanRemote flightSessionBeanRemote;
+    private FlightScheduleSessionBeanRemote flightScheduleSessionBeanRemote;
 
     public SalesManagementModule() {
     }
 
-    public SalesManagementModule(Employee currentEmployee, SeatsInventorySessionBeanRemote seatsInventorySessionBeanRemote, FlightReservationSessionBeanRemote flightReservationSessionBeanRemote, FlightSessionBeanRemote flightSessionBeanRemote) {
+    public SalesManagementModule(Employee currentEmployee, SeatsInventorySessionBeanRemote seatsInventorySessionBeanRemote, FlightReservationSessionBeanRemote flightReservationSessionBeanRemote, FlightSessionBeanRemote flightSessionBeanRemote, FlightScheduleSessionBeanRemote flightScheduleSessionBeanRemote) {
         this.currentEmployee = currentEmployee;
         this.seatsInventorySessionBeanRemote = seatsInventorySessionBeanRemote;
         this.flightReservationSessionBeanRemote = flightReservationSessionBeanRemote;
         this.flightSessionBeanRemote = flightSessionBeanRemote;
+        this.flightScheduleSessionBeanRemote = flightScheduleSessionBeanRemote;
     }
 
     public void menuSalesManagement() throws InvalidAccessRightException {
@@ -108,16 +112,83 @@ public class SalesManagementModule {
             }
         }
         System.out.println("Select flight schedule> ");
-        FlightSchedule flightSchedule = flightSchedules1.get(scanner.nextInt());
+        Long scheduleId = scanner.nextLong();
+        FlightSchedule flightSchedule = flightScheduleSessionBeanRemote.retrieveFlightScheduleById(scheduleId);
         List<FlightReservation> flightReservations = flightSchedule.getFlightReservations();
-        Collections.sort(flightReservations, new Comparator<FlightReservation>() {
-            public int compare(FlightReservation r1, FlightReservation r2) {
-                return r1.getSeatNumber().compareTo(r2.getSeatNumber());
-            }
-        });
-        System.out.printf("%20s%20s%20s\n", "Seat Number", "Passenger Name", "Fare Basis Code");
+        List<FlightReservation> flightReservationsFirst = new ArrayList<>();
+        List<FlightReservation> flightReservationsBusiness = new ArrayList<>();
+        List<FlightReservation> flightReservationsPremium = new ArrayList<>();
+        List<FlightReservation> flightReservationsEconomy = new ArrayList<>();
+        
         for (FlightReservation flightReservation : flightReservations) {
-            System.out.printf("%20s%20s%20s\n", flightReservation.getSeatNumber(), flightReservation.getPassengerName(), flightReservation.getFareBasisCode());
+            if(flightReservation.getCabinClassEnum().equals(CabinClassEnum.FIRSTCLASS)) {
+                flightReservationsFirst.add(flightReservation);
+            } else if (flightReservation.getCabinClassEnum().equals(CabinClassEnum.BUSINESS)) {
+                flightReservationsBusiness.add(flightReservation);
+            } else if (flightReservation.getCabinClassEnum().equals(CabinClassEnum.PREMIUMECONOMY)) {
+                flightReservationsPremium.add(flightReservation);
+            } else {
+                flightReservationsEconomy.add(flightReservation);
+            }
+        }
+        List<String> first = new ArrayList<>();
+        List<String> business = new ArrayList<>();
+        List<String> premium = new ArrayList<>();
+        List<String> economy = new ArrayList<>();
+        
+        for (FlightReservation flightReservation : flightReservationsFirst) {
+            for (String str : flightReservation.getPassengerName()) {
+                String fn = str.substring(0,5);
+                if (fn.equals(flightNumber)) {
+                    first.add(str);
+                }
+            }
+        }
+        
+        for (FlightReservation flightReservation : flightReservationsEconomy) {
+            for (String str : flightReservation.getPassengerName()) {
+                String fn = str.substring(0,5);
+                if (fn.equals(flightNumber)) {
+                    economy.add(str);
+                }
+            }
+        }
+        
+        for (FlightReservation flightReservation : flightReservationsBusiness) {
+            for (String str : flightReservation.getPassengerName()) {
+                String fn = str.substring(0,5);
+                if (fn.equals(flightNumber)) {
+                    business.add(str);
+                }
+            }
+        }
+        
+        for (FlightReservation flightReservation : flightReservationsPremium) {
+            for (String str : flightReservation.getPassengerName()) {
+                String fn = str.substring(0,5);
+                if (fn.equals(flightNumber)) {
+                    premium.add(str);
+                }
+            }
+        }
+        Collections.sort(first);
+        Collections.sort(business);
+        Collections.sort(premium);
+        Collections.sort(economy);
+        
+        System.out.printf("%20s%20s%20s\n", "Seat Number", "Passenger Name", "Fare Basis Code");
+        for (String str : first) {
+            System.out.println(str);
+        }
+        
+        for (String str : business) {
+            System.out.println(str);
+        }
+        for (String str : premium) {
+            System.out.println(str);
+        }
+        for (String str : economy) {
+            System.out.println(str);
         }
     }
 

@@ -8,6 +8,9 @@ package ejb.session.stateless;
 import entity.SeatInventory;
 import java.util.List;
 import javax.ejb.Remote;
+import util.exception.InputDataValidationException;
+import util.exception.SeatInventoryNotFoundException;
+import util.exception.UpdateSeatInventoryException;
 
 /**
  *
@@ -16,4 +19,5 @@ import javax.ejb.Remote;
 @Remote
 public interface SeatsInventorySessionBeanRemote {
     public List<SeatInventory> viewSeatsInventory();
+    public void updateSeatInventory(SeatInventory seatInventory) throws SeatInventoryNotFoundException, UpdateSeatInventoryException, InputDataValidationException;
 }

@@ -43,6 +43,13 @@ public class SeatInventory implements Serializable {
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private FlightSchedule flightSchedule;
+    
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
+    private CabinClassConfiguration cabinClassConfiguration;
+    
+    @Column(nullable = false, length = 64)
+    private boolean[][] taken;
 
     public SeatInventory() {
     }
@@ -129,6 +136,30 @@ public class SeatInventory implements Serializable {
 
     public void setCabinClass(CabinClassEnum cabinClass) {
         this.cabinClass = cabinClass;
+    }
+
+    public CabinClassConfiguration getCabinClassConfiguration() {
+        return cabinClassConfiguration;
+    }
+
+    public void setCabinClassConfiguration(CabinClassConfiguration cabinClassConfiguration) {
+        this.cabinClassConfiguration = cabinClassConfiguration;
+        int numSeatsAbreast = cabinClassConfiguration.getNumSeatsAbreast();
+        int numRow = cabinClassConfiguration.getNumRow();
+        this.setTaken(new boolean[numRow][numSeatsAbreast]);
+        for (int row = 0; row < numRow; row ++) {
+            for (int col = 0; col < numSeatsAbreast; col++) {
+                getTaken()[row][col] = false;
+            }
+        }
+    }
+
+    public boolean[][] getTaken() {
+        return taken;
+    }
+
+    public void setTaken(boolean[][] taken) {
+        this.taken = taken;
     }
 
     

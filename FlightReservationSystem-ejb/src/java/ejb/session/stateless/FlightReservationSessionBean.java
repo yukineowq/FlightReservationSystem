@@ -46,14 +46,10 @@ public class FlightReservationSessionBean implements FlightReservationSessionBea
     }
 
     @Override
-    public Long createNewFlightReservation(FlightReservation newFlightReservation, Long flightScheduleId) throws FlightReservationNotFoundException, UnknownPersistenceException, InputDataValidationException {
+    public Long createNewFlightReservation(FlightReservation newFlightReservation) throws FlightReservationNotFoundException, UnknownPersistenceException, InputDataValidationException {
         Set<ConstraintViolation<FlightReservation>> constraintViolations = validator.validate(newFlightReservation);
         if (constraintViolations.isEmpty()) {
-            FlightSchedule flightSchedule = entityManager.find(FlightSchedule.class, flightScheduleId);
-            if (flightSchedule != null) {
-                newFlightReservation.setFlightSchedule(flightSchedule);
-                flightSchedule.getFlightReservations().add(newFlightReservation);
-            }
+           
             try {
                 entityManager.persist(newFlightReservation);
                 entityManager.flush();
@@ -88,10 +84,34 @@ public class FlightReservationSessionBean implements FlightReservationSessionBea
     }
 
     @Override
-    public List<FlightReservation> viewFlightReservations() {
-        Query query = entityManager.createQuery("SELECT r FROM FlightReservation r");
+    public List<FlightReservation> viewFlightReservations(Long customerId) {
+        Query query = entityManager.createQuery("SELECT r FROM FlightReservation r WHERE r.customer.customerId = :inCustomerId");
+        query.setParameter("inCustomerId", customerId);
         List<FlightReservation> flightReservations = query.getResultList();
-        flightReservations.size();
+        for (FlightReservation flightReservation : flightReservations) {
+            flightReservation.getFlightSchedule().size();
+            List<FlightSchedule> flightSchedules = flightReservation.getFlightSchedule();
+            for (FlightSchedule flightSchedule : flightSchedules) {
+                flightSchedule.getSeatInventories().size();
+            }
+        }
+        return flightReservations;
+    }
+    
+    @Override
+    public List<FlightReservation> viewFlightReservationDetails(Long customerId, Long reservationId) {
+        
+        Query query = entityManager.createQuery("SELECT r FROM FlightReservation r WHERE r.customer.customerId = :inCustomerId AND r.flightReservationId :=inReservationId");
+        query.setParameter("inCustomerId", customerId);
+        query.setParameter("inReservationId", reservationId);
+        List<FlightReservation> flightReservations = query.getResultList();
+        for (FlightReservation flightReservation : flightReservations) {
+            flightReservation.getFlightSchedule().size();
+            List<FlightSchedule> flightSchedules = flightReservation.getFlightSchedule();
+            for (FlightSchedule flightSchedule : flightSchedules) {
+                flightSchedule.getSeatInventories().size();
+            }
+        }
         return flightReservations;
     }
 

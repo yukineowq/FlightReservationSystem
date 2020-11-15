@@ -73,6 +73,9 @@ public class CabinClassConfiguration implements Serializable {
     @OneToMany(mappedBy = "cabinClassConfiguration", cascade = CascadeType.PERSIST)
     private List<Fare> fares;
     
+    @OneToMany(mappedBy = "cabinClassConfiguration", cascade = CascadeType.PERSIST)
+    private List<SeatInventory> seatInventories;
+    
     @ManyToMany(mappedBy = "cabinClassConfiguration", cascade = CascadeType.PERSIST)
     private List<Flight> flights;
     
@@ -83,6 +86,7 @@ public class CabinClassConfiguration implements Serializable {
 
     public CabinClassConfiguration() {
         fares = new ArrayList<>();
+        seatInventories = new ArrayList<>();
     }
 
     public CabinClassConfiguration(int numAisle, int numRow, int numSeatsAbreast, String seatingConfigurationPerColumn, CabinClassEnum cabinClass) {
@@ -215,6 +219,14 @@ public class CabinClassConfiguration implements Serializable {
 
     public void setFlights(List<Flight> flights) {
         this.flights = flights;
+    }
+
+    public List<SeatInventory> getSeatInventories() {
+        return seatInventories;
+    }
+
+    public void setSeatInventories(List<SeatInventory> seatInventories) {
+        this.seatInventories = seatInventories;
     }
 
 
