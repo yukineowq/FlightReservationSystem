@@ -8,3 +8,7 @@
 /FlightReservationSystemReservationClient/build/
 /FlightReservationSystemManagementClient/dist/
 /FlightReservationSystem-ejb/build/
+/HolidayReservationSystemJavaSeClient/nbproject/private/
+/HolidayReservationSystemJavaSeClient/build/
+/HolidayReservationSystemConsumeWebService/nbproject/private/
+/HolidayReservationSystemConsumeWebService/HolidayReservationSystemConsumeWebService-ejb/nbproject/private/

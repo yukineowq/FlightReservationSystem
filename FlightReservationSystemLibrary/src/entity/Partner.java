@@ -6,6 +6,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -60,6 +61,21 @@ public class Partner implements Serializable {
     @OneToMany(mappedBy = "partner", cascade = CascadeType.PERSIST)
     private List<FlightReservation> flightReservations;
 
+    public Partner() {
+        flightReservations = new ArrayList<>();
+    }
+
+    public Partner(String firstName, String lastName, String email, String mobileNumber, String address, String userName, String password, List<FlightReservation> flightReservations) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.mobileNumber = mobileNumber;
+        this.address = address;
+        this.userName = userName;
+        this.password = password;
+        this.flightReservations = flightReservations;
+    }
+     
     public Long getPartnerId() {
         return partnerId;
     }
