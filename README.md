@@ -55,7 +55,7 @@ This project also known as FRS, consists of 3 parts:
 - [X] Update Flight
 - [X] Delete Flight
 - [X] Search Flight 
-- [ ] Reserve Flight
+- [X] Reserve Flight
 
 ### Flight Schedule Plan Session Bean [Flight Operation Module]
 - [X] Create Flight Schedule Plan
@@ -69,8 +69,8 @@ This project also known as FRS, consists of 3 parts:
 
 ### Flight Reservations Session Bean [Sales Management Module]
 - [X] View Flight Reservations
-- [ ] View My Flight Reservations
-- [ ] View My Flight Reservation Details
+- [X] View My Flight Reservations
+- [X] View My Flight Reservation Details
 
 ## FRS Reservation Client (for Customers)
 ### Customer Session Bean 
